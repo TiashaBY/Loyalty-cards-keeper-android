@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.MainFragment"
+        android:label="mainFragment" />
+    <fragment
+        android:id="@+id/cardDetailsViewFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.CardDetailsViewFragment"
+        android:label="CardDetailsViewFragment" />
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.SignInFragment"
+        android:label="SignInFragment" />
+    <fragment
+        android:id="@+id/cardsDashboardFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.CardsDashboardFragment"
+        android:label="CardsDashboardFragment" />
+</navigation>
