@@ -1,14 +1,15 @@
 package com.rsschool.myapplication.loyaltycards.repository
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository {
+@Singleton
+class UserRepository @Inject constructor() {
 
     val mAuth = FirebaseAuth.getInstance()
 

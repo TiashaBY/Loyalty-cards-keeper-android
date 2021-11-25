@@ -6,18 +6,32 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.MainFragment"
-        android:label="mainFragment" />
+        android:name="com.rsschool.myapplication.loyaltycards.MainFragment" />
     <fragment
         android:id="@+id/cardDetailsViewFragment"
         android:name="com.rsschool.myapplication.loyaltycards.CardDetailsViewFragment"
-        android:label="CardDetailsViewFragment" />
+        android:label="CardDetailsViewFragment" >
+        <action
+            android:id="@+id/action_cardDetailsViewFragment_to_cardsDashboardFragment"
+            app:destination="@id/cardsDashboardFragment" />
+    </fragment>
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.rsschool.myapplication.loyaltycards.SignInFragment"
         android:label="SignInFragment" />
     <fragment
         android:id="@+id/cardsDashboardFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.CardsDashboardFragment"
-        android:label="CardsDashboardFragment" />
+        android:name="com.rsschool.myapplication.loyaltycards.CardsDashboardFragment" >
+        <action
+            android:id="@+id/action_cardsDashboardFragment_to_cardDetailsViewFragment"
+            app:destination="@id/cardDetailsViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.SearchFragment"
+        android:label="SearchFragment" />
+    <fragment
+        android:id="@+id/addCardFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.AddCardFragment"
+        android:label="AddCardFragment" />
 </navigation>
