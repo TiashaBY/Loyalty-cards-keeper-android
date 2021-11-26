@@ -8,12 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.rsschool.myapplication.loyaltycards.databinding.SignInFragmentBinding
 import com.rsschool.myapplication.loyaltycards.viewmodel.AuthViewModel
 import android.util.Log
-import androidx.activity.addCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
@@ -32,9 +29,8 @@ class SignInFragment : Fragment() {
     private val binding get() = checkNotNull(_binding)
 
     private val userAuthViewModel by viewModels<AuthViewModel>()
-    private lateinit var navController: NavController
 
-    private val signInLauncher = registerForActivityResult(
+    private val signInResultLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
     ) { res ->
         this.onSignInResult(res)
@@ -53,21 +49,16 @@ class SignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = findNavController()
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navController.popBackStack(R.id.mainFragment, false)
-        }
-
-
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launchWhenStarted {
             userAuthViewModel.authState.collect { state ->
+                Log.d("dfghfhgfhgfhhg", "stater!!!=" + state)
                 when (state) {
                     AuthentificationState.AUTH -> {
-                        navController.popBackStack()
-                        navController.navigate(R.id.cardsDashboardFragment)
+                        Log.d("dfghfhgfhgfhhg", "navigate to dashboard")
+                        findNavController().navigate(R.id.cardsDashboardFragment)
                     }
                     AuthentificationState.NOT_AUTH -> {
-                        Snackbar.make(view, "Not logged in", Snackbar.LENGTH_LONG).show()
+                        Log.d("dfghfhgfhgfhhg", "navigate to sign in")
                     }
                     else -> {
                         Log.w("TAG", "signInResult:failed")
@@ -87,7 +78,7 @@ class SignInFragment : Fragment() {
             providers
         ).build()
 
-        signInLauncher.launch(signInIntent)
+        signInResultLauncher.launch(signInIntent)
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {

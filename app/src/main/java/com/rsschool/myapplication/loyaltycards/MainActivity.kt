@@ -3,6 +3,7 @@ package com.rsschool.myapplication.loyaltycards
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -32,22 +33,20 @@ class MainActivity : AppCompatActivity() {
             setupActionBarWithNavController(it, appBarConfiguration)
             bottomNavView?.setupWithNavController(it)
         }
+
+            navController?.addOnDestinationChangedListener { _, destination, _ ->
+                when(destination.id) {
+                    R.id.signInFragment -> {
+                        bottomNavView?.visibility = View.GONE
+                        actionBar?.hide()
+                    }
+                    else -> {
+                        actionBar?.show()
+                        bottomNavView?.visibility = View.VISIBLE
+                }
+            }
+        }
     }
-
-/*    override fun onResume() {
-        super.onResume()
-        navController = findNavController(R.id.nav_host_fragment_container)
-            .apply { setGraph(R.navigation.nav_graph) }
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-    }*/
-
-    //MENU STUFF
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.bottom_menu, menu)
-        return true
-    }
-
 
     override fun onSupportNavigateUp(): Boolean {
         return navController?.navigateUp() == true || super.onSupportNavigateUp()

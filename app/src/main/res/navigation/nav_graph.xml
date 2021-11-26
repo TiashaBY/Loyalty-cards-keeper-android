@@ -2,11 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/signInFragment">
 
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.MainFragment" />
     <fragment
         android:id="@+id/cardDetailsViewFragment"
         android:name="com.rsschool.myapplication.loyaltycards.CardDetailsViewFragment"
@@ -33,5 +30,20 @@
     <fragment
         android:id="@+id/addCardFragment"
         android:name="com.rsschool.myapplication.loyaltycards.AddCardFragment"
-        android:label="AddCardFragment" />
+        android:label="AddCardFragment" >
+        <action
+            android:id="@+id/action_addCardFragment_to_cardsDashboardFragment2"
+            app:destination="@id/cardsDashboardFragment" />
+        <action
+            android:id="@+id/action_addCardFragment_to_cameraPreviewFragment"
+            app:destination="@id/cameraPreviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraPreviewFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.CameraPreviewFragment"
+        android:label="CameraPreviewFragment" >
+        <action
+            android:id="@+id/action_cameraPreviewFragment_to_addCardFragment"
+            app:destination="@id/addCardFragment" />
+    </fragment>
 </navigation>
