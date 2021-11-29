@@ -1,11 +1,9 @@
-package com.rsschool.myapplication.loyaltycards.viewmodel
+package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rsschool.myapplication.loyaltycards.repository.UserRepository
+import com.rsschool.myapplication.loyaltycards.datasource.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 

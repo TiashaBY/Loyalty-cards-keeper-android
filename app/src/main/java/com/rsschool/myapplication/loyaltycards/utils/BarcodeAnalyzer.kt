@@ -7,7 +7,8 @@ import androidx.camera.core.ImageProxy
 import androidx.core.os.bundleOf
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import com.rsschool.myapplication.loyaltycards.BarcodeListener
+import com.rsschool.myapplication.loyaltycards.model.Barcode
+import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
     // Get an instance of BarcodeScanner
@@ -24,14 +25,13 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                     if (barcodes.isNotEmpty()) {
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
-                        barcodeListener(bundleOf("CODE" to barcode.displayValue, "TYPE" to barcode.format))
+                        barcodeListener(bundleOf("BARCODE" to Barcode(barcode.displayValue, barcode.format)))
                     }
                 }
                 .addOnFailureListener {
                     // You should really do something about Exceptions
                 }
                 .addOnCompleteListener {
-                    // It's important to close the imageProxy
                     imageProxy.close()
                 }
         }

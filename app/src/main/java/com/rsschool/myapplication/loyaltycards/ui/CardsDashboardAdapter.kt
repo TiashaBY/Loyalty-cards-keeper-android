@@ -39,4 +39,9 @@ class CardsDashboardAdapter : ListAdapter<LoyaltyCard, CardsDashboardAdapter.Car
             oldItem == newItem
     }
 
+    interface OnItemClickListener {
+        fun onItemClick(card: LoyaltyCard)
+        fun onFavIconClick(card : LoyaltyCard, isChecked: Boolean)
+    }
+
 }

@@ -10,18 +10,12 @@
         <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="cardViewStyle">@style/MyStyle.Cardview.Orange</item>
-
-    </style>
-    <!-- CardView -->
-    <style name="MyStyle.Cardview.Orange" parent="CardView">
-        <item name="cardBackgroundColor">#F3921F</item>
     </style>
 
-    <style name="roundedImageViewRounded">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
+    <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">#F3921F</item>
+        <item name="android:textColorSecondary">#e2e2e2</item>
     </style>
 </resources>

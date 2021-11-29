@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards
+package com.rsschool.myapplication.loyaltycards.ui
 
 import android.Manifest.permission.CAMERA
 import android.content.pm.PackageManager
@@ -16,6 +16,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
 import com.rsschool.myapplication.loyaltycards.utils.BarcodeAnalyzer
 import kotlinx.android.synthetic.main.camera_preview_fragment.*

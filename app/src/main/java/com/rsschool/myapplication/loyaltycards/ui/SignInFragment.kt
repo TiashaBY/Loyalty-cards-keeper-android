@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards
+package com.rsschool.myapplication.loyaltycards.ui
 
 
 import android.app.Activity.RESULT_OK
@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.rsschool.myapplication.loyaltycards.databinding.SignInFragmentBinding
-import com.rsschool.myapplication.loyaltycards.viewmodel.AuthViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AuthViewModel
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,7 +18,8 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.rsschool.myapplication.loyaltycards.viewmodel.AuthentificationState
+import com.rsschool.myapplication.loyaltycards.R
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AuthentificationState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 

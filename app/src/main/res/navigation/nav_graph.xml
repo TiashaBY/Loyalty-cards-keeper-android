@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/cardDetailsViewFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.CardDetailsViewFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.CardDetailsViewFragment"
         android:label="CardDetailsViewFragment" >
         <action
             android:id="@+id/action_cardDetailsViewFragment_to_cardsDashboardFragment"
@@ -14,22 +14,19 @@
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.SignInFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.SignInFragment"
         android:label="SignInFragment" />
     <fragment
         android:id="@+id/cardsDashboardFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.CardsDashboardFragment" >
+        android:name="com.rsschool.myapplication.loyaltycards.ui.CardsDashboardFragment"
+        android:label="Dashboard">
         <action
             android:id="@+id/action_cardsDashboardFragment_to_cardDetailsViewFragment"
             app:destination="@id/cardDetailsViewFragment" />
     </fragment>
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.SearchFragment"
-        android:label="SearchFragment" />
-    <fragment
         android:id="@+id/addCardFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.AddCardFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.AddCardFragment"
         android:label="AddCardFragment" >
         <action
             android:id="@+id/action_addCardFragment_to_cardsDashboardFragment2"
@@ -40,10 +37,14 @@
     </fragment>
     <fragment
         android:id="@+id/cameraPreviewFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.CameraPreviewFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.CameraPreviewFragment"
         android:label="CameraPreviewFragment" >
         <action
             android:id="@+id/action_cameraPreviewFragment_to_addCardFragment"
             app:destination="@id/addCardFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/favouritesFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.FavouritesFragment"
+        android:label="FavouritesFragment" />
 </navigation>

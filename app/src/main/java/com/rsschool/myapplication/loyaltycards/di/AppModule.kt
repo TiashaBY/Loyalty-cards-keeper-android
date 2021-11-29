@@ -1,14 +1,16 @@
 package com.rsschool.myapplication.loyaltycards.di
 
-import android.content.Context
+import android.app.Application
 import androidx.room.Room
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.rsschool.myapplication.loyaltycards.database.CardsDatabase
+import com.rsschool.myapplication.loyaltycards.datasource.repository.CardsRepository
+import com.rsschool.myapplication.loyaltycards.datasource.repository.RoomCardsRepository
+import com.rsschool.myapplication.loyaltycards.datasource.room.CardsDatabase
+import com.rsschool.myapplication.loyaltycards.datasource.room.LoyaltyCardDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -26,15 +28,17 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context) =
-        Room.databaseBuilder(context, CardsDatabase::class.java, "cards_database")
+    fun provideDatabase(app: Application) =
+        Room.databaseBuilder(app, CardsDatabase::class.java, "cards_database")
             .fallbackToDestructiveMigration()
             .build()
 
     @Provides
     fun provideLoyaltyCardsDao(db : CardsDatabase) = db.getLoyaltyCardDao()
 
-
+    @Provides
+    @Singleton
+    fun provideCardsRepo(dao: LoyaltyCardDao) : CardsRepository = RoomCardsRepository(dao)
 
 /*    @Provides
     @Singleton

@@ -58,6 +58,29 @@
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="000000111" />
 
+        <CheckBox
+            android:id="@+id/like_button_cb"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/ic_baseline_favorite_border_24"
+            android:button="@null"
+            android:gravity="center"
+            android:padding="4dp"
+            android:textSize="16sp"
+            android:theme="@style/checkBoxStyle"
+            android:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_baseline_close_24"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
             android:layout_width="wrap_content"

@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.database
+package com.rsschool.myapplication.loyaltycards.datasource.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

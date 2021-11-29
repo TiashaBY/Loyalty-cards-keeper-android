@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.repository
+package com.rsschool.myapplication.loyaltycards.datasource.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
