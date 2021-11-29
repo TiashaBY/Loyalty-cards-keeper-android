@@ -29,22 +29,41 @@
         android:name="com.rsschool.myapplication.loyaltycards.ui.AddCardFragment"
         android:label="AddCardFragment" >
         <action
-            android:id="@+id/action_addCardFragment_to_cardsDashboardFragment2"
+            android:id="@+id/action_addCardFragment_to_cardsDashboardFragment"
             app:destination="@id/cardsDashboardFragment" />
         <action
-            android:id="@+id/action_addCardFragment_to_cameraPreviewFragment"
-            app:destination="@id/cameraPreviewFragment" />
+            android:id="@+id/action_addCardFragment_to_selectBarcodeFragment"
+            app:destination="@id/selectBarcodeFragment"/>
+        <argument
+            android:name="barcode"
+            app:argType="com.rsschool.myapplication.loyaltycards.model.Barcode"
+            app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/favouritesFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.FavouritesFragment"
+        android:label="FavouritesFragment" />
+    <dialog
+        android:id="@+id/selectBarcodeFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.SelectBarcodeFragment"
+        android:label="SelectBarcodeFragment" >
+        <action
+            android:id="@+id/action_selectBarcodeFragment_to_addCardFragment"
+            app:destination="@id/addCardFragment" />
+        <argument
+            android:name="barcode"
+            app:argType="com.rsschool.myapplication.loyaltycards.model.Barcode"
+            app:nullable="true" />
+    </dialog>
     <fragment
         android:id="@+id/cameraPreviewFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CameraPreviewFragment"
         android:label="CameraPreviewFragment" >
         <action
             android:id="@+id/action_cameraPreviewFragment_to_addCardFragment"
-            app:destination="@id/addCardFragment" />
+            app:destination="@id/addCardFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/addCardFragment"
+            app:popUpToInclusive="false" />
     </fragment>
-    <fragment
-        android:id="@+id/favouritesFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.ui.FavouritesFragment"
-        android:label="FavouritesFragment" />
 </navigation>

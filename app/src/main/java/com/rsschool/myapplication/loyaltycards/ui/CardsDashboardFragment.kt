@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
+import com.rsschool.myapplication.loyaltycards.databinding.SelectBarcodeFragmentBinding
 import com.rsschool.myapplication.loyaltycards.model.SearchEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,7 +18,10 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class CardsDashboardFragment : Fragment() {
 
-    val viewModel : CardsDashboardViewModel by viewModels()
+    private var _binding : CardsDashboardFragmentBinding? = null
+    private val binding get() = checkNotNull(_binding)
+
+    private val viewModel : CardsDashboardViewModel by viewModels()
     lateinit var searchView : SearchView
 
     override fun onCreateView(
@@ -26,12 +30,13 @@ class CardsDashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         this.setHasOptionsMenu(true)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        _binding = CardsDashboardFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = CardsDashboardFragmentBinding.bind(view)
+
         val cardAdapter = CardsDashboardAdapter()
         binding.apply {
             listRecyclerView.apply {
@@ -41,7 +46,7 @@ class CardsDashboardFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.cards.collect {
                 cardAdapter.submitList(it)
             }

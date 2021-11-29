@@ -15,9 +15,11 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
+import com.rsschool.myapplication.loyaltycards.model.Barcode
 import com.rsschool.myapplication.loyaltycards.utils.BarcodeAnalyzer
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
 import java.util.concurrent.ExecutorService
@@ -25,6 +27,8 @@ import java.util.concurrent.Executors
 
 class CameraPreviewFragment : Fragment() {
     private lateinit var cameraExecutor: ExecutorService
+
+   // private val cameraViewModel by vi
 
 
     private val cameraLauncher = registerForActivityResult(
@@ -85,10 +89,13 @@ class CameraPreviewFragment : Fragment() {
             val imageAnalysis = ImageAnalysis.Builder()
                 .build()
                 .also {
-                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer() { code ->
-                        findNavController().navigate(R.id.addCardFragment, code)
-                    }
-                    )
+                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { code ->
+                        val action = CameraPreviewFragmentDirections
+                            .actionCameraPreviewFragmentToAddCardFragment(code)
+                        lifecycleScope.launchWhenResumed {
+                            findNavController().navigate(action)
+                        }
+                    })
                 }
 
             // Select back camera
@@ -103,10 +110,6 @@ class CameraPreviewFragment : Fragment() {
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
-
-/*    private fun searchBarcode(barcode: String) {
-        scanBarcodeViewModel.searchBarcode(barcode)
-    }*/
 
     private fun allPermissionsGranted() = ContextCompat.checkSelfPermission(
         requireContext(), REQUIRED_PERMISSIONS
@@ -127,6 +130,6 @@ class CameraPreviewFragment : Fragment() {
 
 }
 
-typealias BarcodeListener = (barcode: Bundle) -> Unit
+typealias BarcodeListener = (barcode: Barcode?) -> Unit
 
 

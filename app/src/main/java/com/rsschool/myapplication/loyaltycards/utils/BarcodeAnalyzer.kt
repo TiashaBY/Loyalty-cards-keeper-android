@@ -7,11 +7,11 @@ import androidx.camera.core.ImageProxy
 import androidx.core.os.bundleOf
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
-    // Get an instance of BarcodeScanner
     private val scanner = BarcodeScanning.getClient()
 
     @SuppressLint("UnsafeOptInUsageError")
@@ -19,21 +19,43 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            // Pass image to the scanner and have it do its thing
+
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
-                    if (barcodes.isNotEmpty()) {
+                    if (barcodes.isNotEmpty() && barcodes.size == 1) {
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
-                        barcodeListener(bundleOf("BARCODE" to Barcode(barcode.displayValue, barcode.format)))
+                        barcodeListener(Barcode(barcode.displayValue ?: "",
+                            barcode.format.toZxingBarcode())
+                        )
                     }
+                    return@addOnSuccessListener
                 }
                 .addOnFailureListener {
                     // You should really do something about Exceptions
                 }
                 .addOnCompleteListener {
-                    imageProxy.close()
+                   imageProxy.close()
                 }
         }
+    }
+}
+
+private fun Int.toZxingBarcode(): BarcodeFormat? {
+    return when(this) {
+        1 -> BarcodeFormat.CODE_128
+        2 -> BarcodeFormat.CODE_39
+        4 -> BarcodeFormat.CODE_93
+        8 -> BarcodeFormat.CODABAR
+        16 -> BarcodeFormat.DATA_MATRIX
+        32 -> BarcodeFormat.EAN_13
+        64 -> BarcodeFormat.EAN_8
+        128 -> BarcodeFormat.ITF
+        256 -> BarcodeFormat.QR_CODE
+        512 -> BarcodeFormat.UPC_A
+        1024 -> BarcodeFormat.UPC_E
+        2048 -> BarcodeFormat.PDF_417
+        4096 -> BarcodeFormat.AZTEC
+        else -> null
     }
 }
