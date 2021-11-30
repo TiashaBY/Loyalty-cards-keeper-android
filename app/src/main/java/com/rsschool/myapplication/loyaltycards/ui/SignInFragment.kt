@@ -56,7 +56,7 @@ class SignInFragment : Fragment() {
                 when (state) {
                     AuthentificationState.AUTH -> {
                         Log.d("dfghfhgfhgfhhg", "navigate to dashboard")
-                        findNavController().navigate(R.id.cardsDashboardFragment)
+                        findNavController().navigate(R.id.action_signInFragment_to_cardsDashboardFragment)
                     }
                     AuthentificationState.NOT_AUTH -> {
                         Log.d("dfghfhgfhgfhhg", "navigate to sign in")

@@ -6,6 +6,4 @@ import javax.inject.Inject
 
 class AddCardUseCase @Inject constructor(private val repo: CardsRepository) {
     suspend operator fun invoke(card:LoyaltyCard) = repo.insert(card)
-
-
 }

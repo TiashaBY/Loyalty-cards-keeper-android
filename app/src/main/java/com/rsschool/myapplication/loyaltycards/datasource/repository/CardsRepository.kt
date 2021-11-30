@@ -11,4 +11,6 @@ interface CardsRepository {
     suspend fun delete(card: LoyaltyCard): Int
 
     fun getCardByNameOrNumber(query: String): Flow<List<LoyaltyCard>>
+
+    fun getFavouritesCarts() : Flow<List<LoyaltyCard>>
 }

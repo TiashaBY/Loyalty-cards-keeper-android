@@ -15,7 +15,13 @@
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.SignInFragment"
-        android:label="SignInFragment" />
+        android:label="SignInFragment" >
+        <action
+            android:id="@+id/action_signInFragment_to_cardsDashboardFragment"
+            app:destination="@id/cardsDashboardFragment"
+            app:popUpTo="@id/cardsDashboardFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/cardsDashboardFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CardsDashboardFragment"

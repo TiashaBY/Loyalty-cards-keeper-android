@@ -6,7 +6,7 @@
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSecondary">#6F009688</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <!-- Status bar color. -->
@@ -14,8 +14,18 @@
         <item name="cardViewStyle">@style/MyStyle.Cardview.Orange</item>
     </style>
 
-    <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
-        <item name="colorAccent">#F3921F</item>
-        <item name="android:textColorSecondary">#e2e2e2</item>
+    <style name="Theme.LoyaltyCards.checkBoxFavStyle">
+        <item name="colorAccent">#BC0000</item>
+        <item name="android:textColorSecondary">#FFFFFF</item>
+    </style>
+
+    <style name="Theme.LoyaltyCards.cardViewStyle">
+        <item name="cardCornerRadius">2dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardMaxElevation">4dp</item>
+        <item name="contentPaddingBottom">12dp</item>
+        <item name="contentPaddingTop">12dp</item>
+        <item name="contentPaddingLeft">10dp</item>
+        <item name="contentPaddingRight">10dp</item>
     </style>
 </resources>

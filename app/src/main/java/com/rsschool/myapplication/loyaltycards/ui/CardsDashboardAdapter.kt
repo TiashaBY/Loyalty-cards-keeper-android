@@ -8,14 +8,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
 
-class CardsDashboardAdapter : ListAdapter<LoyaltyCard, CardsDashboardAdapter.CardViewHolder>(DiffCallback()) {
+class CardsDashboardAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsDashboardAdapter.CardViewHolder>(DiffCallback()) {
 
-    class CardViewHolder(private val binding: CardViewBinding) :
+    inner class CardViewHolder(private val binding: CardViewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(card: LoyaltyCard) {
             with(binding) {
                 cardName.text = card.cardName
                 cardNumber.text = card.cardNumber
+                likeButtonCb.isChecked = card.isFavourite
+
+                binding.details.setOnClickListener {
+
+                }
+                binding.deleteButton.setOnClickListener {
+                    listener.onDeleteIconClick(card)
+                }
+
+                binding.likeButtonCb.setOnCheckedChangeListener { _, isChecked ->
+                    listener.onFavIconClick(card, isChecked)
+                }
             }
         }
     }
@@ -36,12 +48,9 @@ class CardsDashboardAdapter : ListAdapter<LoyaltyCard, CardsDashboardAdapter.Car
         }
 
         override fun areContentsTheSame(oldItem: LoyaltyCard, newItem: LoyaltyCard) =
-            oldItem == newItem
+            oldItem.cardId == newItem.cardId &&
+                    oldItem.userId == newItem.userId &&
+                    oldItem.cardName == newItem.cardName &&
+                    oldItem.cardNumber == newItem.cardNumber
     }
-
-    interface OnItemClickListener {
-        fun onItemClick(card: LoyaltyCard)
-        fun onFavIconClick(card : LoyaltyCard, isChecked: Boolean)
-    }
-
 }

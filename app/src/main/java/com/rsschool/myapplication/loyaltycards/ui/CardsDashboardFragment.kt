@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
-import com.rsschool.myapplication.loyaltycards.databinding.SelectBarcodeFragmentBinding
+import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.model.SearchEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +37,18 @@ class CardsDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cardAdapter = CardsDashboardAdapter()
+        val cardAdapter = CardsDashboardAdapter(object: CardsDashboardAdapter.OnCardClickListener {
+            override fun onItemClick(card: LoyaltyCard) {
+                viewModel.onItemClick(card)
+            }
+            override fun onFavIconClick(card: LoyaltyCard, isChecked: Boolean) {
+                viewModel.onFavIconClick(card, isChecked)
+            }
+            override fun onDeleteIconClick(card: LoyaltyCard) {
+                viewModel.onDeleteIconClick(card)
+            }
+        })
+
         binding.apply {
             listRecyclerView.apply {
                 adapter = cardAdapter
@@ -68,6 +79,5 @@ class CardsDashboardFragment : Fragment() {
                 return true
             }
         })
-
     }
 }

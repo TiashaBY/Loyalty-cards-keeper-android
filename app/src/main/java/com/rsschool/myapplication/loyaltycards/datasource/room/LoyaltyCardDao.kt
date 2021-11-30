@@ -18,4 +18,7 @@ interface LoyaltyCardDao {
 
     @Query("SELECT distinct * FROM CardsTable WHERE cardName like '%' || :query || '%'or cardNumber like '%' || :query || '%'")
     fun getCardByNameOrNumber(query: String = ""): Flow<List<LoyaltyCard>>
+
+    @Query("SELECT * FROM CardsTable WHERE isFavourite = 1")
+    fun getFavouritesCarts(): Flow<List<LoyaltyCard>>
 }

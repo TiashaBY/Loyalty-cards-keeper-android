@@ -8,6 +8,7 @@ import com.rsschool.myapplication.loyaltycards.datasource.repository.CardsReposi
 import com.rsschool.myapplication.loyaltycards.datasource.repository.RoomCardsRepository
 import com.rsschool.myapplication.loyaltycards.datasource.room.CardsDatabase
 import com.rsschool.myapplication.loyaltycards.datasource.room.LoyaltyCardDao
+import com.rsschool.myapplication.loyaltycards.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,7 +41,15 @@ class AppModule {
     @Singleton
     fun provideCardsRepo(dao: LoyaltyCardDao) : CardsRepository = RoomCardsRepository(dao)
 
-/*    @Provides
+    @Provides
     @Singleton
-    fun provideRepo(context: Application) = UserRepository()*/
+    fun provideLoyaltyCardsUseCases(repo: CardsRepository): LoyaltyCardUseCases {
+        return LoyaltyCardUseCases(
+            getCards = SearchForQueryUseCase(repo),
+            deleteCard = DeleteCardUseCase(repo),
+            addCard = AddCardUseCase(repo),
+            getFavoriteCards = GetFavouritesListUseCase(repo),
+            updateFavorites = UpdateFavoritesUseCase(repo)
+        )
+    }
 }

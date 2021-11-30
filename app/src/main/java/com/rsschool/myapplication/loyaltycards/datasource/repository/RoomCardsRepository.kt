@@ -2,6 +2,7 @@ package com.rsschool.myapplication.loyaltycards.datasource.repository
 
 import com.rsschool.myapplication.loyaltycards.datasource.room.LoyaltyCardDao
 import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class RoomCardsRepository @Inject constructor(private val dao: LoyaltyCardDao) : CardsRepository {
@@ -13,4 +14,7 @@ class RoomCardsRepository @Inject constructor(private val dao: LoyaltyCardDao) :
     override suspend fun delete(card: LoyaltyCard) = dao.delete(card)
 
     override fun getCardByNameOrNumber(query: String) = dao.getCardByNameOrNumber(query)
+
+    override fun getFavouritesCarts(): Flow<List<LoyaltyCard>> = dao.getFavouritesCarts()
+
 }
