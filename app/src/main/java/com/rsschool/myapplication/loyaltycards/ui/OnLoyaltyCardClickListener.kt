@@ -1,24 +1,23 @@
 package com.rsschool.myapplication.loyaltycards.ui
 
-import androidx.lifecycle.ViewModel
 import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.base.BaseCardsViewModel
 
 
 interface OnCardClickListener {
-    fun onItemClick(card: LoyaltyCard)
+    fun onItemDetailsClick(card: LoyaltyCard)
     fun onFavIconClick(card: LoyaltyCard, isChecked: Boolean)
     fun onDeleteIconClick(card: LoyaltyCard)
 }
-class OnLoyaltyCardClickListener(viewModel: ViewModel): OnCardClickListener  {
-    override fun onItemClick(card: LoyaltyCard) {
-        TODO("Not yet implemented")
-    }
+class OnLoyaltyCardClickListener(private val viewModel: BaseCardsViewModel): OnCardClickListener  {
 
+    override fun onItemDetailsClick(card: LoyaltyCard) {
+        viewModel.onItemDetailsClick(card)
+    }
     override fun onFavIconClick(card: LoyaltyCard, isChecked: Boolean) {
-        TODO("Not yet implemented")
+        viewModel.onFavIconClick(card, isChecked)
     }
-
     override fun onDeleteIconClick(card: LoyaltyCard) {
-        TODO("Not yet implemented")
+        viewModel.onDeleteIconClick(card)
     }
 }

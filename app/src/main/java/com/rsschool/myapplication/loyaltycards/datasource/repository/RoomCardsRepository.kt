@@ -16,5 +16,4 @@ class RoomCardsRepository @Inject constructor(private val dao: LoyaltyCardDao) :
     override fun getCardByNameOrNumber(query: String) = dao.getCardByNameOrNumber(query)
 
     override fun getFavouritesCarts(): Flow<List<LoyaltyCard>> = dao.getFavouritesCarts()
-
 }

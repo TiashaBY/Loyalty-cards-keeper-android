@@ -1,20 +1,17 @@
 package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import android.graphics.Bitmap
-import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.make
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.model.Barcode
 import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.usecase.AddCardUseCase
-import com.rsschool.myapplication.loyaltycards.usecase.SearchForQueryUseCase
 import com.rsschool.myapplication.loyaltycards.utils.BarcodeGenerator
+import com.rsschool.myapplication.loyaltycards.utils.Constants.ADD_TASK_RESULT_OK
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,6 +31,9 @@ class AddCardViewModel @Inject constructor(private val state: SavedStateHandle?,
     val imageBitmap = _imageBitmap.asStateFlow()
 
     private val name = MutableStateFlow("")
+
+    private val addCardEventChannel = Channel<AddCardEvent>()
+    val event = addCardEventChannel.receiveAsFlow().stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     fun onCardNumberChange(newValue : String) {
         _number.value = newValue
@@ -66,12 +66,18 @@ class AddCardViewModel @Inject constructor(private val state: SavedStateHandle?,
             number.value!!,
             barcodeFormat.value)
         viewModelScope.launch {
-            useCase.invoke(card)
+            val result = useCase.invoke(card)
+            if (result > 0) {
+                addCardEventChannel.send(AddCardEvent.NavigateBackWithResult(ADD_TASK_RESULT_OK))
+            } else {
+                addCardEventChannel.send(AddCardEvent.ShowInvalidInputMessage("Message"))
+            }
         }
     }
 }
 
 sealed class AddCardEvent {
-    data class ShowInvalidInputMessage(val msg: String) : AddCardEvent()
-    data class NavigateBackWithResult(val result: Int)
+    class ShowInvalidInputMessage(val msg: String) : AddCardEvent()
+    class NavigateBackWithResult(val resultCode: String) : AddCardEvent()
+    class NavigateToCameraPreview(val result: Int) : AddCardEvent()
 }

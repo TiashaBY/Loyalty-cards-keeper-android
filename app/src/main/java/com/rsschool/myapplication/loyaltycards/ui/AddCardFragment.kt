@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.model.Barcode
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import com.rsschool.myapplication.loyaltycards.utils.BarcodeGenerator
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,10 +59,25 @@ class AddCardFragment : Fragment() {
         }
 
         binding.cardNumber.doOnTextChanged { text, start, count, after ->
-            viewModel.onCardNumberChange(text.toString())// action which will be invoked when the text is changing
+            viewModel.onCardNumberChange(text.toString())
         }
-        binding.cardName.doOnTextChanged { text, start, count, after ->
-            viewModel.onNameChange(text.toString())// action which will be invoked when the text is changing
+        binding.cardName.doOnTextChanged { text, _, _, _ ->
+            viewModel.onNameChange(text.toString())//
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.event.collect { event->
+                when(event) {
+                    is AddCardEvent.ShowInvalidInputMessage -> {
+                        Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG).show()
+                    }
+                    is AddCardEvent.NavigateBackWithResult -> {
+                        findNavController().popBackStack()
+                        findNavController().navigate(R.id.cardsDashboardFragment)
+
+                    }
+                }
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {

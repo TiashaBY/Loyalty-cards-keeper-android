@@ -1,6 +1,8 @@
 package com.rsschool.myapplication.loyaltycards.di
 
 import android.app.Application
+import android.content.Context
+import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -12,6 +14,7 @@ import com.rsschool.myapplication.loyaltycards.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -52,4 +55,8 @@ class AppModule {
             updateFavorites = UpdateFavoritesUseCase(repo)
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideSharedPrefs(@ApplicationContext context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
 }

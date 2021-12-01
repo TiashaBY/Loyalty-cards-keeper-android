@@ -16,9 +16,15 @@ interface LoyaltyCardDao {
     @Delete
     suspend fun delete(card: LoyaltyCard): Int
 
-    @Query("SELECT distinct * FROM CardsTable WHERE cardName like '%' || :query || '%'or cardNumber like '%' || :query || '%'")
+    @Query("""SELECT distinct * 
+            FROM CardsTable
+            WHERE cardName like '%' || :query || '%'or cardNumber like '%' || :query || '%'
+            order by cardName ASC """)
     fun getCardByNameOrNumber(query: String = ""): Flow<List<LoyaltyCard>>
 
-    @Query("SELECT * FROM CardsTable WHERE isFavourite = 1")
+    @Query("""SELECT * 
+            FROM CardsTable
+            WHERE isFavourite = 1
+            order by cardName ASC""")
     fun getFavouritesCarts(): Flow<List<LoyaltyCard>>
 }

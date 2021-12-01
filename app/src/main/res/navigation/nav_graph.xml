@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/signInFragment">
+    app:startDestination="@id/cardsDashboardFragment">
 
     <fragment
         android:id="@+id/cardDetailsViewFragment"
@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_cardDetailsViewFragment_to_cardsDashboardFragment"
             app:destination="@id/cardsDashboardFragment" />
+        <argument
+            android:name="card"
+            app:argType="com.rsschool.myapplication.loyaltycards.model.LoyaltyCard" />
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
@@ -19,8 +22,9 @@
         <action
             android:id="@+id/action_signInFragment_to_cardsDashboardFragment"
             app:destination="@id/cardsDashboardFragment"
-            app:popUpTo="@id/cardsDashboardFragment"
-            app:popUpToInclusive="false" />
+            app:launchSingleTop="false"
+            app:popUpTo="@id/signInFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/cardsDashboardFragment"
@@ -35,15 +39,15 @@
         android:name="com.rsschool.myapplication.loyaltycards.ui.AddCardFragment"
         android:label="AddCardFragment" >
         <action
-            android:id="@+id/action_addCardFragment_to_cardsDashboardFragment"
-            app:destination="@id/cardsDashboardFragment" />
-        <action
             android:id="@+id/action_addCardFragment_to_selectBarcodeFragment"
             app:destination="@id/selectBarcodeFragment"/>
         <argument
             android:name="barcode"
             app:argType="com.rsschool.myapplication.loyaltycards.model.Barcode"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_addCardFragment_to_cameraPreviewFragment"
+            app:destination="@id/cameraPreviewFragment" />
     </fragment>
     <fragment
         android:id="@+id/favouritesFragment"

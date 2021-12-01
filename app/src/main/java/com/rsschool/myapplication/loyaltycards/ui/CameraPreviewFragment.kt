@@ -26,10 +26,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class CameraPreviewFragment : Fragment() {
-    private lateinit var cameraExecutor: ExecutorService
-
-   // private val cameraViewModel by vi
-
+    private var cameraExecutor= Executors.newSingleThreadExecutor()
 
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -62,7 +59,6 @@ class CameraPreviewFragment : Fragment() {
         } else {
             cameraLauncher.launch(REQUIRED_PERMISSIONS)
         }
-        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     //make suspend

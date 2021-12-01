@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.ui.OnCardClickListener
 
-class CardsDashboardAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsDashboardAdapter.CardViewHolder>(DiffCallback()) {
+class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsListAdapter.CardViewHolder>(
+    DiffCallback()
+) {
 
     inner class CardViewHolder(private val binding: CardViewBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -19,12 +22,11 @@ class CardsDashboardAdapter(private val listener : OnCardClickListener) : ListAd
                 likeButtonCb.isChecked = card.isFavourite
 
                 binding.details.setOnClickListener {
-
+                    listener.onItemDetailsClick(card)
                 }
                 binding.deleteButton.setOnClickListener {
                     listener.onDeleteIconClick(card)
                 }
-
                 binding.likeButtonCb.setOnCheckedChangeListener { _, isChecked ->
                     listener.onFavIconClick(card, isChecked)
                 }
