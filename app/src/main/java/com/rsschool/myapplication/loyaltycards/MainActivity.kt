@@ -33,19 +33,6 @@ class MainActivity : AppCompatActivity() {
             setupActionBarWithNavController(it, appBarConfiguration)
             bottomNavView?.setupWithNavController(it)
         }
-
-            navController?.addOnDestinationChangedListener { _, destination, _ ->
-                when(destination.id) {
-                    R.id.signInFragment -> {
-                        bottomNavView?.visibility = View.GONE
-                        actionBar?.hide()
-                    }
-                    else -> {
-                        actionBar?.show()
-                        bottomNavView?.visibility = View.VISIBLE
-                }
-            }
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

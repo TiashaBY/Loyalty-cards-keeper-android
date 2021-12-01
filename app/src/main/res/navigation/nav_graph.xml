@@ -16,17 +16,6 @@
             app:argType="com.rsschool.myapplication.loyaltycards.model.LoyaltyCard" />
     </fragment>
     <fragment
-        android:id="@+id/signInFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.ui.SignInFragment"
-        android:label="SignInFragment" >
-        <action
-            android:id="@+id/action_signInFragment_to_cardsDashboardFragment"
-            app:destination="@id/cardsDashboardFragment"
-            app:launchSingleTop="false"
-            app:popUpTo="@id/signInFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
         android:id="@+id/cardsDashboardFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CardsDashboardFragment"
         android:label="Dashboard">
@@ -76,4 +65,8 @@
             app:popUpTo="@id/addCardFragment"
             app:popUpToInclusive="false" />
     </fragment>
+    <fragment
+        android:id="@+id/userPrefsFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.UserPrefsFragment"
+        android:label="UserPrefsFragment" />
 </navigation>

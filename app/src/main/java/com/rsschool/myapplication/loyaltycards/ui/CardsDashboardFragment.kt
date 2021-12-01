@@ -14,7 +14,6 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
-import com.rsschool.myapplication.loyaltycards.usecase.AuthentificationState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -36,21 +35,6 @@ class CardsDashboardFragment : Fragment() {
     ): View {
         this.setHasOptionsMenu(true)
         _binding = CardsDashboardFragmentBinding.inflate(inflater, container, false)
-
-        lifecycleScope.launchWhenCreated {
-            viewModel.authState.collect { state ->
-                when (state) {
-                    AuthentificationState.AUTH -> {
-                        Log.d("auth", "user is logged in")
-                    }
-                    AuthentificationState.NOT_AUTH -> {
-                        findNavController().popBackStack()
-                        findNavController().navigate(R.id.signInFragment)
-                        Log.d("auth", "navigate to sign in")
-                    }
-                }
-            }
-        }
         return binding.root
     }
 
@@ -93,10 +77,7 @@ class CardsDashboardFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.logout -> {
-                viewModel.onLogoutClick()
-                true
-            }
+
             else -> {
                 super.onOptionsItemSelected(item)
             }
