@@ -2,6 +2,7 @@ package com.rsschool.myapplication.loyaltycards.domain
 
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface CardsRepository {
     suspend fun insert(card: LoyaltyCard): Long

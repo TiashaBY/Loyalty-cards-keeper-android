@@ -3,6 +3,7 @@ package com.rsschool.myapplication.loyaltycards.data.repository
 import com.rsschool.myapplication.loyaltycards.data.room.LoyaltyCardDao
 import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -16,5 +17,6 @@ class RoomCardsRepository @Inject constructor(private val dao: LoyaltyCardDao) :
 
     override fun getCardByNameOrNumber(query: String) = dao.getCardByNameOrNumber(query)
 
-    override fun getFavouritesCarts(): Flow<List<LoyaltyCard>> = dao.getFavouritesCarts()
+    @Throws
+    override fun getFavouritesCarts() = dao.getFavouritesCarts()
 }

@@ -3,6 +3,7 @@ package com.rsschool.myapplication.loyaltycards.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,6 +16,7 @@ import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmen
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnLoyaltyCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.DBResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -50,10 +52,35 @@ class CardsDashboardFragment : Fragment() {
                 setHasFixedSize(true)
             }
         }
+        viewModel.onLoad()
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.cards.collect {
-                cardAdapter.submitList(it)
+            viewModel.islistEmpty.collect() {
+                if (it) {
+                    binding.noCardsMsg.visibility = View.VISIBLE
+                } else {
+                    binding.noCardsMsg.visibility = View.GONE
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.uiState.collect {
+                when (it) {
+                    is DBResult.Success -> {
+                        cardAdapter.submitList(it.value)
+                    }
+                    is DBResult.Empty -> {
+                        cardAdapter.submitList(emptyList())
+                    }
+                    is DBResult.Failure -> {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.error_on_db_get),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
         }
     }

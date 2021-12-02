@@ -17,6 +17,9 @@
     <string name="scan_barcode_button_text">Scan barcode</string>
     <string name="textview">TextView</string>
     <string name="add_barcode_text">Scan you card barcode or add its number manually</string>
+    <string name="add_into_favourites_text">Start adding into favourites by clicking ❤ on card</string>
+    <string name="error_on_db_get">Error on retrieving data from DB</string>
+    <string name="add_card_text">Click + Add button to scan your first loyalty card</string>
 
 
 </resources>
