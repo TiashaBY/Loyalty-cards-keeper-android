@@ -2,9 +2,9 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.rsschool.myapplication.loyaltycards.model.Barcode
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.utils.BarcodeGenerator
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

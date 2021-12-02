@@ -3,9 +3,9 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.base.BaseCardsViewModel
-import com.rsschool.myapplication.loyaltycards.usecase.LoyaltyCardUseCases
+import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*

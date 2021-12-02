@@ -1,7 +1,7 @@
-package com.rsschool.myapplication.loyaltycards.usecase
+package com.rsschool.myapplication.loyaltycards.domain.usecase
 
-import com.rsschool.myapplication.loyaltycards.datasource.repository.CardsRepository
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import javax.inject.Inject
 
 class UpdateFavoritesUseCase @Inject constructor(private val repo: CardsRepository) {

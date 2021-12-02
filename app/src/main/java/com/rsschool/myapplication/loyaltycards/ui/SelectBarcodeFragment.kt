@@ -11,12 +11,12 @@ import com.bumptech.glide.Glide
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.SelectBarcodeFragmentBinding
-import com.rsschool.myapplication.loyaltycards.utils.BarcodeGenerator
+import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.view.allViews
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.rsschool.myapplication.loyaltycards.model.Barcode
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import kotlinx.coroutines.flow.collect
 

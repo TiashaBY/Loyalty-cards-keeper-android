@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.utils
+package com.rsschool.myapplication.loyaltycards.domain.utils
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle

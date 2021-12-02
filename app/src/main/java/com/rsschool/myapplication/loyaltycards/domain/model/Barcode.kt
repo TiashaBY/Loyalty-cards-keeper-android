@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.model
+package com.rsschool.myapplication.loyaltycards.domain.model
 
 import android.os.Parcelable
 import com.google.zxing.BarcodeFormat

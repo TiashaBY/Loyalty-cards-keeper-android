@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.LoyaltyCards.v29" parent="Theme.LoyaltyCards">
+        <item name="android:forceDarkAllowed">true</item>
+    </style>
+</resources>

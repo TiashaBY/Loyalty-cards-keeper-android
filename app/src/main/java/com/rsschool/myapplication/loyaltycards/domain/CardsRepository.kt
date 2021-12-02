@@ -1,6 +1,6 @@
-package com.rsschool.myapplication.loyaltycards.datasource.repository
+package com.rsschool.myapplication.loyaltycards.domain
 
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import kotlinx.coroutines.flow.Flow
 
 interface CardsRepository {

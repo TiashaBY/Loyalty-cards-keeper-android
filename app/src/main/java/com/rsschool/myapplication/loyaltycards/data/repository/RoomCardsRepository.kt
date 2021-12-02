@@ -1,7 +1,8 @@
-package com.rsschool.myapplication.loyaltycards.datasource.repository
+package com.rsschool.myapplication.loyaltycards.data.repository
 
-import com.rsschool.myapplication.loyaltycards.datasource.room.LoyaltyCardDao
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.data.room.LoyaltyCardDao
+import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

@@ -13,7 +13,7 @@
             app:destination="@id/cardsDashboardFragment" />
         <argument
             android:name="card"
-            app:argType="com.rsschool.myapplication.loyaltycards.model.LoyaltyCard" />
+            app:argType="com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard" />
     </fragment>
     <fragment
         android:id="@+id/cardsDashboardFragment"
@@ -29,14 +29,15 @@
         android:label="AddCardFragment" >
         <action
             android:id="@+id/action_addCardFragment_to_selectBarcodeFragment"
-            app:destination="@id/selectBarcodeFragment"/>
-        <argument
-            android:name="barcode"
-            app:argType="com.rsschool.myapplication.loyaltycards.model.Barcode"
-            app:nullable="true" />
+            app:destination="@id/selectBarcodeFragment"
+            app:launchSingleTop="true" />
         <action
-            android:id="@+id/action_addCardFragment_to_cameraPreviewFragment"
-            app:destination="@id/cameraPreviewFragment" />
+            android:id="@+id/action_addCardFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment"
+            app:launchSingleTop="true" />
+        <argument
+            android:name="cameraResult"
+            app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent" />
     </fragment>
     <fragment
         android:id="@+id/favouritesFragment"
@@ -51,22 +52,22 @@
             app:destination="@id/addCardFragment" />
         <argument
             android:name="barcode"
-            app:argType="com.rsschool.myapplication.loyaltycards.model.Barcode"
+            app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode"
             app:nullable="true" />
     </dialog>
-    <fragment
-        android:id="@+id/cameraPreviewFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.ui.CameraPreviewFragment"
-        android:label="CameraPreviewFragment" >
-        <action
-            android:id="@+id/action_cameraPreviewFragment_to_addCardFragment"
-            app:destination="@id/addCardFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/addCardFragment"
-            app:popUpToInclusive="false" />
-    </fragment>
     <fragment
         android:id="@+id/userPrefsFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.UserPrefsFragment"
         android:label="UserPrefsFragment" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.rsschool.myapplication.loyaltycards.ui.CameraFragment"
+        android:label="CameraFragment" >
+        <action
+            android:id="@+id/action_cameraFragment_to_addCardFragment"
+            app:destination="@id/addCardFragment" />
+        <argument
+            android:name="cameraAction"
+            app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest" />
+    </fragment>
 </navigation>

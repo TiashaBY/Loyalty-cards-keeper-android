@@ -1,15 +1,15 @@
-package com.rsschool.myapplication.loyaltycards.utils
+package com.rsschool.myapplication.loyaltycards.domain.utils
 
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.core.os.bundleOf
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
-import com.rsschool.myapplication.loyaltycards.model.Barcode
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()
@@ -25,8 +25,13 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                     if (barcodes.isNotEmpty() && barcodes.size == 1) {
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
-                        barcodeListener(Barcode(barcode.displayValue ?: "",
-                            barcode.format.toZxingBarcode())
+                        barcodeListener(
+                            CameraResultEvent.BarcodeScanned(
+                                Barcode(
+                                    barcode.displayValue ?: "",
+                                    barcode.format.toZxingBarcode()
+                                )
+                            )
                         )
                     }
                     return@addOnSuccessListener
@@ -35,14 +40,14 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                     // You should really do something about Exceptions
                 }
                 .addOnCompleteListener {
-                   imageProxy.close()
+                    imageProxy.close()
                 }
         }
     }
 }
 
 private fun Int.toZxingBarcode(): BarcodeFormat? {
-    return when(this) {
+    return when (this) {
         1 -> BarcodeFormat.CODE_128
         2 -> BarcodeFormat.CODE_39
         4 -> BarcodeFormat.CODE_93

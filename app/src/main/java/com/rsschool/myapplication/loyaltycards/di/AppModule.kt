@@ -6,11 +6,11 @@ import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.rsschool.myapplication.loyaltycards.datasource.repository.CardsRepository
-import com.rsschool.myapplication.loyaltycards.datasource.repository.RoomCardsRepository
-import com.rsschool.myapplication.loyaltycards.datasource.room.CardsDatabase
-import com.rsschool.myapplication.loyaltycards.datasource.room.LoyaltyCardDao
-import com.rsschool.myapplication.loyaltycards.usecase.*
+import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
+import com.rsschool.myapplication.loyaltycards.data.repository.RoomCardsRepository
+import com.rsschool.myapplication.loyaltycards.data.room.CardsDatabase
+import com.rsschool.myapplication.loyaltycards.data.room.LoyaltyCardDao
+import com.rsschool.myapplication.loyaltycards.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

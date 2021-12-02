@@ -1,6 +1,6 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.listener
 
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.base.BaseCardsViewModel
 
 

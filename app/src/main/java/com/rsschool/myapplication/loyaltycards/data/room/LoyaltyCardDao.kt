@@ -1,9 +1,8 @@
-package com.rsschool.myapplication.loyaltycards.datasource.room
+package com.rsschool.myapplication.loyaltycards.data.room
 
 import androidx.room.*
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface LoyaltyCardDao {

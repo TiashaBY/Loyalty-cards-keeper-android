@@ -12,6 +12,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
+import com.rsschool.myapplication.loyaltycards.ui.listener.OnLoyaltyCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -77,7 +78,9 @@ class CardsDashboardFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-
+            R.id.userPrefsFragment -> {
+                item.onNavDestinationSelected(findNavController())
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }

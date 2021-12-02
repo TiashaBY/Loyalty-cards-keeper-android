@@ -1,10 +1,10 @@
-package com.rsschool.myapplication.loyaltycards.utils
+package com.rsschool.myapplication.loyaltycards.domain.utils
 
 import android.graphics.Bitmap
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
-import com.rsschool.myapplication.loyaltycards.model.Barcode
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import java.lang.Exception
 
 class BarcodeGenerator {
@@ -14,7 +14,7 @@ class BarcodeGenerator {
         var bitMatrix: BitMatrix
         try {
             bitMatrix = try {
-                writer.encode(barcode.code, barcode.format, 15, 10, null)
+                writer.encode(barcode.code, barcode.format, 200, 150, null)
             } catch (e: Exception) {
                 // Cast a wider net here and catch any exception, as there are some
                 // cases where an encoder may fail if the data is invalid for the

@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rsschool.myapplication.loyaltycards.databinding.FavouritesFragmentBinding
+import com.rsschool.myapplication.loyaltycards.ui.listener.OnLoyaltyCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.FavouriteCardsViewModel
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.usecase
+package com.rsschool.myapplication.loyaltycards.domain.usecase
 
 data class LoyaltyCardUseCases(
     val getCards: SearchForQueryUseCase,

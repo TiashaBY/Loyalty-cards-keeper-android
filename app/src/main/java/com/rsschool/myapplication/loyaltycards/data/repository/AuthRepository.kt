@@ -1,6 +1,5 @@
-package com.rsschool.myapplication.loyaltycards.datasource.repository
+package com.rsschool.myapplication.loyaltycards.data.repository
 
-import android.app.Application
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow

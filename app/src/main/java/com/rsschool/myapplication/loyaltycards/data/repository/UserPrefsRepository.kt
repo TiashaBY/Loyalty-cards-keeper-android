@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.datasource.repository
+package com.rsschool.myapplication.loyaltycards.data.repository
 
 import android.content.SharedPreferences
 import javax.inject.Inject

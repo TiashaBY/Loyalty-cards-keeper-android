@@ -2,8 +2,8 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.usecase.LoyaltyCardUseCases
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

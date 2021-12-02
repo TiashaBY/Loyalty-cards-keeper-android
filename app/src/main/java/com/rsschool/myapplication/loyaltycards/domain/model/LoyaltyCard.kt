@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.model
+package com.rsschool.myapplication.loyaltycards.domain.model
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -11,7 +11,6 @@ import kotlinx.android.parcel.Parcelize
 data class LoyaltyCard(
     @PrimaryKey
     val cardId: Long? = null,
-    val userId: String,
     val isFavourite: Boolean,
     val cardName: String,
     val cardNumber: String,

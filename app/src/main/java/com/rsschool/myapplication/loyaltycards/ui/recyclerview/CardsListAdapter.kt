@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
-import com.rsschool.myapplication.loyaltycards.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.ui.OnCardClickListener
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 
 class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsListAdapter.CardViewHolder>(
     DiffCallback()
@@ -51,7 +51,6 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
 
         override fun areContentsTheSame(oldItem: LoyaltyCard, newItem: LoyaltyCard) =
             oldItem.cardId == newItem.cardId &&
-                    oldItem.userId == newItem.userId &&
                     oldItem.cardName == newItem.cardName &&
                     oldItem.cardNumber == newItem.cardNumber
     }
