@@ -26,7 +26,7 @@ class CardsDashboardFragment : CardsFragment() {
 
     override val viewModel : CardsDashboardViewModel by viewModels()
     override lateinit var cardAdapter : CardsListAdapter
-    private lateinit var searchView : SearchView
+    private var searchView : SearchView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,20 +63,22 @@ class CardsDashboardFragment : CardsFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar_menu, menu)
         searchView = menu.findItem(R.id.app_bar_search).actionView as SearchView
-        searchView.queryHint = getString(R.string.search_field_hint)
-        searchView.onActionViewExpanded()
-        searchView.clearFocus()
-        searchView.setQuery(viewModel.searchQuery.value, false)
+        searchView?.let {
+            it.queryHint = getString(R.string.search_field_hint)
+            it.onActionViewExpanded()
+            it.clearFocus()
+            it.setQuery(viewModel.searchQuery.value, false)
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.onSearchQueryChange(newText)
-                return true
-            }
-            override fun onQueryTextSubmit(query: String): Boolean {
-                return true
-            }
-        })
+            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextChange(newText: String): Boolean {
+                    viewModel.onSearchQueryChange(newText)
+                    return true
+                }
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    return true
+                }
+            })
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -92,6 +94,6 @@ class CardsDashboardFragment : CardsFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        searchView.setOnQueryTextListener(null)
+        searchView?.setOnQueryTextListener(null)
     }
 }

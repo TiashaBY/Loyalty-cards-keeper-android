@@ -39,6 +39,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/card_number_textfield_hint"
+        android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@+id/scan_barcode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,8 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLength="30"
-            android:maxLines="1" />
+            android:maxLength="30" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -70,20 +70,18 @@
     <ImageView
         android:id="@+id/barcode"
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         app:layout_constraintBottom_toTopOf="@+id/save_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
-        app:layout_constraintVertical_bias="0.3"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/barcode_type"
-        android:layout_width="56dp"
-        android:layout_height="14dp"
-        android:text="None"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NONE"
         android:textSize="16dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/select_barcode_type"
@@ -109,9 +107,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
         android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -121,13 +117,12 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginStart="@dimen/cardview_margin"
+        android:layout_marginEnd="@dimen/cardview_margin"
         android:ellipsize="end"
-        android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:text="@string/add_barcode_text"
-        android:textSize="20sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/card_name_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -139,12 +134,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="265dp" />
+        app:layout_constraintGuide_begin="250dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="375dp" />
+        app:layout_constraintGuide_begin="365dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

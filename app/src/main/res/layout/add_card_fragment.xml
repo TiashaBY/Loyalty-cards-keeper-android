@@ -5,9 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/selectHubLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <include
         android:id="@+id/add_card_top"
         layout="@layout/add_card_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -19,36 +40,46 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Button"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:layout_editor_absoluteX="317dp"
-        tools:layout_editor_absoluteY="654dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/card_front_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/card_front_image"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/card_back_image"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        app:layout_constraintBottom_toTopOf="@+id/add_card_back"
-        tools:layout_editor_absoluteX="0dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/add_card_back"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_front_image"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <Button
         android:id="@+id/add_card_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Button"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="654dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/card_back_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/card_back_image" />
 
     <ImageView
         android:id="@+id/card_front_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toEndOf="@+id/card_back_image"
-        tools:layout_editor_absoluteY="494dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_back_image"
+        app:layout_constraintEnd_toStartOf="@+id/add_card_front"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_card_top"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"

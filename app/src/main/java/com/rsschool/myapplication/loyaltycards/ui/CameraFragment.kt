@@ -1,8 +1,6 @@
 package com.rsschool.myapplication.loyaltycards.ui
 
-import android.Manifest.permission.CAMERA
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.content.Context
+import android.Manifest.permission.*
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -33,6 +31,13 @@ import java.util.concurrent.Executors
 import java.io.File
 import java.util.*
 
+import android.os.Build.VERSION.SDK_INT
+
+import android.os.Build
+import android.os.Environment
+import android.widget.Toast
+
+
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
@@ -48,8 +53,31 @@ class CameraFragment : Fragment() {
 
     private val cameraViewModel : CameraViewModel by viewModels()
 
-    private val launcher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) {}
+    private val scannerLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            scanBarcode()
+        } else {
+            Toast.makeText(
+                context,
+                "permission_not_granted",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private val photoLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            startCamera()
+        } else {
+            Toast.makeText(
+                context,
+                "permission_not_granted",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,30 +90,29 @@ class CameraFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Request camera permissions
+
+        binding.cameraCaptureButton.setOnClickListener {
+            takePicture()
+        }
 
         lifecycleScope.launchWhenCreated {
-            cameraViewModel.event.collectLatest {
+            cameraViewModel.event.collect {
+                Log.d("aaa", it.toString())
                 when (it) {
                     is CameraActionsRequest.ScanBarcodeAction -> {
+                        binding.cameraCaptureButton.visibility = GONE
                         if (cameraPermissionGranted()) {
-                            binding.cameraCaptureButton.visibility = GONE
                             scanBarcode()
                         } else {
-                            launcher.launch(CAMERA_PERMISSIONS)
-
+                            scannerLauncher.launch(CAMERA_PERMISSIONS)
                         }
                     }
                     is CameraActionsRequest.CaptureImageAction -> {
-                        if (allPermissionsGranted()) {
+                        binding.cameraCaptureButton.visibility = VISIBLE
+                        if (storagePermissionsGranted() && cameraPermissionGranted()) {
                             startCamera()
-                            binding.cameraCaptureButton.visibility = VISIBLE
-                            binding.cameraCaptureButton.setOnClickListener {
-                                //cameraViewModel.onTakePhotoClick()
-                             takepic()}
                         } else {
-                            launcher.launch(WRITE_EXTERNAL_STORAGE)
-                            launcher.launch(CAMERA)
+                            photoLauncher.launch(CAMERA_PERMISSIONS + STORAGE_PERMISSIONS)
                         }
                     }
                 }
@@ -146,7 +173,7 @@ class CameraFragment : Fragment() {
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    fun takepic() {
+    private fun takePicture() {
         val imageCapture = imageCaptureUseCase
 
         val photoFile = File(requireContext().filesDir, UUID.randomUUID().toString() + ".jpg")
@@ -183,9 +210,16 @@ class CameraFragment : Fragment() {
         requireContext(), CAMERA_PERMISSIONS
     ) == PackageManager.PERMISSION_GRANTED
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-            requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    private fun storagePermissionsGranted() : Boolean {
+        return if (SDK_INT >= Build.VERSION_CODES.R) {
+            !Environment.isExternalStorageManager()
+        } else {
+            STORAGE_PERMISSIONS.all {
+                ContextCompat.checkSelfPermission(
+                    requireContext(), it
+                ) == PackageManager.PERMISSION_GRANTED
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -195,8 +229,8 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraXBasic"
-        private val CAMERA_PERMISSIONS = CAMERA
-        private val REQUIRED_PERMISSIONS = arrayOf(WRITE_EXTERNAL_STORAGE, CAMERA)
+        private const val CAMERA_PERMISSIONS = CAMERA
+        private val STORAGE_PERMISSIONS = arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
 
     }
 }

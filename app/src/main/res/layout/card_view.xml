@@ -2,23 +2,28 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="130dp"
-    android:layout_margin="10dp"
-    android:theme="@style/Theme.LoyaltyCards.cardViewStyle"
-    app:cardBackgroundColor="@color/colorSecondary">
+    android:layout_marginStart="@dimen/cardview_margin"
+    android:layout_marginTop="12dp"
+    android:layout_marginEnd="@dimen/cardview_margin"
+    android:elevation="4dp"
+    android:padding="12dp"
+    app:cardBackgroundColor="@color/colorPrimaryVariant"
+    app:cardCornerRadius="0dp"
+    app:contentPaddingRight="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3" />
+            app:layout_constraintGuide_percent="0.5" />
 
         <ImageButton
             android:id="@+id/delete_button"
@@ -28,25 +33,24 @@
             android:padding="12dp"
             android:scaleType="fitStart"
             android:src="@drawable/ic_baseline_close_24"
-            app:layout_constraintBottom_toTopOf="@+id/details"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside"
             tools:ignore="SpeakableTextPresentCheck" />
 
-        <ImageButton
+        <Button
             android:id="@+id/details"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="48dp"
+            android:layout_marginEnd="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:scaleType="fitStart"
-            android:src="@drawable/ic_baseline_navigate_next_24"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toBottomOf="@+id/delete_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck" />
-
 
         <TextView
             android:id="@+id/card_name"
@@ -54,13 +58,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="30dp"
+            android:layout_marginBottom="4dp"
             android:ellipsize="end"
             android:textColor="@color/colorOnPrimary"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/card_number"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread_inside"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:text="Card name" />
 
         <TextView
@@ -68,9 +73,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="20dp"
             android:textColor="@color/colorOnPrimary"
-            android:textSize="12sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
             app:layout_constraintTop_toBottomOf="@+id/card_name"
@@ -81,29 +87,26 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:button="@drawable/ic_baseline_favorite_24"
-            android:gravity="center"
-            android:padding="4dp"
-            android:theme="@style/Theme.LoyaltyCards.checkBoxFavStyle"
-            app:layout_constraintStart_toStartOf="parent"
+            android:gravity="center|center_horizontal"
+            android:padding="12dp"
+            app:buttonTint="@color/fav_checkbox_custom"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="101dp"
-            android:layout_height="106dp"
+            android:layout_width="150dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/card_default"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintGuide_percent="0.8" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
