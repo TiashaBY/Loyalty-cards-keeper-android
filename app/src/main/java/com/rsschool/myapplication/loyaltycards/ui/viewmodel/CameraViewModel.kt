@@ -10,22 +10,21 @@ import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
-class CameraViewModel @Inject constructor(state: SavedStateHandle) : ViewModel() {
+class CameraViewModel @Inject constructor(private val state: SavedStateHandle) : ViewModel() {
 
     private val _cameraEventFlow = MutableStateFlow<CameraActionsRequest?>(null)
     val event = _cameraEventFlow
 
-    init {
+    fun onLoad() {
         state.get<CameraActionsRequest>("cameraAction")?.let {
             _cameraEventFlow.value = it
         }
-        _cameraEventFlow.value = null
     }
 }
 
 sealed class CameraResultEvent : Serializable {
-    class BarcodeScanned(val barcode: Barcode) : CameraResultEvent()
-    class ImageSaved(val type: CardImageType, val imageUri: Uri?) : CameraResultEvent()
+    data class BarcodeScanned(val barcode: Barcode) : CameraResultEvent()
+    data class ImageSaved(val type: CardImageType, val imageUri: Uri?) : CameraResultEvent()
 }
 
 sealed class CameraActionsRequest : Serializable {

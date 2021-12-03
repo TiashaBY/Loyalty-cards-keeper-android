@@ -94,6 +94,7 @@ class CameraFragment : Fragment() {
         binding.cameraCaptureButton.setOnClickListener {
             takePicture()
         }
+        cameraViewModel.onLoad()
 
         lifecycleScope.launchWhenCreated {
             cameraViewModel.event.collect {
