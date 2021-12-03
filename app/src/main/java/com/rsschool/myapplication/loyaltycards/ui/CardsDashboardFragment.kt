@@ -1,11 +1,8 @@
 package com.rsschool.myapplication.loyaltycards.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -16,20 +13,20 @@ import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmen
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnLoyaltyCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.DBResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class CardsDashboardFragment : Fragment() {
+class CardsDashboardFragment : CardsFragment() {
 
     private var _binding : CardsDashboardFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
 
-    private val viewModel : CardsDashboardViewModel by viewModels()
-    lateinit var searchView : SearchView
+    override val viewModel : CardsDashboardViewModel by viewModels()
+    override lateinit var cardAdapter : CardsListAdapter
+    private lateinit var searchView : SearchView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,7 +40,7 @@ class CardsDashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val cardAdapter = CardsListAdapter(OnLoyaltyCardClickListener(viewModel))
+        cardAdapter = CardsListAdapter(OnLoyaltyCardClickListener(viewModel))
 
         binding.apply {
             listRecyclerView.apply {
@@ -52,10 +49,8 @@ class CardsDashboardFragment : Fragment() {
                 setHasFixedSize(true)
             }
         }
-        viewModel.onLoad()
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.islistEmpty.collect() {
+            viewModel.isListEmpty.collect {
                 if (it) {
                     binding.noCardsMsg.visibility = View.VISIBLE
                 } else {
@@ -63,34 +58,15 @@ class CardsDashboardFragment : Fragment() {
                 }
             }
         }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.uiState.collect {
-                when (it) {
-                    is DBResult.Success -> {
-                        cardAdapter.submitList(it.value)
-                    }
-                    is DBResult.Empty -> {
-                        cardAdapter.submitList(emptyList())
-                    }
-                    is DBResult.Failure -> {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.error_on_db_get),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar_menu, menu)
-        val menuItem = menu.findItem(R.id.app_bar_search)
-        searchView = menuItem.actionView as SearchView
-        searchView.queryHint = "Type name or number"
-        searchView.setQuery(viewModel.searchQueryValue, true) //restore saved state
+        searchView = menu.findItem(R.id.app_bar_search).actionView as SearchView
+        searchView.queryHint = getString(R.string.search_field_hint)
+        searchView.onActionViewExpanded()
+        searchView.clearFocus()
+        searchView.setQuery(viewModel.searchQuery.value, false)
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
@@ -112,5 +88,10 @@ class CardsDashboardFragment : Fragment() {
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchView.setOnQueryTextListener(null)
     }
 }

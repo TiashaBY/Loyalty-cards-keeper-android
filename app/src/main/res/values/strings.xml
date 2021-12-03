@@ -19,7 +19,6 @@
     <string name="add_barcode_text">Scan you card barcode or add its number manually</string>
     <string name="add_into_favourites_text">Start adding into favourites by clicking ❤ on card</string>
     <string name="error_on_db_get">Error on retrieving data from DB</string>
-    <string name="add_card_text">Click + Add button to scan your first loyalty card</string>
-
-
+    <string name="add_card_text">No cards here. Click + Add button to scan loyalty card</string>
+    <string name="search_field_hint">Type name or number</string>
 </resources>

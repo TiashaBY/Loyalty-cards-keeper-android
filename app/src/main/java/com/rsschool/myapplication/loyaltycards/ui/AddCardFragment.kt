@@ -92,7 +92,7 @@ class AddCardFragment : Fragment() {
                     }
                     is AddCardEvent.NavigateToCameraScanBarcode -> {
                         val action = AddCardFragmentDirections
-                            .actionAddCardFragmentToCameraFragment(CameraActionsRequest.ScanBarcodeAction())
+                            .actionAddCardFragmentToCameraFragment(CameraActionsRequest.ScanBarcodeAction)
                         findNavController().navigate(action)
                     }
                     is AddCardEvent.NavigateToCameraTakeFrontImage -> {

@@ -3,14 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
     app:startDestination="@id/cardsDashboardFragment">
-
     <fragment
         android:id="@+id/cardDetailsViewFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CardDetailsViewFragment"
         android:label="CardDetailsViewFragment" >
-        <action
-            android:id="@+id/action_cardDetailsViewFragment_to_cardsDashboardFragment"
-            app:destination="@id/cardsDashboardFragment" />
         <argument
             android:name="card"
             app:argType="com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard" />
@@ -18,11 +14,7 @@
     <fragment
         android:id="@+id/cardsDashboardFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CardsDashboardFragment"
-        android:label="Dashboard">
-        <action
-            android:id="@+id/action_cardsDashboardFragment_to_cardDetailsViewFragment"
-            app:destination="@id/cardDetailsViewFragment" />
-    </fragment>
+        android:label="Dashboard"/>
     <fragment
         android:id="@+id/addCardFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.AddCardFragment"
@@ -70,4 +62,10 @@
             android:name="cameraAction"
             app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest" />
     </fragment>
+    <action
+        android:id="@+id/action_to_cardsDetailsFragment"
+        app:destination="@id/cardDetailsViewFragment" />
+    <argument
+        android:name="card"
+        app:argType="com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard" />
 </navigation>

@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -17,12 +14,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CameraViewModel @Inject constructor(state: SavedStateHandle): ViewModel() {
 
-    private val cameraEventChannel = Channel<CameraActionsRequest>()
-    val event = cameraEventChannel.receiveAsFlow().stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val _cameraEventFlow = MutableStateFlow<CameraActionsRequest?>(null)
+    val event = _cameraEventFlow
 
     init {
         viewModelScope.launch {
-            state.get<CameraActionsRequest>("cameraAction")?.let { cameraEventChannel.send(it) }
+            state.get<CameraActionsRequest>("cameraAction")?.let {
+                _cameraEventFlow.value = it }
         }
     }
 }
@@ -32,9 +30,9 @@ sealed class CameraResultEvent : Serializable{
     class ImageSaved(val type :CardImageType, val imageUri: Uri?) : CameraResultEvent()
 }
 
-sealed class CameraActionsRequest() : Serializable {
-    class ScanBarcodeAction() : CameraActionsRequest()
-    class CaptureImageAction(val type :CardImageType) : CameraActionsRequest()
+sealed class CameraActionsRequest : Serializable {
+    object ScanBarcodeAction : CameraActionsRequest()
+    data class CaptureImageAction(val type :CardImageType) : CameraActionsRequest()
 }
 
 enum class CardImageType {

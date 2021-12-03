@@ -32,6 +32,7 @@ class CardDetailsViewFragment : Fragment() {
         Glide.with(this)
             .load(viewModel.bitmap)
             .error(R.drawable.ic_baseline_image_not_supported_24)
+            .fitCenter()
             .into(binding.barcode)
         binding.number.text = viewModel.cardNumber
     }
