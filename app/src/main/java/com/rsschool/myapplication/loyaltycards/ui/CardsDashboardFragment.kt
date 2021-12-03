@@ -10,8 +10,6 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
-import com.rsschool.myapplication.loyaltycards.ui.listener.OnLoyaltyCardClickListener
-import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -25,7 +23,6 @@ class CardsDashboardFragment : CardsFragment() {
     private val binding get() = checkNotNull(_binding)
 
     override val viewModel : CardsDashboardViewModel by viewModels()
-    override lateinit var cardAdapter : CardsListAdapter
     private var searchView : SearchView? = null
 
     override fun onCreateView(
@@ -40,7 +37,6 @@ class CardsDashboardFragment : CardsFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cardAdapter = CardsListAdapter(OnLoyaltyCardClickListener(viewModel))
 
         binding.apply {
             listRecyclerView.apply {

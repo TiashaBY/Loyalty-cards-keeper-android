@@ -3,13 +3,17 @@ package com.rsschool.myapplication.loyaltycards.ui
 import android.Manifest.permission.*
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -26,16 +30,11 @@ import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
-import java.util.concurrent.Executors
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.util.*
-
-import android.os.Build.VERSION.SDK_INT
-
-import android.os.Build
-import android.os.Environment
-import android.widget.Toast
+import java.util.concurrent.Executors
 
 
 @ExperimentalCoroutinesApi
@@ -51,30 +50,36 @@ class CameraFragment : Fragment() {
 
     private var cameraExecutor = Executors.newSingleThreadExecutor()
 
-    private val cameraViewModel : CameraViewModel by viewModels()
+    private val cameraViewModel: CameraViewModel by viewModels()
 
     private val scannerLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
         if (isGranted) {
             scanBarcode()
         } else {
             Toast.makeText(
                 context,
-                "permission_not_granted",
-                Toast.LENGTH_SHORT
+                "Camera permissions not granted",
+                Toast.LENGTH_LONG
             ).show()
         }
     }
 
     private val photoLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) {
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { p ->
+        if (p[READ_EXTERNAL_STORAGE] == true &&
+            p[WRITE_EXTERNAL_STORAGE] == true &&
+            p[CAMERA] == true
+        ) {
             startCamera()
         } else {
             Toast.makeText(
                 context,
-                "permission_not_granted",
-                Toast.LENGTH_SHORT
+                "Necessary permissions are not granted: " +
+                        p.filter { it.value == false }.map { it.key }.toString(),
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -98,14 +103,13 @@ class CameraFragment : Fragment() {
 
         lifecycleScope.launchWhenCreated {
             cameraViewModel.event.collect {
-                Log.d("aaa", it.toString())
                 when (it) {
                     is CameraActionsRequest.ScanBarcodeAction -> {
                         binding.cameraCaptureButton.visibility = GONE
                         if (cameraPermissionGranted()) {
                             scanBarcode()
                         } else {
-                            scannerLauncher.launch(CAMERA_PERMISSIONS)
+                            scannerLauncher.launch(CAMERA)
                         }
                     }
                     is CameraActionsRequest.CaptureImageAction -> {
@@ -113,7 +117,7 @@ class CameraFragment : Fragment() {
                         if (storagePermissionsGranted() && cameraPermissionGranted()) {
                             startCamera()
                         } else {
-                            photoLauncher.launch(CAMERA_PERMISSIONS + STORAGE_PERMISSIONS)
+                            photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
                         }
                     }
                 }
@@ -122,7 +126,6 @@ class CameraFragment : Fragment() {
     }
 
     private fun previewUseCase(): Preview {
-        // Preview
         return Preview.Builder()
             .build()
             .also {
@@ -150,8 +153,9 @@ class CameraFragment : Fragment() {
                 cameraProvider.unbindAll()
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, previewUseCase(), imageCaptureUseCase)
-            } catch(exc: Exception) {
+                    this, cameraSelector, previewUseCase(), imageCaptureUseCase
+                )
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
@@ -167,7 +171,12 @@ class CameraFragment : Fragment() {
                 // Unbind any bound use cases before rebinding
                 cameraProvider.unbindAll()
                 // Bind use cases to lifecycleOwner
-                cameraProvider.bindToLifecycle(this, cameraSelector, previewUseCase(), imageAnalysisUseCase())
+                cameraProvider.bindToLifecycle(
+                    this,
+                    cameraSelector,
+                    previewUseCase(),
+                    imageAnalysisUseCase()
+                )
             } catch (e: Exception) {
                 Log.e("PreviewUseCase", "Binding failed! :(", e)
             }
@@ -181,10 +190,13 @@ class CameraFragment : Fragment() {
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         imageCapture.takePicture(
-            outputOptions, ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageSavedCallback {
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e("CameraFragment", "Photo capture failed: ${exc.message}", exc)
                 }
+
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
@@ -193,11 +205,17 @@ class CameraFragment : Fragment() {
                         cameraViewModel.event.collectLatest {
                             when (it) {
                                 is CameraActionsRequest.CaptureImageAction -> {
-                                    val action = CameraFragmentDirections
+                                    findNavController().previousBackStackEntry?.savedStateHandle
+                                        ?.set(
+                                            "cameraResult",
+                                            CameraResultEvent.ImageSaved(it.type, savedUri)
+                                        )
+                                    findNavController().navigateUp()
+/*                                   val action = CameraFragmentDirections
                                         .actionCameraFragmentToAddCardFragment(
                                             CameraResultEvent.ImageSaved(it.type, savedUri)
                                         )
-                                    findNavController().navigate(action)
+                                    findNavController().navigate(action)*/
 
                                 }
                             }
@@ -208,10 +226,10 @@ class CameraFragment : Fragment() {
     }
 
     private fun cameraPermissionGranted() = ContextCompat.checkSelfPermission(
-        requireContext(), CAMERA_PERMISSIONS
+        requireContext(), CAMERA
     ) == PackageManager.PERMISSION_GRANTED
 
-    private fun storagePermissionsGranted() : Boolean {
+    private fun storagePermissionsGranted(): Boolean {
         return if (SDK_INT >= Build.VERSION_CODES.R) {
             !Environment.isExternalStorageManager()
         } else {
@@ -230,8 +248,7 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraXBasic"
-        private const val CAMERA_PERMISSIONS = CAMERA
-        private val STORAGE_PERMISSIONS = arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+        private val STORAGE_PERMISSIONS = listOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
 
     }
 }

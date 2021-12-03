@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
@@ -20,9 +21,9 @@ import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardImageType
 import dagger.hilt.android.AndroidEntryPoint
+
 import kotlinx.coroutines.flow.collect
 import java.io.File
-
 
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
@@ -43,6 +44,7 @@ class AddCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.handleSavedState()
 
         with(binding.addCardTop) {
             scanBarcode.setOnClickListener {
@@ -50,7 +52,7 @@ class AddCardFragment : Fragment() {
             }
             selectBarcodeType.setOnClickListener {
                 val number = viewModel.number.value
-                if (number.isNullOrEmpty()) {
+                if (number.isEmpty()) {
                     Toast.makeText(context, "Enter card number first", Toast.LENGTH_LONG).show()
                 } else {
                     val barcode = Barcode(number, viewModel.barcodeFormat.value)
@@ -81,7 +83,7 @@ class AddCardFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.event.collect { event ->
+            viewModel.addCardEventsFlow.collect { event ->
                 when (event) {
                     is AddCardEvent.ShowInvalidInputMessage -> {
                         Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG).show()
@@ -100,6 +102,15 @@ class AddCardFragment : Fragment() {
                             .actionAddCardFragmentToCameraFragment(
                                 CameraActionsRequest.CaptureImageAction(
                                     CardImageType.FRONT
+                                )
+                            )
+                        findNavController().navigate(action)
+                    }
+                    is AddCardEvent.NavigateToCameraTakeBackImage -> {
+                        val action = AddCardFragmentDirections
+                            .actionAddCardFragmentToCameraFragment(
+                                CameraActionsRequest.CaptureImageAction(
+                                    CardImageType.BACK
                                 )
                             )
                         findNavController().navigate(action)
@@ -135,7 +146,7 @@ class AddCardFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.frontImageUri.collect { uri ->
-                val imgFile = File(uri?.path)
+                val imgFile = File(uri?.path ?: "")
                 if (imgFile.exists()) {
                     val bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath())
                     Glide.with(this@AddCardFragment)
@@ -149,10 +160,15 @@ class AddCardFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.backImageUri.collect { uri ->
-                Glide.with(this@AddCardFragment)
-                    .load(uri)
-                    .error(R.drawable.ic_baseline_image_not_supported_24)
-                    .into(binding.cardBackImage)
+                val imgFile = File(uri?.path ?: "")
+                if (imgFile.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath())
+                    Glide.with(this@AddCardFragment)
+                        .load(bitmap)
+                        .error(R.drawable.ic_baseline_image_not_supported_24)
+                        .centerInside()
+                        .into(binding.cardBackImage)
+                }
             }
         }
     }

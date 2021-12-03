@@ -23,19 +23,20 @@ class AddCardViewModel @Inject constructor(
     private val useCase: AddCardUseCase
 ) : ViewModel() {
 
-    private val _number : MutableStateFlow<String?> by lazy {
-        if (state?.get<CameraResultEvent>("cameraResult") is CameraResultEvent.BarcodeScanned?)
-            MutableStateFlow(state?.get<CameraResultEvent.BarcodeScanned?>("cameraResult")?.barcode?.code)
-        else MutableStateFlow(null)
-    }
+    private val _number = MutableStateFlow<String>("")
     val number = _number.asStateFlow()
 
-    private val _barcodeFormat : MutableStateFlow<BarcodeFormat?> by lazy {
-        if (state?.get<CameraResultEvent>("cameraResult") is CameraResultEvent.BarcodeScanned?)
-            MutableStateFlow(state?.get<CameraResultEvent.BarcodeScanned?>("cameraResult")?.barcode?.format)
-        else MutableStateFlow(null)
-    }
+    private val _barcodeFormat = MutableStateFlow<BarcodeFormat?>(null)
     val barcodeFormat = _barcodeFormat.asStateFlow()
+
+    private val _frontImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
+    val frontImageUri = _frontImageUri.asStateFlow()
+
+    private val _backImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
+    val backImageUri = _backImageUri.asStateFlow()
+
+    private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent?>()
+    val addCardEventsFlow = _addCardEventsFlow.asSharedFlow()
 
     private var _imageBitmap = MutableStateFlow<Bitmap?>(null)
     val imageBitmap = _imageBitmap.asStateFlow()
@@ -43,25 +44,40 @@ class AddCardViewModel @Inject constructor(
     private val _name = MutableStateFlow("")
     val name = _name.asStateFlow()
 
-    private val _frontImageUri : MutableStateFlow<Uri?> by lazy {
-        if (state?.get<CameraResultEvent>("cameraResult") is CameraResultEvent.ImageSaved?
-            && (state?.get<CameraResultEvent.ImageSaved?>("cameraResult")?.type == CardImageType.FRONT))
-            MutableStateFlow(state.get<CameraResultEvent.ImageSaved?>("cameraResult")?.imageUri)
-        else MutableStateFlow(Uri.EMPTY)
-    }
-    val frontImageUri = _frontImageUri.asStateFlow()
+    fun handleSavedState() {
+        //restore editable field
+        state?.get<Uri>("frontImageUri")?.let {
+            _frontImageUri.value = it
+        }
+        state?.get<Uri>("backImageUri")?.let {
+            _backImageUri.value = it
+        }
+        state?.get<String>("name")?.let {
+            _name.value = it
+        }
+        state?.get<String>("number")?.let {
+            _number.value = it
+        }
+        state?.get<BarcodeFormat>("barcodeFormat")?.let {
+            _barcodeFormat.value = it
+        }
 
-    private val _backImageUri : MutableStateFlow<Uri?> by lazy {
-        if (state?.get<CameraResultEvent>("cameraResult") is CameraResultEvent.ImageSaved?
-            && (state?.get<CameraResultEvent.ImageSaved?>("cameraResult")?.type == CardImageType.BACK)
-        ) MutableStateFlow(state.get<CameraResultEvent.ImageSaved?>("cameraResult")?.imageUri)
-        else MutableStateFlow(Uri.EMPTY)
+        when(state?.get<CameraResultEvent>("cameraResult")) {
+            is CameraResultEvent.BarcodeScanned? -> {
+                _number.value = state?.get<CameraResultEvent.BarcodeScanned?>("cameraResult")?.barcode?.code ?: ""
+                _barcodeFormat.value = state?.get<CameraResultEvent.BarcodeScanned?>("cameraResult")?.barcode?.format
+            }
+            is CameraResultEvent.ImageSaved? -> {
+                if (state?.get<CameraResultEvent.ImageSaved?>("cameraResult")?.type == CardImageType.FRONT) {
+                    _frontImageUri.value =
+                        state.get<CameraResultEvent.ImageSaved?>("cameraResult")?.imageUri
+                } else {
+                    _backImageUri.value =
+                        state?.get<CameraResultEvent.ImageSaved?>("cameraResult")?.imageUri
+                }
+            }
+        }
     }
-    val backImageUri = _backImageUri.asStateFlow()
-
-    private val addCardEventChannel = Channel<AddCardEvent>()
-    val event =
-        addCardEventChannel.receiveAsFlow().stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     fun onCardNumberChange(newValue: String) {
         _number.value = newValue
@@ -89,37 +105,38 @@ class AddCardViewModel @Inject constructor(
             backImageUri.value.toString()
         )
         viewModelScope.launch {
-            val result = useCase.invoke(card)
+            val result = useCase(card)
             if (result > 0) {
-                addCardEventChannel.send(AddCardEvent.NavigateBackWithResult(ADD_TASK_RESULT_OK))
+                _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(ADD_TASK_RESULT_OK))
             } else {
-                addCardEventChannel.send(AddCardEvent.ShowInvalidInputMessage("Message"))
+                _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("Message"))
             }
         }
     }
 
     fun onScanBarcodeClick() {
         viewModelScope.launch {
-            addCardEventChannel.send(AddCardEvent.NavigateToCameraScanBarcode())
+            _addCardEventsFlow.emit(AddCardEvent.NavigateToCameraScanBarcode)
         }
     }
 
     fun addCardFront() {
         viewModelScope.launch {
-            addCardEventChannel.send(AddCardEvent.NavigateToCameraTakeFrontImage())
+            _addCardEventsFlow.emit(AddCardEvent.NavigateToCameraTakeFrontImage)
         }
     }
+
     fun addCardBack() {
         viewModelScope.launch {
-            addCardEventChannel.send(AddCardEvent.NavigateToCameraTakeBackImage())
+            _addCardEventsFlow.emit(AddCardEvent.NavigateToCameraTakeBackImage)
         }
     }
 }
 
 sealed class AddCardEvent {
-    class ShowInvalidInputMessage(val msg: String) : AddCardEvent()
-    class NavigateBackWithResult(val resultCode: String) : AddCardEvent()
-    class NavigateToCameraScanBarcode : AddCardEvent()
-    class NavigateToCameraTakeFrontImage : AddCardEvent()
-    class NavigateToCameraTakeBackImage : AddCardEvent()
+    data class ShowInvalidInputMessage(val msg: String) : AddCardEvent()
+    data class NavigateBackWithResult(val resultCode: String) : AddCardEvent()
+    object NavigateToCameraScanBarcode : AddCardEvent()
+    object NavigateToCameraTakeFrontImage : AddCardEvent()
+    object NavigateToCameraTakeBackImage : AddCardEvent()
 }

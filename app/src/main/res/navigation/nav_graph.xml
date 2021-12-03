@@ -25,8 +25,7 @@
             app:launchSingleTop="true" />
         <action
             android:id="@+id/action_addCardFragment_to_cameraFragment"
-            app:destination="@id/cameraFragment"
-            app:launchSingleTop="true" />
+            app:destination="@id/cameraFragment" />
         <argument
             android:name="cameraResult"
             app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent" />
@@ -41,7 +40,10 @@
         android:label="SelectBarcodeFragment" >
         <action
             android:id="@+id/action_selectBarcodeFragment_to_addCardFragment"
-            app:destination="@id/addCardFragment" />
+            app:destination="@id/addCardFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/addCardFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="barcode"
             app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode"
@@ -57,7 +59,10 @@
         android:label="CameraFragment" >
         <action
             android:id="@+id/action_cameraFragment_to_addCardFragment"
-            app:destination="@id/addCardFragment" />
+            app:destination="@id/addCardFragment"
+            app:popUpTo="@id/addCardFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"/>
         <argument
             android:name="cameraAction"
             app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest" />

@@ -6,7 +6,9 @@ import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,12 +21,13 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
     protected val _isListEmpty = MutableStateFlow(false)
     val isListEmpty = _isListEmpty.asStateFlow()
 
-    protected val _dashboardEvent = MutableStateFlow<DashboardEvent?>(null)
-    val dashboardEvent = _dashboardEvent.asStateFlow()
+    private val _dashboardEvent = MutableSharedFlow<DashboardEvent>()
+    val dashboardEvent = _dashboardEvent.asSharedFlow()
 
     fun onItemDetailsClick(card: LoyaltyCard) {
-       _dashboardEvent.value = DashboardEvent.NavigateToDetailsView(card)
-        _dashboardEvent.value = null
+        viewModelScope.launch {
+            _dashboardEvent.emit(DashboardEvent.NavigateToDetailsView(card))
+        }
     }
 
     fun onFavIconClick(card: LoyaltyCard, checked: Boolean) {

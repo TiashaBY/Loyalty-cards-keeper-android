@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavDirections
-import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.NavGraphDirections
 import com.rsschool.myapplication.loyaltycards.R
+import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DBResult
@@ -22,11 +21,23 @@ import kotlinx.coroutines.flow.*
 abstract class CardsFragment : Fragment() {
 
     abstract val viewModel : BaseCardsViewModel
-    abstract val cardAdapter: CardsListAdapter
+    protected lateinit var cardAdapter: CardsListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.onLoad()
+        cardAdapter = CardsListAdapter(object: OnCardClickListener {
+            override fun onItemDetailsClick(card: LoyaltyCard) {
+                viewModel.onItemDetailsClick(card)
+            }
+            override fun onFavIconClick(card: LoyaltyCard, isChecked: Boolean) {
+                viewModel.onFavIconClick(card, isChecked)
+            }
+            override fun onDeleteIconClick(card: LoyaltyCard) {
+                viewModel.onDeleteIconClick(card)
+            }
+        })
+
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.uiState.collect {
                 when (it) {
@@ -47,15 +58,15 @@ abstract class CardsFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.dashboardEvent.collect { event ->
-                when (event) {
-                    is DashboardEvent.NavigateToDetailsView -> {
-                        val action = NavGraphDirections.actionToCardsDetailsFragment(event.card)
-                        findNavController().navigate(action)
+            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                viewModel.dashboardEvent.collect { event ->
+                    when (event) {
+                        is DashboardEvent.NavigateToDetailsView -> {
+                            val action = NavGraphDirections.actionToCardsDetailsFragment(event.card)
+                            findNavController().navigate(action)
+                        }
                     }
                 }
             }
         }
-    }
 }

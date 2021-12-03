@@ -2,6 +2,7 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DBResult
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -49,7 +50,7 @@ class FavouriteCardsViewModelTest {
         assert(viewModel.uiState.value is DBResult.Empty)
     }
     @Test
-    fun givenUserWithFavorites_whenGetFavoritesUseCaseExecuted_thenUiStateIsSuccess() {
+    fun givenUserWithFavourites_whenGetFavoritesUseCaseExecuted_thenUiStateIsSuccess() {
         val card = mockk<LoyaltyCard>()
         // given
         coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
