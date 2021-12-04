@@ -22,6 +22,7 @@ class CameraViewModel @Inject constructor(private val state: SavedStateHandle) :
     }
 }
 
+/*
 sealed class CameraResultEvent : Serializable {
     data class BarcodeScanned(val barcode: Barcode) : CameraResultEvent()
     data class ImageSaved(val type: CardImageType, val imageUri: Uri?) : CameraResultEvent()
@@ -34,4 +35,4 @@ sealed class CameraActionsRequest : Serializable {
 
 enum class CardImageType {
     FRONT, BACK
-}
+}*/

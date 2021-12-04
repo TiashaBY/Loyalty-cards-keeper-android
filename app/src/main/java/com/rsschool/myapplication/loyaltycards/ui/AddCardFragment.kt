@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
-import com.rsschool.myapplication.loyaltycards.R
+import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
@@ -21,14 +21,17 @@ import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardImageType
 import dagger.hilt.android.AndroidEntryPoint
-
 import kotlinx.coroutines.flow.collect
 import java.io.File
+import android.widget.AdapterView
+import com.rsschool.myapplication.loyaltycards.R
+
 
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
 
-    private val viewModel: AddCardViewModel by viewModels()
+    private val viewModel: AddCardViewModel by navGraphViewModels(R.id.add_card_graph)
+    { defaultViewModelProviderFactory }
 
     private var _binding: AddCardFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
@@ -44,35 +47,46 @@ class AddCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.handleSavedState()
+        viewModel.handleArgs()
 
         with(binding.addCardTop) {
             scanBarcode.setOnClickListener {
                 viewModel.onScanBarcodeClick()
             }
-            selectBarcodeType.setOnClickListener {
-                val number = viewModel.number.value
-                if (number.isEmpty()) {
-                    Toast.makeText(context, "Enter card number first", Toast.LENGTH_LONG).show()
-                } else {
-                    val barcode = Barcode(number, viewModel.barcodeFormat.value)
-                    val action: AddCardFragmentDirections.ActionAddCardFragmentToSelectBarcodeFragment =
-                        AddCardFragmentDirections.actionAddCardFragmentToSelectBarcodeFragment(
-                            barcode
-                        )
-                    findNavController().navigate(action)
-                }
-            }
+
+            cardName.setText(viewModel.name.value)
+            cardNumber.setText(viewModel.number.value)
+
             saveButton.setOnClickListener {
                 viewModel.onSaveClick()
             }
 
-            cardNumber.doOnTextChanged { text, start, count, after ->
+            cardNumber.doOnTextChanged { text, _, _, _ ->
                 viewModel.onCardNumberChange(text.toString())
             }
             cardName.doOnTextChanged { text, _, _, _ ->
                 viewModel.onNameChange(text.toString())//
             }
+
+            val values = BarcodeFormat.values()
+            val spinnerAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                values
+            )
+            barcodeTypeSpinner.adapter = spinnerAdapter
+            barcodeTypeSpinner.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>, view: View?, pos: Int, id: Long
+                    ) {
+                        viewModel.onBarcodeTypeChange(values[pos])
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {
+                        // Another interface callback
+                    }
+                }
         }
 
         binding.addCardFront.setOnClickListener {
@@ -126,12 +140,6 @@ class AddCardFragment : Fragment() {
                         setText(barcode)
                     }
                 }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.barcodeFormat.collect { format ->
-                binding.addCardTop.barcodeType.setText(format?.name)
             }
         }
 

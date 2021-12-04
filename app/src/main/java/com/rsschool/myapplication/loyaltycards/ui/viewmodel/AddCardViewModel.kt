@@ -12,9 +12,9 @@ import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.ADD_TASK_RESULT_OK
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +26,9 @@ class AddCardViewModel @Inject constructor(
     private val _number = MutableStateFlow<String>("")
     val number = _number.asStateFlow()
 
+    private val _name = MutableStateFlow("")
+    val name = _name.asStateFlow()
+
     private val _barcodeFormat = MutableStateFlow<BarcodeFormat?>(null)
     val barcodeFormat = _barcodeFormat.asStateFlow()
 
@@ -35,16 +38,22 @@ class AddCardViewModel @Inject constructor(
     private val _backImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
     val backImageUri = _backImageUri.asStateFlow()
 
-    private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent?>()
-    val addCardEventsFlow = _addCardEventsFlow.asSharedFlow()
-
     private var _imageBitmap = MutableStateFlow<Bitmap?>(null)
     val imageBitmap = _imageBitmap.asStateFlow()
 
-    private val _name = MutableStateFlow("")
-    val name = _name.asStateFlow()
+    private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent?>()
+    val addCardEventsFlow = _addCardEventsFlow.asSharedFlow()
 
-    fun handleSavedState() {
+    private val _cameraEventFlow = MutableStateFlow<CameraActionsRequest?>(null)
+    val event = _cameraEventFlow
+
+    fun onLoad() {
+        state?.get<CameraActionsRequest>("cameraAction")?.let {
+            _cameraEventFlow.value = it
+        }
+    }
+
+    fun handleArgs() {
         //restore editable field
         state?.get<Uri>("frontImageUri")?.let {
             _frontImageUri.value = it
@@ -85,14 +94,14 @@ class AddCardViewModel @Inject constructor(
             .generateBarcode(Barcode(number.value ?: "", barcodeFormat.value))
     }
 
-    fun onFormatChange(newValue: BarcodeFormat?) {
+    fun onNameChange(newValue: String) {
+        _name.value = newValue
+    }
+
+    fun onBarcodeTypeChange(newValue: BarcodeFormat) {
         _barcodeFormat.value = newValue
         _imageBitmap.value = BarcodeGenerator()
             .generateBarcode(Barcode(number.value ?: "", newValue))
-    }
-
-    fun onNameChange(newValue: String) {
-        _name.value = newValue
     }
 
     fun onSaveClick() {
@@ -139,4 +148,18 @@ sealed class AddCardEvent {
     object NavigateToCameraScanBarcode : AddCardEvent()
     object NavigateToCameraTakeFrontImage : AddCardEvent()
     object NavigateToCameraTakeBackImage : AddCardEvent()
+}
+
+sealed class CameraResultEvent : Serializable {
+    data class BarcodeScanned(val barcode: Barcode) : CameraResultEvent()
+    data class ImageSaved(val type: CardImageType, val imageUri: Uri?) : CameraResultEvent()
+}
+
+sealed class CameraActionsRequest : Serializable {
+    object ScanBarcodeAction : CameraActionsRequest()
+    data class CaptureImageAction(val type: CardImageType) : CameraActionsRequest()
+}
+
+enum class CardImageType {
+    FRONT, BACK
 }

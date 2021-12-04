@@ -7,7 +7,7 @@
         android:title="Home"
         app:showAsAction="always" />
     <item
-        android:id="@+id/addCardFragment"
+        android:id="@+id/add_card_graph"
         android:title="Add"
         app:showAsAction="always" />
     <item

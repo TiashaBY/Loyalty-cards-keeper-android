@@ -4,6 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/drawable/gradient.xml" value="0.2753846153846154" />
+        <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.1" />
+        <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1" />
+        <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/layout-land/add_card_fragment.xml" value="0.1984126984126984" />
         <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/layout/activity_main.xml" value="0.17831813576494426" />
         <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/layout/add_card_fragment.xml" value="0.22" />
         <entry key="..\:/Work/Android/LoyaltyCards/app/src/main/res/layout/add_card_top.xml" value="0.29936594202898553" />

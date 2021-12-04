@@ -22,8 +22,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
+import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraViewModel
@@ -50,7 +53,10 @@ class CameraFragment : Fragment() {
 
     private var cameraExecutor = Executors.newSingleThreadExecutor()
 
-    private val cameraViewModel: CameraViewModel by viewModels()
+    private val cameraViewModel: AddCardViewModel by navGraphViewModels(R.id.add_card_graph)
+    { defaultViewModelProviderFactory }
+
+    //private val cameraViewModel: CameraViewModel by viewModels()
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
