@@ -15,17 +15,15 @@ import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
-import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardImageType
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.io.File
 import android.widget.AdapterView
 import com.rsschool.myapplication.loyaltycards.R
-
 
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
@@ -50,10 +48,6 @@ class AddCardFragment : Fragment() {
         viewModel.handleArgs()
 
         with(binding.addCardTop) {
-            scanBarcode.setOnClickListener {
-                viewModel.onScanBarcodeClick()
-            }
-
             cardName.setText(viewModel.name.value)
             cardNumber.setText(viewModel.number.value)
 
@@ -89,6 +83,10 @@ class AddCardFragment : Fragment() {
                 }
         }
 
+        binding.addCardTop.scanBarcode.setOnClickListener {
+            viewModel.onScanBarcodeClick()
+        }
+
         binding.addCardFront.setOnClickListener {
             viewModel.addCardFront()
         }
@@ -115,7 +113,7 @@ class AddCardFragment : Fragment() {
                         val action = AddCardFragmentDirections
                             .actionAddCardFragmentToCameraFragment(
                                 CameraActionsRequest.CaptureImageAction(
-                                    CardImageType.FRONT
+                                    CameraMode.FRONT
                                 )
                             )
                         findNavController().navigate(action)
@@ -124,7 +122,7 @@ class AddCardFragment : Fragment() {
                         val action = AddCardFragmentDirections
                             .actionAddCardFragmentToCameraFragment(
                                 CameraActionsRequest.CaptureImageAction(
-                                    CardImageType.BACK
+                                    CameraMode.CAPTURE_BACK
                                 )
                             )
                         findNavController().navigate(action)

@@ -14,7 +14,6 @@ import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.ADD_TASK_R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,14 +22,17 @@ class AddCardViewModel @Inject constructor(
     private val useCase: AddCardUseCase
 ) : ViewModel() {
 
-    private val _number = MutableStateFlow<String>("")
-    val number = _number.asStateFlow()
-
     private val _name = MutableStateFlow("")
     val name = _name.asStateFlow()
 
+    private val _number = MutableStateFlow<String>("")
+    val number = _number.asStateFlow()
+
     private val _barcodeFormat = MutableStateFlow<BarcodeFormat?>(null)
     val barcodeFormat = _barcodeFormat.asStateFlow()
+
+    private var _imageBitmap = MutableStateFlow<Bitmap?>(null)
+    val imageBitmap = _imageBitmap.asStateFlow()
 
     private val _frontImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
     val frontImageUri = _frontImageUri.asStateFlow()
@@ -38,20 +40,8 @@ class AddCardViewModel @Inject constructor(
     private val _backImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
     val backImageUri = _backImageUri.asStateFlow()
 
-    private var _imageBitmap = MutableStateFlow<Bitmap?>(null)
-    val imageBitmap = _imageBitmap.asStateFlow()
-
     private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent?>()
     val addCardEventsFlow = _addCardEventsFlow.asSharedFlow()
-
-    private val _cameraEventFlow = MutableStateFlow<CameraActionsRequest?>(null)
-    val event = _cameraEventFlow
-
-    fun onLoad() {
-        state?.get<CameraActionsRequest>("cameraAction")?.let {
-            _cameraEventFlow.value = it
-        }
-    }
 
     fun handleArgs() {
         //restore editable field
@@ -69,22 +59,6 @@ class AddCardViewModel @Inject constructor(
         }
         state?.get<BarcodeFormat>("barcodeFormat")?.let {
             _barcodeFormat.value = it
-        }
-
-        when(state?.get<CameraResultEvent>("cameraResult")) {
-            is CameraResultEvent.BarcodeScanned? -> {
-                _number.value = state?.get<CameraResultEvent.BarcodeScanned?>("cameraResult")?.barcode?.code ?: ""
-                _barcodeFormat.value = state?.get<CameraResultEvent.BarcodeScanned?>("cameraResult")?.barcode?.format
-            }
-            is CameraResultEvent.ImageSaved? -> {
-                if (state?.get<CameraResultEvent.ImageSaved?>("cameraResult")?.type == CardImageType.FRONT) {
-                    _frontImageUri.value =
-                        state.get<CameraResultEvent.ImageSaved?>("cameraResult")?.imageUri
-                } else {
-                    _backImageUri.value =
-                        state?.get<CameraResultEvent.ImageSaved?>("cameraResult")?.imageUri
-                }
-            }
         }
     }
 
@@ -125,19 +99,19 @@ class AddCardViewModel @Inject constructor(
 
     fun onScanBarcodeClick() {
         viewModelScope.launch {
-            _addCardEventsFlow.emit(AddCardEvent.NavigateToCameraScanBarcode)
+            _addCardEventsFlow.emit(AddCardEvent.RequestImageEvent(CameraMode.SCANNER))
         }
     }
 
     fun addCardFront() {
         viewModelScope.launch {
-            _addCardEventsFlow.emit(AddCardEvent.NavigateToCameraTakeFrontImage)
+            _addCardEventsFlow.emit(AddCardEvent.RequestImageEvent(CameraMode.CAPTURE_BACK))
         }
     }
 
     fun addCardBack() {
         viewModelScope.launch {
-            _addCardEventsFlow.emit(AddCardEvent.NavigateToCameraTakeBackImage)
+            _addCardEventsFlow.emit(AddCardEvent.RequestImageEvent(CameraMode.CAPTURE_BACK))
         }
     }
 }
@@ -145,21 +119,21 @@ class AddCardViewModel @Inject constructor(
 sealed class AddCardEvent {
     data class ShowInvalidInputMessage(val msg: String) : AddCardEvent()
     data class NavigateBackWithResult(val resultCode: String) : AddCardEvent()
-    object NavigateToCameraScanBarcode : AddCardEvent()
-    object NavigateToCameraTakeFrontImage : AddCardEvent()
-    object NavigateToCameraTakeBackImage : AddCardEvent()
+    data class RequestImageEvent(val mode:CameraMode) : AddCardEvent()
+    object CameraResultSuccess : AddCardEvent()
+    data class CameraResultError(val message: String) : AddCardEvent()
 }
 
-sealed class CameraResultEvent : Serializable {
+/*sealed class CameraResultEvent : Serializable {
     data class BarcodeScanned(val barcode: Barcode) : CameraResultEvent()
-    data class ImageSaved(val type: CardImageType, val imageUri: Uri?) : CameraResultEvent()
+    data class ImageSaved(val type: CameraMode, val imageUri: Uri?) : CameraResultEvent()
 }
 
 sealed class CameraActionsRequest : Serializable {
     object ScanBarcodeAction : CameraActionsRequest()
-    data class CaptureImageAction(val type: CardImageType) : CameraActionsRequest()
-}
+    data class CaptureImageAction(val type: CameraMode) : CameraActionsRequest()
+}*/
 
-enum class CardImageType {
-    FRONT, BACK
+enum class CameraMode {
+    SCANNER, FRONT, CAPTURE_BACK
 }
