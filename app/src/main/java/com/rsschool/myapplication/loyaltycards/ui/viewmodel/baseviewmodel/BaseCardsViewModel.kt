@@ -1,21 +1,20 @@
 package com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): ViewModel() {
 
-    protected val _uiState = MutableStateFlow<DBResult>(DBResult.Empty)
+    protected val _uiState = MutableStateFlow<MyResult<List<LoyaltyCard>>>(MyResult.Empty)
     val uiState = _uiState.asStateFlow()
 
     protected val _isListEmpty = MutableStateFlow(false)
@@ -45,12 +44,17 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
     abstract fun onLoad(): Job
 }
 
-sealed class DBResult {
-    data class Success(val value: List<LoyaltyCard>) : DBResult()
-    object Empty : DBResult()
-    data class Failure(val msg: Throwable) : DBResult()
+sealed class MyResult<out T> {
+    object Empty : MyResult<Nothing>()
+    data class Success<T>(val data: T) : MyResult<T>()
+    data class Failure(val exception: Throwable) : MyResult<Nothing>()
 }
 
 sealed class DashboardEvent {
     data class NavigateToDetailsView(val card: LoyaltyCard) : DashboardEvent()
 }
+
+val <T> T.exhaustive: T
+    get() = this
+
+

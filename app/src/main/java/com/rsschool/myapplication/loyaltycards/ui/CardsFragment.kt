@@ -12,7 +12,6 @@ import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DBResult
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.*
@@ -41,13 +40,13 @@ abstract class CardsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.uiState.collect {
                 when (it) {
-                    is DBResult.Success -> {
-                        cardAdapter.submitList(it.value)
+                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Success -> {
+                        cardAdapter.submitList(it.data)
                     }
-                    is DBResult.Empty -> {
+                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Empty -> {
                         cardAdapter.submitList(emptyList())
                     }
-                    is DBResult.Failure -> {
+                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure -> {
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.error_on_db_get),

@@ -5,7 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DBResult
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -32,14 +33,14 @@ class CardsDashboardViewModel @Inject constructor(private val cardUseCase: Loyal
             res.collectLatest { list ->
                 if (list.isEmpty()) {
                     _isListEmpty.value = true
-                    _uiState.value = DBResult.Empty
+                    _uiState.value = MyResult.Empty
                 } else {
                     _isListEmpty.value = false
-                    _uiState.value = DBResult.Success(list)
+                    _uiState.value = MyResult.Success(list)
                 }
             }
         } catch (e : Exception) {
-            _uiState.value = DBResult.Failure(e)
+            _uiState.value = Failure(e)
         }
     }
 }

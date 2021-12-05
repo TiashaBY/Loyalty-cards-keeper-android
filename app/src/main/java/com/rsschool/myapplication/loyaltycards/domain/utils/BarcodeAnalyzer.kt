@@ -9,7 +9,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()
@@ -25,19 +25,15 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                     if (barcodes.isNotEmpty() && barcodes.size == 1) {
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
-                        barcodeListener(
-                            CameraResultEvent.BarcodeScanned(
-                                Barcode(
-                                    barcode.displayValue ?: "",
-                                    barcode.format.toZxingBarcode()
-                                )
-                            )
-                        )
+                        barcodeListener(MyResult.Success(Barcode(
+                            barcode.displayValue ?: "",
+                            barcode.format.toZxingBarcode()
+                        )))
                     }
                     return@addOnSuccessListener
                 }
                 .addOnFailureListener {
-                    // You should really do something about Exceptions
+                    barcodeListener(MyResult.Failure(it))
                 }
                 .addOnCompleteListener {
                     imageProxy.close()

@@ -25,10 +25,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.*
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode.CAPTURE_BACK
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode.FRONT
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,10 +49,10 @@ class CameraFragment : Fragment() {
     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var cameraExecutor = Executors.newSingleThreadExecutor()
 
+    private lateinit var imageCapture: ImageCapture
+
     private val cameraViewModel: AddCardViewModel by navGraphViewModels(R.id.add_card_graph)
     { defaultViewModelProviderFactory }
-
-    //private val cameraViewModel: CameraViewModel by viewModels()
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -64,13 +66,21 @@ class CameraFragment : Fragment() {
         }
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
     private val photoLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { p ->
-        if (!(p[READ_EXTERNAL_STORAGE] == true &&
-            p[WRITE_EXTERNAL_STORAGE] == true &&
-            p[CAMERA] == true
-        )) {
+        if ((p[READ_EXTERNAL_STORAGE] == true &&
+                    p[WRITE_EXTERNAL_STORAGE] == true &&
+                    p[CAMERA] == true
+                    )
+        ) {
+            bindUseCases(
+                UseCaseGroup.Builder()
+                    .addUseCase(previewUseCase())
+                    .addUseCase(captureImageUseCase()).build()
+            )
+        } else {
             Toast.makeText(
                 context,
                 "Necessary permissions are not granted: " +
@@ -93,35 +103,45 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        lifecycleScope.launchWhenCreated {
-            cameraViewModel.addCardEventsFlow.collect {
-                if (it is AddCardEvent.RequestImageEvent) {
-                    when (val mode = it.mode) {
-                        CameraMode.SCANNER -> {
-                            binding.cameraCaptureButton.visibility = GONE
-                            if (cameraPermissionGranted()) {
-                                bindUseCases(UseCaseGroup.Builder()
+        lifecycleScope.launchWhenStarted {
+            cameraViewModel.cameraMode.collect {
+                when (val mode = it) {
+                    CameraMode.SCANNER -> {
+                        binding.cameraText.text = "Scanner your card barcode"
+                        binding.cameraCaptureButton.visibility = GONE
+                        if (cameraPermissionGranted()) {
+                            bindUseCases(
+                                UseCaseGroup.Builder()
                                     .addUseCase(previewUseCase())
-                                    .addUseCase(imageAnalysisUseCase()).build())
-                            } else {
-                                scannerLauncher.launch(CAMERA)
-                            }
+                                    .addUseCase(imageAnalysisUseCase()).build()
+                            )
+                        } else {
+                            scannerLauncher.launch(CAMERA)
                         }
-                        FRONT,
-                        CAPTURE_BACK -> {
-                            binding.cameraCaptureButton.visibility = VISIBLE
-                            binding.cameraCaptureButton.setOnClickListener {
-                                captureImageUseCase(mode)
-                            }
-                            if (storagePermissionsGranted() && cameraPermissionGranted()) {
-                                    bindUseCases(UseCaseGroup.Builder()
-                                        .addUseCase(previewUseCase())
-                                        .addUseCase(imageAnalysisUseCase()).build())
-                            } else {
-                                photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
-                            }
+                    }
+                    CameraMode.CAPTURE_IMAGE_FRONT,
+                    CameraMode.CAPTURE_IMAGE_BACK -> {
+                        binding.cameraCaptureButton.visibility = VISIBLE
+                        if (it == CameraMode.CAPTURE_IMAGE_FRONT) {
+                            binding.cameraText.text = "Capture image front"
+                        } else {
+                            binding.cameraText.text = "Capture image back"
                         }
+                        binding.cameraCaptureButton.setOnClickListener {
+                            captureImage(mode)
+                        }
+                        if (storagePermissionsGranted() && cameraPermissionGranted()) {
+                            bindUseCases(
+                                UseCaseGroup.Builder()
+                                    .addUseCase(previewUseCase())
+                                    .addUseCase(captureImageUseCase()).build()
+                            )
+                        } else {
+                            photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
+                        }
+                    }
+                    CameraMode.NOT_ACTIVE -> {
+                        findNavController().navigateUp()
                     }
                 }
             }
@@ -139,16 +159,26 @@ class CameraFragment : Fragment() {
     private fun imageAnalysisUseCase() = ImageAnalysis.Builder()
         .build()
         .also {
-            it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { code ->
-                val action = CameraFragmentDirections.actionCameraFragmentToAddCardFragment(code)
-                lifecycleScope.launchWhenResumed {
-                    findNavController().navigate(action)
+            it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { result ->
+                when (result) {
+                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Success -> {
+                        cameraViewModel.onBarcodeScanned(result.data as Barcode)
+                    }
+                    com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Empty -> {
+                    }
+                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure -> {
+                    }
                 }
             })
         }
 
+    private fun captureImageUseCase(): ImageCapture {
+        imageCapture = ImageCapture.Builder().build()
+        return imageCapture
+    }
+
     @SuppressLint("UnsafeOptInUsageError")
-    private fun bindUseCases(useCases : UseCaseGroup) {
+    private fun bindUseCases(useCases: UseCaseGroup) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
@@ -157,7 +187,8 @@ class CameraFragment : Fragment() {
                 cameraProvider.unbindAll()
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, useCases)
+                    this, cameraSelector, useCases
+                )
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
@@ -165,9 +196,8 @@ class CameraFragment : Fragment() {
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    private fun captureImageUseCase(mode: CameraMode) {
-        val imageCapture = ImageCapture.Builder()
-            .build()
+    private fun captureImage(mode: CameraMode) {
+        val imageCapture = imageCapture
 
         val photoFile = File(requireContext().filesDir, UUID.randomUUID().toString() + ".jpg")
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -179,13 +209,15 @@ class CameraFragment : Fragment() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e("CameraFragment", "Photo capture failed: ${exc.message}", exc)
                 }
+
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
                     Log.d("CameraFragment", msg)
-                    cameraViewModel.onCardCaptured(mode)
+                    cameraViewModel.onCardCaptured(mode, savedUri)
                 }
             })
+
     }
 
     private fun cameraPermissionGranted() = ContextCompat.checkSelfPermission(
@@ -207,6 +239,7 @@ class CameraFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
+        _binding = null
     }
 
     companion object {
@@ -216,4 +249,4 @@ class CameraFragment : Fragment() {
     }
 }
 
-typealias BarcodeListener = (resultEvent: CameraResultEvent) -> Unit
+typealias BarcodeListener = (resultEvent: MyResult<*>) -> Unit

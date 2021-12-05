@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -15,15 +14,14 @@ import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraActionsRequest
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.io.File
 import android.widget.AdapterView
+import android.widget.Toast
 import com.rsschool.myapplication.loyaltycards.R
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
@@ -45,7 +43,6 @@ class AddCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.handleArgs()
 
         with(binding.addCardTop) {
             cardName.setText(viewModel.name.value)
@@ -76,22 +73,18 @@ class AddCardFragment : Fragment() {
                     ) {
                         viewModel.onBarcodeTypeChange(values[pos])
                     }
-
                     override fun onNothingSelected(parent: AdapterView<*>) {
                         // Another interface callback
                     }
                 }
-        }
+            }
 
         binding.addCardTop.scanBarcode.setOnClickListener {
             viewModel.onScanBarcodeClick()
         }
 
         binding.addCardFront.setOnClickListener {
-            viewModel.addCardFront()
-        }
-        binding.addCardBack.setOnClickListener {
-            viewModel.addCardBack()
+            viewModel.onAddCardClick()
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
@@ -104,28 +97,8 @@ class AddCardFragment : Fragment() {
                         findNavController().popBackStack()
                         findNavController().navigate(R.id.cardsDashboardFragment)
                     }
-                    is AddCardEvent.NavigateToCameraScanBarcode -> {
-                        val action = AddCardFragmentDirections
-                            .actionAddCardFragmentToCameraFragment(CameraActionsRequest.ScanBarcodeAction)
-                        findNavController().navigate(action)
-                    }
-                    is AddCardEvent.NavigateToCameraTakeFrontImage -> {
-                        val action = AddCardFragmentDirections
-                            .actionAddCardFragmentToCameraFragment(
-                                CameraActionsRequest.CaptureImageAction(
-                                    CameraMode.FRONT
-                                )
-                            )
-                        findNavController().navigate(action)
-                    }
-                    is AddCardEvent.NavigateToCameraTakeBackImage -> {
-                        val action = AddCardFragmentDirections
-                            .actionAddCardFragmentToCameraFragment(
-                                CameraActionsRequest.CaptureImageAction(
-                                    CameraMode.CAPTURE_BACK
-                                )
-                            )
-                        findNavController().navigate(action)
+                    is AddCardEvent.RequestImageEvent -> {
+                        findNavController().navigate(R.id.cameraFragment)
                     }
                 }
             }

@@ -10,8 +10,8 @@ import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
-class CameraViewModel @Inject constructor(private val state: SavedStateHandle) : ViewModel() {
-
+class CameraViewModel @Inject constructor(private val state: SavedStateHandle) : ViewModel()
+/*
     private val _cameraEventFlow = MutableStateFlow<CameraActionsRequest?>(null)
     val event = _cameraEventFlow
 
@@ -21,6 +21,7 @@ class CameraViewModel @Inject constructor(private val state: SavedStateHandle) :
         }
     }
 }
+*/
 
 /*
 sealed class CameraResultEvent : Serializable {

@@ -2,7 +2,7 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DBResult
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -12,13 +12,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.mockito.Mockito
-import org.mockito.Mock
 import java.lang.Exception
 
 
@@ -47,7 +43,7 @@ class FavouriteCardsViewModelTest {
         // when
         viewModel.onLoad()
         // then
-        assert(viewModel.uiState.value is DBResult.Empty)
+        assert(viewModel.uiState.value is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Empty)
     }
     @Test
     fun givenUserWithFavourites_whenGetFavoritesUseCaseExecuted_thenUiStateIsSuccess() {
@@ -59,7 +55,7 @@ class FavouriteCardsViewModelTest {
         // when
         viewModel.onLoad()
         // then
-        assert(viewModel.uiState.value == DBResult.Success(listOf(card)))
+        assert(viewModel.uiState.value == MyResult.Success(listOf(card)))
     }
 
     @Test
@@ -70,7 +66,7 @@ class FavouriteCardsViewModelTest {
         // when
         viewModel.onLoad()
         // then
-        assert(viewModel.uiState.value is DBResult.Failure)
+        assert(viewModel.uiState.value is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure)
     }
 
     @After
