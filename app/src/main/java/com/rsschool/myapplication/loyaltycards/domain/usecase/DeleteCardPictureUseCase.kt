@@ -7,16 +7,14 @@ import com.rsschool.myapplication.loyaltycards.domain.utils.ImageUtil
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 import javax.inject.Inject
 
-class TakeCardPictureUseCase @Inject constructor(private val app: Application) {
+class DeleteCardPictureUseCase @Inject constructor(private val app: Application) {
 
-    suspend operator fun invoke(image: ImageProxy): MyResult<*> {
+    suspend operator fun invoke(uri: Uri): MyResult<*> {
         val imageUtil = ImageUtil(app)
-        val bitmap = imageUtil.cropImage(image)
-        return try {
-            val photoFile = imageUtil.savePhotoToInternalStorage(bitmap)
-            MyResult.Success(photoFile)
-        } catch (e: Exception) {
-            MyResult.Failure(e)
+        return if (imageUtil.deletePhotoFromInternalStorage(uri)){
+            MyResult.Success(Unit)
+    } else {
+            MyResult.Failure(Exception("An error occurred when deleting an image"))
         }
     }
 }

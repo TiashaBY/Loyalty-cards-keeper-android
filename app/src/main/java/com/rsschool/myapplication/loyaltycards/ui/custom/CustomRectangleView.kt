@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.custom
 
 import android.content.Context
 import android.content.res.TypedArray
@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
 import com.rsschool.myapplication.loyaltycards.R
-
 
 class CustomRectangleView @JvmOverloads constructor(
     context: Context,

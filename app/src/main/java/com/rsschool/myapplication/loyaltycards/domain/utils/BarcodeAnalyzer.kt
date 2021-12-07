@@ -26,7 +26,7 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
                         barcodeListener(MyResult.Success(Barcode(
-                            barcode.displayValue ?: "",
+                            barcode.displayValue,
                             barcode.format.toZxingBarcode()
                         )))
                     }

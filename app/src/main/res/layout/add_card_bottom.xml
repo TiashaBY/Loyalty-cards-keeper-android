@@ -6,58 +6,61 @@
     android:layout_height="match_parent"
     tools:showIn="@layout/add_card_fragment">
 
+    <TextView
+        android:id="@+id/step3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Step3"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/add_card_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/add_card_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/cardview_margin"
+        android:layout_marginBottom="16dp"
         android:text="Capture card image"
+        app:layout_constraintBottom_toTopOf="@+id/card_front_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/card_back_image"
-        android:layout_width="187dp"
-        android:layout_height="51dp"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         android:scaleType="center"
-        android:src="@drawable/ic_baseline_no_photography_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_front_image"
         app:layout_constraintVertical_bias="0.0"
         tools:layout_height="50dp"
-        tools:layout_width="180dp"
+        tools:layout_width="160dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <ImageView
         android:id="@+id/card_front_image"
-        android:layout_width="180dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         android:scaleType="center"
-        android:src="@drawable/ic_baseline_no_photography_24"
         app:layout_constraintBottom_toTopOf="@+id/card_back_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_card_button"
         app:layout_constraintVertical_chainStyle="packed"
         tools:layout_height="50dp"
-        tools:layout_width="180dp"
+        tools:layout_width="160dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-    <Button
-        android:id="@+id/save_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="Save"
-        app:layout_constraintBottom_toBottomOf="@+id/card_back_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/card_back_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

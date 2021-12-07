@@ -1,19 +1,21 @@
 package com.rsschool.myapplication.loyaltycards.domain.utils
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android .graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.camera.core.ImageProxy
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
+import androidx.core.net.toFile
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 
+private const val TAG = "FileUtil"
+
 class ImageUtil(private val context: Context) {
 
-    fun cropImage(image: ImageProxy): Bitmap {
+    suspend fun cropImage(image: ImageProxy): Bitmap {
         val buffer = image.planes[0].buffer
         val bytes = ByteArray(buffer.capacity()).also { buffer.get(it) }
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
@@ -42,22 +44,37 @@ class ImageUtil(private val context: Context) {
         )
     }
 
-    fun savePhotoToInternalStorage(bitmap: Bitmap): MyResult<*> {
+    suspend fun savePhotoToInternalStorage(bitmap: Bitmap): Uri {
         val photoFile = File(context.filesDir, UUID.randomUUID().toString() + ".jpg")
-        val fileStream = photoFile.outputStream()
+        val fileStream = context.openFileOutput(photoFile.name, Context.MODE_PRIVATE)
 
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
         val byteArrayStream = stream.toByteArray()
 
-        try {
+        return try {
             byteArrayStream.let { fileStream.write(it, 0, it.size) }
+            val uri = Uri.fromFile(photoFile)
+            Log.d(TAG, "File saved: ${uri.path}")
+            uri
         } catch (e: Exception) {
-            return MyResult.Failure(e)
+            throw e
         } finally {
             fileStream.flush()
             fileStream.close()
         }
-        return MyResult.Success(Uri.fromFile(photoFile))
+    }
+
+    suspend fun deletePhotoFromInternalStorage(uri: Uri): Boolean {
+        val filename = uri.toFile().name
+        return try {
+            context.deleteFile(filename)
+            Log.d(TAG, "File deleted: ${uri.path}")
+            true
+        } catch (e: Exception) {
+            Log.d(TAG, "File not deleted: ${uri.path}")
+            e.printStackTrace()
+            false
+        }
     }
 }

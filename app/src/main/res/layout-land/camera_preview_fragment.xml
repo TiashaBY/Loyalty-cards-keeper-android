@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <com.rsschool.myapplication.loyaltycards.ui.CustomRectangleView
+    <com.rsschool.myapplication.loyaltycards.ui.custom.CustomRectangleView
         android:id="@+id/viewPort"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

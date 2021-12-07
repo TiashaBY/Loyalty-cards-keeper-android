@@ -53,8 +53,3 @@ sealed class MyResult<out T> {
 sealed class DashboardEvent {
     data class NavigateToDetailsView(val card: LoyaltyCard) : DashboardEvent()
 }
-
-val <T> T.exhaustive: T
-    get() = this
-
-

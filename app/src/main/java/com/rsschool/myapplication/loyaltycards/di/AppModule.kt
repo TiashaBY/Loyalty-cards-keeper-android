@@ -46,10 +46,10 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideLoyaltyCardsUseCases(repo: CardsRepository): LoyaltyCardUseCases {
+    fun provideLoyaltyCardsUseCases(repo: CardsRepository, app: Application): LoyaltyCardUseCases {
         return LoyaltyCardUseCases(
             getCards = SearchForQueryUseCase(repo),
-            deleteCard = DeleteCardUseCase(repo),
+            deleteCard = DeleteCardUseCase(repo, app),
             addCard = AddCardUseCase(repo),
             getFavoriteCards = GetFavouritesListUseCase(repo),
             updateFavorites = UpdateFavoritesUseCase(repo)

@@ -10,9 +10,10 @@ import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
+import com.rsschool.myapplication.loyaltycards.domain.usecase.DeleteCardPictureUseCase
 import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
-import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.ADD_TASK_RESULT_OK
+import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.RESULT_OK
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,9 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddCardViewModel @Inject constructor(
-    state: SavedStateHandle?,
-    private val useCase: AddCardUseCase,
-    private val pictureUseCase: TakeCardPictureUseCase
+    private val state: SavedStateHandle?,
+    private val cardUseCase: AddCardUseCase,
+    private val pictureUseCase: TakeCardPictureUseCase,
+    private val deleteUseCase: DeleteCardPictureUseCase
 ) : ViewModel() {
 
     private val _name = MutableStateFlow("")
@@ -53,7 +55,7 @@ class AddCardViewModel @Inject constructor(
     private val _cameraMode = MutableStateFlow(CameraMode.NOT_ACTIVE)
     val cameraMode = _cameraMode.asStateFlow()
 
-    init {
+    fun onLoad() {
         state?.get<Uri>("frontImageUri")?.let {
             _frontImageUri.value = it
         }
@@ -78,7 +80,7 @@ class AddCardViewModel @Inject constructor(
     fun onCardNumberChange(newValue: String) {
         _number.value = newValue
         _imageBitmap.value = BarcodeGenerator()
-            .generateBarcode(Barcode(number.value ?: "", barcodeFormat.value))
+            .generateBarcode(Barcode(number.value, barcodeFormat.value))
     }
 
     fun onBarcodeTypeChange(newValue: BarcodeFormat) {
@@ -97,11 +99,11 @@ class AddCardViewModel @Inject constructor(
             backImageUri.value.toString()
         )
         viewModelScope.launch {
-            val result = useCase(card)
+            val result = cardUseCase(card)
             if (result > 0) {
-                _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(ADD_TASK_RESULT_OK))
+                _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
             } else {
-                _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("Message"))
+                _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error during saving card"))
             }
         }
     }
@@ -158,6 +160,18 @@ class AddCardViewModel @Inject constructor(
     fun onCardCaptureError() {
         viewModelScope.launch {
             _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error during image capturing occurred, please try again"))
+        }
+    }
+
+    fun onLeave() {
+        viewModelScope.launch {
+            if (frontImageUri.value != Uri.EMPTY) {
+                deleteUseCase(frontImageUri.value)
+            }
+            if (backImageUri.value != Uri.EMPTY) {
+                deleteUseCase(backImageUri.value)
+            }
+            _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
         }
     }
 }
