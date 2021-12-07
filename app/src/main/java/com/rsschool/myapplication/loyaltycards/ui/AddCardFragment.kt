@@ -44,13 +44,9 @@ class AddCardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding.addCardTop) {
+        binding.addCardTop.apply {
             cardName.setText(viewModel.name.value)
             cardNumber.setText(viewModel.number.value)
-
-            saveButton.setOnClickListener {
-                viewModel.onSaveClick()
-            }
 
             cardNumber.doOnTextChanged { text, _, _, _ ->
                 viewModel.onCardNumberChange(text.toString())
@@ -73,9 +69,7 @@ class AddCardFragment : Fragment() {
                     ) {
                         viewModel.onBarcodeTypeChange(values[pos])
                     }
-                    override fun onNothingSelected(parent: AdapterView<*>) {
-                        // Another interface callback
-                    }
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
             }
 
@@ -83,11 +77,15 @@ class AddCardFragment : Fragment() {
             viewModel.onScanBarcodeClick()
         }
 
-        binding.addCardFront.setOnClickListener {
+        binding.addCardBottom.saveButton.setOnClickListener {
+            viewModel.onSaveClick()
+        }
+
+        binding.addCardBottom.addCardButton.setOnClickListener {
             viewModel.onAddCardClick()
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             viewModel.addCardEventsFlow.collect { event ->
                 when (event) {
                     is AddCardEvent.ShowInvalidInputMessage -> {
@@ -104,7 +102,7 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             viewModel.number.collect { barcode ->
                 with(binding.addCardTop.cardNumber) {
                     if (text.toString() != barcode) {
@@ -114,7 +112,7 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             viewModel.imageBitmap.collect { bitmap ->
                 Glide.with(this@AddCardFragment)
                     .load(bitmap)
@@ -125,14 +123,15 @@ class AddCardFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.frontImageUri.collect { uri ->
-                val imgFile = File(uri?.path ?: "")
+                val imgFile = File(uri.path ?: "")
                 if (imgFile.exists()) {
-                    val bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath())
+                    val bytes = imgFile.readBytes()
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     Glide.with(this@AddCardFragment)
                         .load(bitmap)
                         .error(R.drawable.ic_baseline_image_not_supported_24)
                         .centerInside()
-                        .into(binding.cardFrontImage)
+                        .into(binding.addCardBottom.cardFrontImage)
                 }
             }
         }
@@ -146,7 +145,7 @@ class AddCardFragment : Fragment() {
                         .load(bitmap)
                         .error(R.drawable.ic_baseline_image_not_supported_24)
                         .centerInside()
-                        .into(binding.cardBackImage)
+                        .into(binding.addCardBottom.cardBackImage)
                 }
             }
         }

@@ -3,7 +3,6 @@ package com.rsschool.myapplication.loyaltycards.ui
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -17,6 +16,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
+import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
+import androidx.camera.core.CameraSelector.DEFAULT_FRONT_CAMERA
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -25,18 +26,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
-import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import java.io.File
-import java.util.*
 import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
@@ -46,9 +43,7 @@ class CameraFragment : Fragment() {
     private var _binding: CameraPreviewFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
 
-    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var cameraExecutor = Executors.newSingleThreadExecutor()
-
     private lateinit var imageCapture: ImageCapture
 
     private val cameraViewModel: AddCardViewModel by navGraphViewModels(R.id.add_card_graph)
@@ -103,11 +98,11 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenCreated {
             cameraViewModel.cameraMode.collect {
                 when (val mode = it) {
                     CameraMode.SCANNER -> {
-                        binding.cameraText.text = "Scanner your card barcode"
+                        binding.cameraText.text = getString(R.string.scan_barcode)
                         binding.cameraCaptureButton.visibility = GONE
                         if (cameraPermissionGranted()) {
                             bindUseCases(
@@ -123,14 +118,15 @@ class CameraFragment : Fragment() {
                     CameraMode.CAPTURE_IMAGE_BACK -> {
                         binding.cameraCaptureButton.visibility = VISIBLE
                         if (it == CameraMode.CAPTURE_IMAGE_FRONT) {
-                            binding.cameraText.text = "Capture image front"
+                            binding.cameraText.text = getString(R.string.capture_front)
                         } else {
-                            binding.cameraText.text = "Capture image back"
+                            binding.cameraText.text = getString(R.string.capture_back)
                         }
                         binding.cameraCaptureButton.setOnClickListener {
                             captureImage(mode)
                         }
-                        if (storagePermissionsGranted() && cameraPermissionGranted()) {
+                        if (!storagePermissionsGranted() && cameraPermissionGranted()) {
+                            photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
                             bindUseCases(
                                 UseCaseGroup.Builder()
                                     .addUseCase(previewUseCase())
@@ -150,30 +146,27 @@ class CameraFragment : Fragment() {
 
     private fun previewUseCase(): Preview {
         return Preview.Builder()
-            .build()
-            .also {
+            .build().also {
                 it.setSurfaceProvider(viewFinder.surfaceProvider)
             }
     }
 
-    private fun imageAnalysisUseCase() = ImageAnalysis.Builder()
-        .build()
-        .also {
-            it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { result ->
-                when (result) {
-                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Success -> {
-                        cameraViewModel.onBarcodeScanned(result.data as Barcode)
-                    }
-                    com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Empty -> {
-                    }
-                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure -> {
-                    }
-                }
-            })
-        }
+    private fun imageAnalysisUseCase(): ImageAnalysis {
+        return ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+            .also {
+                it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { result ->
+                    cameraViewModel.onBarcodeScanned(result)
+                })
+            }
+    }
 
     private fun captureImageUseCase(): ImageCapture {
-        imageCapture = ImageCapture.Builder().build()
+        imageCapture =
+            ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .build()
         return imageCapture
     }
 
@@ -182,42 +175,41 @@ class CameraFragment : Fragment() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            // Select lensFacing depending on the available cameras
+            val lensFacing = when {
+                cameraProvider.hasCamera(DEFAULT_BACK_CAMERA) -> DEFAULT_BACK_CAMERA
+                cameraProvider.hasCamera(DEFAULT_FRONT_CAMERA) -> DEFAULT_FRONT_CAMERA
+                else -> throw IllegalStateException("Back and front camera are unavailable")
+            }
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, useCases
+                    this, lensFacing, useCases
                 )
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun captureImage(mode: CameraMode) {
         val imageCapture = imageCapture
-
-        val photoFile = File(requireContext().filesDir, UUID.randomUUID().toString() + ".jpg")
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-
         imageCapture.takePicture(
-            outputOptions,
             ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e("CameraFragment", "Photo capture failed: ${exc.message}", exc)
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    super.onCaptureSuccess(image)
+                    val msg = "Photo capture succeeded"
+                    Log.d("CameraFragment", msg)
+                    cameraViewModel.onCardCaptured(mode, image)
                 }
 
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
-                    val msg = "Photo capture succeeded: $savedUri"
-                    Log.d("CameraFragment", msg)
-                    cameraViewModel.onCardCaptured(mode, savedUri)
+                override fun onError(exception: ImageCaptureException) {
+                    Log.d("CameraFragment", exception.message.toString())
+                    cameraViewModel.onCardCaptureError()
                 }
             })
-
     }
 
     private fun cameraPermissionGranted() = ContextCompat.checkSelfPermission(

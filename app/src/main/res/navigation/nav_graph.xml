@@ -38,9 +38,6 @@
             <action
                 android:id="@+id/action_addCardFragment_to_cameraFragment"
                 app:destination="@id/cameraFragment" />
-            <argument
-                android:name="cameraResult"
-                app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraResultEvent" />
         </fragment>
         <fragment
             android:id="@+id/cameraFragment"

@@ -2,6 +2,7 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,17 +10,23 @@ import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
+import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.ADD_TASK_RESULT_OK
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddCardViewModel @Inject constructor(
-    private val state: SavedStateHandle?,
-    private val useCase: AddCardUseCase
+    state: SavedStateHandle?,
+    private val useCase: AddCardUseCase,
+    private val pictureUseCase: TakeCardPictureUseCase
 ) : ViewModel() {
 
     private val _name = MutableStateFlow("")
@@ -34,10 +41,10 @@ class AddCardViewModel @Inject constructor(
     private var _imageBitmap = MutableStateFlow<Bitmap?>(null)
     val imageBitmap = _imageBitmap.asStateFlow()
 
-    private val _frontImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
+    private val _frontImageUri = MutableStateFlow<Uri>(Uri.EMPTY)
     val frontImageUri = _frontImageUri.asStateFlow()
 
-    private val _backImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
+    private val _backImageUri = MutableStateFlow<Uri>(Uri.EMPTY)
     val backImageUri = _backImageUri.asStateFlow()
 
     private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent>()
@@ -77,14 +84,14 @@ class AddCardViewModel @Inject constructor(
     fun onBarcodeTypeChange(newValue: BarcodeFormat) {
         _barcodeFormat.value = newValue
         _imageBitmap.value = BarcodeGenerator()
-            .generateBarcode(Barcode(number.value ?: "", newValue))
+            .generateBarcode(Barcode(number.value, newValue))
     }
 
     fun onSaveClick() {
         val card = LoyaltyCard(
             null, false,
             name.value,
-            number.value!!,
+            number.value,
             barcodeFormat.value,
             frontImageUri.value.toString(),
             backImageUri.value.toString()
@@ -113,19 +120,44 @@ class AddCardViewModel @Inject constructor(
         _cameraMode.value = CameraMode.CAPTURE_IMAGE_FRONT
     }
 
-    fun onBarcodeScanned(barcode: Barcode) {
-        _number.value = barcode?.code
-        _barcodeFormat.value = barcode?.format
+    fun onBarcodeScanned(result: MyResult<*>) {
+        when (result) {
+            is MyResult.Success -> {
+                val barcode = result.data as Barcode
+                _number.value = barcode.code
+                _barcodeFormat.value = barcode.format
+            }
+            MyResult.Empty,
+            is MyResult.Failure -> {
+                onCardCaptureError()
+            }
+        }
         _cameraMode.value = CameraMode.NOT_ACTIVE
     }
 
-    fun onCardCaptured(mode: CameraMode, uri : Uri) {
-        if (mode == CameraMode.CAPTURE_IMAGE_FRONT) {
-            _frontImageUri.value = uri
-            _cameraMode.value = CameraMode.CAPTURE_IMAGE_BACK
-        } else {
-            _backImageUri.value = uri
-            _cameraMode.value = CameraMode.NOT_ACTIVE
+    fun onCardCaptured(mode: CameraMode, image: ImageProxy) {
+        viewModelScope.launch {
+            val result = pictureUseCase(image)
+            when (result) {
+                is MyResult.Success -> {
+                    if (mode == CameraMode.CAPTURE_IMAGE_FRONT) {
+                        _frontImageUri.value = result.data as Uri
+                        _cameraMode.value = CameraMode.CAPTURE_IMAGE_BACK
+                    } else {
+                        _backImageUri.value = result.data as Uri
+                        _cameraMode.value = CameraMode.NOT_ACTIVE
+                    }
+                }
+                is MyResult.Failure -> {
+                    _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error card image saving occurred, try again"))
+                }
+            }
+        }
+    }
+
+    fun onCardCaptureError() {
+        viewModelScope.launch {
+            _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error during image capturing occurred, please try again"))
         }
     }
 }
@@ -134,23 +166,6 @@ sealed class AddCardEvent {
     data class ShowInvalidInputMessage(val msg: String) : AddCardEvent()
     data class NavigateBackWithResult(val resultCode: String) : AddCardEvent()
     object RequestImageEvent : AddCardEvent()
-}
-
-sealed class Destination {
-    object Camera : Destination()
-    object AddCardForm : Destination()
-    object Dashboard : Destination()
-
-}
-
-sealed class CameraResultEvent : java.io.Serializable {
-    data class BarcodeScanned(val barcode: Barcode) : CameraResultEvent()
-    data class ImageSaved(val type: CameraMode, val imageUri: Uri?) : CameraResultEvent()
-}
-
-sealed class CameraActionsRequest : java.io.Serializable {
-    object ScanBarcodeAction : CameraActionsRequest()
-    data class CaptureImageAction(val type: CameraMode) : CameraActionsRequest()
 }
 
 enum class CameraMode {

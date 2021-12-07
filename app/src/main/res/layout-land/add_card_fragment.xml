@@ -15,62 +15,23 @@
         layout="@layout/add_card_top"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/guidline_medium_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/add_card_front"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add front side photo"
-        app:layout_constraintBottom_toBottomOf="@+id/card_front_image"
+    <include
+        android:id="@+id/add_card_bottom"
+        layout="@layout/add_card_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/card_front_image"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <ImageView
-        android:id="@+id/card_back_image"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/ic_baseline_no_photography_24"
-        android:scaleType="center"
-        app:layout_constraintEnd_toStartOf="@+id/add_card_back"
+        app:layout_constraintHorizontal_bias="0.542"
         app:layout_constraintStart_toStartOf="@+id/guidline_medium_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/card_front_image"
-        tools:layout_height="105dp"
-        tools:layout_width="101dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-    <Button
-        android:id="@+id/add_card_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add back side photo"
-        app:layout_constraintBottom_toBottomOf="@+id/card_back_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/card_back_image" />
-
-    <ImageView
-        android:id="@+id/card_front_image"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/ic_baseline_no_photography_24"
-        android:scaleType="center"
-        app:layout_constraintBottom_toTopOf="@+id/card_back_image"
-        app:layout_constraintEnd_toStartOf="@+id/add_card_front"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toStartOf="@+id/guidline_medium_vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_height="105dp"
-        tools:layout_width="101dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidline_medium_vertical"
