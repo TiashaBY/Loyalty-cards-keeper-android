@@ -51,7 +51,7 @@ class ImageUtil(private val context: Context) {
         val byteArrayStream = stream.toByteArray()
 
         try {
-            byteArrayStream.let { stream.write(it, 0, it.size) }
+            byteArrayStream.let { fileStream.write(it, 0, it.size) }
         } catch (e: Exception) {
             return MyResult.Failure(e)
         } finally {
