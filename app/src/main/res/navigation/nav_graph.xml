@@ -43,7 +43,7 @@
             <argument
                 android:name="result"
                 app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode" />
-        </fragment>
+    </fragment>
         <fragment
             android:id="@+id/cameraFragment"
             android:name="com.rsschool.myapplication.loyaltycards.ui.CameraFragment"

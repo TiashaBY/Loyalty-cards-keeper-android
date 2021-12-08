@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         return navController?.navigateUp() == true || super.onSupportNavigateUp()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         navController?.addOnDestinationChangedListener { _, destination, _ ->
             binding?.bottomNavView?.isVisible = destination.id != R.id.addCardFragment

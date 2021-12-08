@@ -60,8 +60,8 @@ class AddCardViewModel @Inject constructor(
         super.onCleared()
         Log.d("ViewM", name.value)
     }
+    init {
 
-    fun load() {
         state?.get<Uri>("frontImageUri")?.let {
             _frontImageUri.value = it
         }
@@ -71,6 +71,18 @@ class AddCardViewModel @Inject constructor(
         state?.get<String>("name")?.let {
             _name.value = it
         }
+    }
+
+    fun load() {
+/*        state?.get<Uri>("frontImageUri")?.let {
+            _frontImageUri.value = it
+        }
+        state?.get<Uri>("backImageUri")?.let {
+            _backImageUri.value = it
+        }
+        state?.get<String>("name")?.let {
+            _name.value = it
+        }*/
         _number.value = state?.get<String>("number") ?: resultArguments?.number ?: ""
         state?.get<BarcodeFormat>("barcodeFormat")?.let {
             _barcodeFormat.value = it } ?: resultArguments?.format

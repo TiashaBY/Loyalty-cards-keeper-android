@@ -24,10 +24,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
-import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraEvents
@@ -138,7 +136,7 @@ class CameraFragment : Fragment() {
                         }
                     }
                     is CameraEvents.BarcodeScanned -> {
-                        val action = CameraFragmentDirections.actionCameraFragmentToAddCardFragment(mode.barcode)
+                        val action = com.rsschool.myapplication.loyaltycards.ui.CameraFragmentDirections.actionCameraFragmentToAddCardFragment(mode.barcode)
                         findNavController().navigate(action)
                     }
                     CameraEvents.CameraStopped -> {
