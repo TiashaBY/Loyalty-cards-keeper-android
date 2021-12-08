@@ -51,10 +51,11 @@
             <action
                 android:id="@+id/action_cameraFragment_to_addCardFragment"
                 app:destination="@id/addCardFragment"
+                app:launchSingleTop="true"
                 app:popUpTo="@id/addCardFragment"
                 app:popUpToInclusive="false" />
             <argument
                 android:name="mode"
-                app:argType="com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode" />
+                app:argType="string" />
         </fragment>
 </navigation>

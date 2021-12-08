@@ -17,8 +17,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
@@ -27,7 +25,6 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.io.File
@@ -36,7 +33,7 @@ import java.io.File
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
 
-    private val viewModel: AddCardViewModel by viewModels()
+    private val viewModel: AddCardViewModel by viewModels<AddCardViewModel>()
 
     private var _binding: AddCardFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
@@ -60,11 +57,13 @@ class AddCardFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
+        viewModel.load()
 
         binding.addCardTop.apply {
-            cardName.setText(viewModel.name.value)
-            cardNumber.setText(viewModel.number.value)
+/*            cardName.setText(viewModel.name.value)
+            cardNumber.setText(viewModel.number.value)*/
 
             cardNumber.doOnTextChanged { text, _, _, _ ->
                 viewModel.onCardNumberChange(text.toString())
@@ -119,7 +118,7 @@ class AddCardFragment : Fragment() {
                         findNavController().navigate(R.id.cameraFragment)
                     }
                     is AddCardEvent.RequestBarcodeEvent -> {
-                        val action = AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(CameraMode.SCANNER)
+                        val action = AddCardFragmentDirections.actionAddCardFragmentToCameraFragment("SCANNER")
                         findNavController().navigate(action)
                     }
                 }
@@ -141,12 +140,17 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+        lifecycleScope.launchWhenResumed {
             viewModel.name.collect { name ->
                 if (name.isNullOrEmpty()) {
                     disableSaveButton()
                 } else {
                     enableSaveButton()
+                }
+                with(binding.addCardTop.cardName) {
+                    if (text.toString() != name) {
+                        setText(name)
+                    }
                 }
             }
         }
@@ -207,6 +211,12 @@ class AddCardFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        Log.d("Fragment", "Destroyed")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("Fragment", "Detached")
     }
 
     private fun showLeavingDialog() {

@@ -2,6 +2,7 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,8 @@ import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUse
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.RESULT_OK
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +30,6 @@ import javax.inject.Inject
 class AddCardViewModel @Inject constructor(
     private val state: SavedStateHandle?,
     private val cardUseCase: AddCardUseCase,
-    private val pictureUseCase: TakeCardPictureUseCase,
     private val deleteUseCase: DeleteCardPictureUseCase
 ) : ViewModel() {
 
@@ -54,7 +56,12 @@ class AddCardViewModel @Inject constructor(
     private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent>()
     val addCardEventsFlow = _addCardEventsFlow.asSharedFlow()
 
-    init {
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("ViewM", name.value)
+    }
+
+    fun load() {
         state?.get<Uri>("frontImageUri")?.let {
             _frontImageUri.value = it
         }
@@ -64,8 +71,7 @@ class AddCardViewModel @Inject constructor(
         state?.get<String>("name")?.let {
             _name.value = it
         }
-        state?.get<String>("number")?.let {
-            _number.value = it } ?: resultArguments?.number
+        _number.value = state?.get<String>("number") ?: resultArguments?.number ?: ""
         state?.get<BarcodeFormat>("barcodeFormat")?.let {
             _barcodeFormat.value = it } ?: resultArguments?.format
     }
@@ -134,12 +140,12 @@ class AddCardViewModel @Inject constructor(
     }*/
 
     //remove
-    fun onCardCaptured(mode: CameraMode, image: ImageProxy) {
+/*    fun onCardCaptured(events: CameraEvents, image: ImageProxy) {
         viewModelScope.launch {
             val result = pictureUseCase(image)
             when (result) {
                 is MyResult.Success -> {
-                    if (mode == CameraMode.CAPTURE_IMAGE_FRONT) {
+                    if (events == CameraEvents.CAPTURE_IMAGE_FRONT) {
                         _frontImageUri.value = result.data as Uri
                        // _cameraMode.value = CameraMode.CAPTURE_IMAGE_BACK
                     } else {
@@ -152,7 +158,7 @@ class AddCardViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 
     fun onLeave() {
         viewModelScope.launch {

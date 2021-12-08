@@ -30,7 +30,7 @@ import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragment
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraEvents
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
@@ -100,9 +100,9 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launchWhenCreated {
-            cameraViewModel.cameraMode.collect {
-                when (val mode = it) {
-                    CameraMode.SCANNER -> {
+            cameraViewModel.cameraMode.collect { mode ->
+                when (mode) {
+                    CameraEvents.OpenScanner -> {
                         binding.cameraText.text = getString(R.string.scan_barcode)
                         binding.cameraCaptureButton.visibility = GONE
                         if (cameraPermissionGranted()) {
@@ -115,10 +115,10 @@ class CameraFragment : Fragment() {
                             scannerLauncher.launch(CAMERA)
                         }
                     }
-                    CameraMode.CAPTURE_IMAGE_FRONT,
-                    CameraMode.CAPTURE_IMAGE_BACK -> {
+                    CameraEvents.CaptureFrontImage,
+                    CameraEvents.CaptureBackImage -> {
                         binding.cameraCaptureButton.visibility = VISIBLE
-                        if (it == CameraMode.CAPTURE_IMAGE_FRONT) {
+                        if (cameraViewModel.startArguments == "CAPTURE_IMAGE_FRONT") {
                             binding.cameraText.text = getString(R.string.capture_front)
                         } else {
                             binding.cameraText.text = getString(R.string.capture_back)
@@ -137,11 +137,11 @@ class CameraFragment : Fragment() {
                             photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
                         }
                     }
-                    CameraMode.DATA -> {
-                        val action = CameraFragmentDirections.actionCameraFragmentToAddCardFragment(Barcode("111", BarcodeFormat.EAN_8))
+                    is CameraEvents.BarcodeScanned -> {
+                        val action = CameraFragmentDirections.actionCameraFragmentToAddCardFragment(mode.barcode)
                         findNavController().navigate(action)
                     }
-                    CameraMode.NOT_ACTIVE -> {
+                    CameraEvents.CameraStopped -> {
                         findNavController().navigateUp()
                     }
                 }
@@ -198,7 +198,7 @@ class CameraFragment : Fragment() {
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    private fun captureImage(mode: CameraMode) {
+    private fun captureImage(events: CameraEvents) {
         val imageCapture = imageCapture
         imageCapture.takePicture(
             ContextCompat.getMainExecutor(requireContext()),
@@ -207,7 +207,7 @@ class CameraFragment : Fragment() {
                     super.onCaptureSuccess(image)
                     val msg = "Photo capture succeeded"
                     Log.d("CameraFragment", msg)
-                    cameraViewModel.onCardCaptured(mode, image)
+                    cameraViewModel.onCardCaptured(events, image)
                 }
                 override fun onError(exception: ImageCaptureException) {
                     Log.d("CameraFragment", exception.message.toString())

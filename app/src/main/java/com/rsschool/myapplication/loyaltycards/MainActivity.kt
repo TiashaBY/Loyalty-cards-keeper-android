@@ -18,8 +18,6 @@ class MainActivity : AppCompatActivity() {
     private var navController: NavController? = null
     private var binding : ActivityMainBinding? = null
 
-    private lateinit var destinastionChangeListener : NavController.OnDestinationChangedListener
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

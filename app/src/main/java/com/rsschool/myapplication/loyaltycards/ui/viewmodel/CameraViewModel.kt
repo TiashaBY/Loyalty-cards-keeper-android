@@ -1,5 +1,6 @@
 package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
+import android.net.Uri
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -19,44 +20,44 @@ class CameraViewModel @Inject constructor(
     private val pictureUseCase: TakeCardPictureUseCase,
 ) : ViewModel() {
 
-    val startArguments = state?.get<CameraMode?>("mode")
+    val startArguments = state?.get<String>("mode")
 
-    private val _cameraMode = MutableStateFlow(CameraMode.NOT_ACTIVE)
+    private val _cameraMode = MutableStateFlow<CameraEvents>(CameraEvents.CameraStopped)
     val cameraMode = _cameraMode.asStateFlow()
 
     init {
-        _cameraMode.value = state?.get<CameraMode?>("cameraMode") ?: startArguments ?: CameraMode.NOT_ACTIVE
+        _cameraMode.value = if (startArguments == "SCANNER") CameraEvents.OpenScanner
+        else state?.get<CameraEvents>("cameraMode") ?: CameraEvents.CameraStopped
     }
 
     fun onBarcodeScanned(result: MyResult<*>) {
         when (result) {
             is MyResult.Success -> {
                 val barcode = result.data as Barcode
-                _cameraMode.value = CameraMode.DATA
+                _cameraMode.value = CameraEvents.BarcodeScanned(barcode)
 
             }
             MyResult.Empty,
             is MyResult.Failure -> {
                 onCardCaptureError()
-                //error event
+                _cameraMode.value = CameraEvents.CameraStopped
             }
         }
-        _cameraMode.value = CameraMode.NOT_ACTIVE
     }
 
     //todo
-    fun onCardCaptured(mode: CameraMode, image: ImageProxy) {
+    fun onCardCaptured(events: CameraEvents, image: ImageProxy) {
         viewModelScope.launch {
             val result = pictureUseCase(image)
             when (result) {
                 is MyResult.Success<*> -> {
-                    if (mode == CameraMode.CAPTURE_IMAGE_FRONT) {
+   /*                 if (events == CameraEvents.CAPTURE_IMAGE_FRONT) {
                        // sucessEvent for front
-                        _cameraMode.value = CameraMode.CAPTURE_IMAGE_BACK
+                        _cameraMode.value = CameraEvents.CAPTURE_IMAGE_BACK
                     } else {
                         // sucessEvent for front
-                        _cameraMode.value = CameraMode.NOT_ACTIVE
-                    }
+                        _cameraMode.value = CameraEvents.NOT_ACTIVE
+                    }*/
                 }
                 is MyResult.Failure -> {
                    //error event on save
@@ -73,6 +74,14 @@ class CameraViewModel @Inject constructor(
     }
 }
 
-enum class CameraMode {
-    SCANNER, CAPTURE_IMAGE_FRONT, CAPTURE_IMAGE_BACK, NOT_ACTIVE, DATA
+sealed class CameraEvents {
+    object OpenScanner : CameraEvents()
+    object CaptureFrontImage : CameraEvents()
+    object CaptureBackImage : CameraEvents()
+    object CameraStopped : CameraEvents()
+    data class BarcodeScanned(val barcode : Barcode) : CameraEvents()
+    data class CapturedImageSaved(val uri : Uri) : CameraEvents()
+    data class CameraError(val msg : String)
+
+    //SCANNER, CAPTURE_IMAGE_FRONT, CAPTURE_IMAGE_BACK, NOT_ACTIVE, DATA
 }
