@@ -16,6 +16,7 @@ import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUse
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.domain.utils.Constants.RESULT_OK
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.AddCardFragmentArgs
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,10 +29,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddCardViewModel @Inject constructor(
-    private val state: SavedStateHandle?,
+    private val state: SavedStateHandle,
     private val cardUseCase: AddCardUseCase,
     private val deleteUseCase: DeleteCardPictureUseCase
 ) : ViewModel() {
+
+    val args : AddCardFragmentArgs = AddCardFragmentArgs.fromSavedStateHandle(state)
 
     private val resultArguments = state?.get<Barcode>("result")
 

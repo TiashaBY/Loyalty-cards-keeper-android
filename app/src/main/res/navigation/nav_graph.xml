@@ -42,7 +42,9 @@
                 app:destination="@id/cameraFragment" />
             <argument
                 android:name="result"
-                app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode" />
+                app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode"
+                app:nullable="true"
+                android:defaultValue="@null" />
     </fragment>
         <fragment
             android:id="@+id/cameraFragment"

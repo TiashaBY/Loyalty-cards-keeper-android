@@ -136,7 +136,7 @@ class CameraFragment : Fragment() {
                         }
                     }
                     is CameraEvents.BarcodeScanned -> {
-                        val action = com.rsschool.myapplication.loyaltycards.ui.CameraFragmentDirections.actionCameraFragmentToAddCardFragment(mode.barcode)
+                        val action = com.rsschool.myapplication.loyaltycards.ui.CameraFragmentDirections.actionCameraFragmentToAddCardFragment().setResult(mode.barcode)
                         findNavController().navigate(action)
                     }
                     CameraEvents.CameraStopped -> {
