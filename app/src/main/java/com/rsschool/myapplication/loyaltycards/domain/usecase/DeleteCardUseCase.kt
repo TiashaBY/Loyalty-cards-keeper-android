@@ -5,7 +5,7 @@ import android.net.Uri
 import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.utils.ImageUtil
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import javax.inject.Inject
 
 class DeleteCardUseCase @Inject constructor(private val repo: CardsRepository, private val app: Application) {

@@ -2,6 +2,7 @@ package com.rsschool.myapplication.loyaltycards.domain.utils
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import java.io.Serializable
 
 // For more details, check: https://gist.github.com/marcellogalhardo/2a1ec56b7d00ba9af1ec9fd3583d53dc
 fun <T> SavedStateHandle.getStateFlow(
@@ -39,4 +41,10 @@ fun <T> SavedStateHandle.getStateFlow(
     }.launchIn(scope)
 
     return stateFlow
+}
+
+sealed class MyResult<out T> {
+    object Empty : MyResult<Nothing>()
+    data class Success<T>(val data: T) : MyResult<T>()
+    data class Failure(val exception: Throwable) : MyResult<Nothing>()
 }

@@ -14,7 +14,7 @@ class BarcodeGenerator {
         var bitMatrix: BitMatrix
         try {
             bitMatrix = try {
-                writer.encode(barcode.code, barcode.format, 200, 150, null)
+                writer.encode(barcode.number, barcode.format, 200, 150, null)
             } catch (e: Exception) {
                 // Cast a wider net here and catch any exception, as there are some
                 // cases where an encoder may fail if the data is invalid for the

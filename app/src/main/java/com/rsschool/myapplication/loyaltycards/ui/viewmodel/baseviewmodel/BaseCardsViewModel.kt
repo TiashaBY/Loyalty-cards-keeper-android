@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.Serializable
 
 abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): ViewModel() {
 
@@ -42,12 +45,6 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
     }
 
     abstract fun onLoad(): Job
-}
-
-sealed class MyResult<out T> {
-    object Empty : MyResult<Nothing>()
-    data class Success<T>(val data: T) : MyResult<T>()
-    data class Failure(val exception: Throwable) : MyResult<Nothing>()
 }
 
 sealed class DashboardEvent {

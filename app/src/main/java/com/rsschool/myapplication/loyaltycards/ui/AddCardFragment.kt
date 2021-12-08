@@ -15,6 +15,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -26,6 +27,7 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.io.File
@@ -34,8 +36,7 @@ import java.io.File
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
 
-    private val viewModel: AddCardViewModel by navGraphViewModels(R.id.add_card_graph)
-    { defaultViewModelProviderFactory }
+    private val viewModel: AddCardViewModel by viewModels()
 
     private var _binding: AddCardFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
@@ -53,7 +54,6 @@ class AddCardFragment : Fragment() {
                 showLeavingDialog()
             }
         }
-        // note that you could enable/disable the callback here as well by setting callback.isEnabled = true/false
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         setHasOptionsMenu(true)
         return binding.root
@@ -61,7 +61,6 @@ class AddCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onLoad()
 
         binding.addCardTop.apply {
             cardName.setText(viewModel.name.value)
@@ -118,6 +117,10 @@ class AddCardFragment : Fragment() {
                     }
                     is AddCardEvent.RequestImageEvent -> {
                         findNavController().navigate(R.id.cameraFragment)
+                    }
+                    is AddCardEvent.RequestBarcodeEvent -> {
+                        val action = AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(CameraMode.SCANNER)
+                        findNavController().navigate(action)
                     }
                 }
             }
@@ -216,7 +219,4 @@ class AddCardFragment : Fragment() {
                 viewModel.onLeave()
             }.create().show()
     }
-
-
-
 }

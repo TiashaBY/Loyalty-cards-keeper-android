@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.NavGraphDirections
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
@@ -40,13 +41,13 @@ abstract class CardsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.uiState.collect {
                 when (it) {
-                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Success -> {
+                    is MyResult.Success -> {
                         cardAdapter.submitList(it.data)
                     }
-                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Empty -> {
+                    is MyResult.Empty -> {
                         cardAdapter.submitList(emptyList())
                     }
-                    is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure -> {
+                    is MyResult.Failure -> {
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.error_on_db_get),

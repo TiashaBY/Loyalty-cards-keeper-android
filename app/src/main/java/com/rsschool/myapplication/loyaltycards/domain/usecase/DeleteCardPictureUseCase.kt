@@ -2,9 +2,8 @@ package com.rsschool.myapplication.loyaltycards.domain.usecase
 
 import android.app.Application
 import android.net.Uri
-import androidx.camera.core.ImageProxy
 import com.rsschool.myapplication.loyaltycards.domain.utils.ImageUtil
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import javax.inject.Inject
 
 class DeleteCardPictureUseCase @Inject constructor(private val app: Application) {

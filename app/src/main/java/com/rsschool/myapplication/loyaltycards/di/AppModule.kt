@@ -58,5 +58,11 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideTakePicUseCaseUseCases(app: Application): TakeCardPictureUseCase {
+        return TakeCardPictureUseCase(app)
+    }
+
+    @Provides
+    @Singleton
     fun provideSharedPrefs(@ApplicationContext context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
 }

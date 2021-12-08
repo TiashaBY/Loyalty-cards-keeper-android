@@ -5,8 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -40,7 +39,7 @@ class CardsDashboardViewModel @Inject constructor(private val cardUseCase: Loyal
                 }
             }
         } catch (e : Exception) {
-            _uiState.value = Failure(e)
+            _uiState.value = MyResult.Failure(e)
         }
     }
 }

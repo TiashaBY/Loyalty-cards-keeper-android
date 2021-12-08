@@ -21,15 +21,17 @@ import androidx.camera.core.CameraSelector.DEFAULT_FRONT_CAMERA
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
+import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraMode
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,8 +48,7 @@ class CameraFragment : Fragment() {
     private var cameraExecutor = Executors.newSingleThreadExecutor()
     private lateinit var imageCapture: ImageCapture
 
-    private val cameraViewModel: AddCardViewModel by navGraphViewModels(R.id.add_card_graph)
-    { defaultViewModelProviderFactory }
+    private val cameraViewModel: CameraViewModel by viewModels()
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -136,6 +137,10 @@ class CameraFragment : Fragment() {
                             photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
                         }
                     }
+                    CameraMode.DATA -> {
+                        val action = CameraFragmentDirections.actionCameraFragmentToAddCardFragment(Barcode("111", BarcodeFormat.EAN_8))
+                        findNavController().navigate(action)
+                    }
                     CameraMode.NOT_ACTIVE -> {
                         findNavController().navigateUp()
                     }
@@ -204,7 +209,6 @@ class CameraFragment : Fragment() {
                     Log.d("CameraFragment", msg)
                     cameraViewModel.onCardCaptured(mode, image)
                 }
-
                 override fun onError(exception: ImageCaptureException) {
                     Log.d("CameraFragment", exception.message.toString())
                     cameraViewModel.onCardCaptureError()
