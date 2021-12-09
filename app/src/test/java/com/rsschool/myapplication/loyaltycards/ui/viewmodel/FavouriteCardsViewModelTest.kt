@@ -1,38 +1,44 @@
 package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.lang.Exception
 
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnit4::class)
 class FavouriteCardsViewModelTest {
 
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
     @MockK
     lateinit var loyaltyCardUseCases: LoyaltyCardUseCases
+
     @MockK
-    lateinit var card : LoyaltyCard
+    lateinit var card: LoyaltyCard
 
     @InjectMockKs
     lateinit var viewModel: FavouriteCardsViewModel
@@ -82,19 +88,22 @@ class FavouriteCardsViewModelTest {
     fun givenUserWithFavourites_thenUiStateInitialStateIsLoading() {
         coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
             emit(MyResult.Success(listOf(card)))
+        }
             assert(viewModel.uiState.value is DashboardUIState.Loading)
         }
-    }
 
     @Test
-    fun givenUserWithFavourites_whenUserClicksFavItem_thenNavigateToDetailsViewEventIsTriggered() {
-        coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-            emit(MyResult.Success(listOf(card)))
+    fun givenUserWithFavourites_whenUserClicksFavItem_thenNavigateToDetailsViewEventIsTriggered() =
+        runBlockingTest {
+            coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
+                emit(MyResult.Success(listOf(card)))
+            }
             viewModel.onItemDetailsClick(card)
-            assert(viewModel.uiState.value is DashboardUIState.Loading)
-        }
-    }
+            viewModel.dashboardEvent.map {
+                assert(it == DashboardEvent.NavigateToDetailsView(card))
+            }
 
+        }
 
     @After
     internal fun tearDown() {

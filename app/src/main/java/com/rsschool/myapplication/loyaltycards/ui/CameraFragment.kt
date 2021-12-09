@@ -28,10 +28,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
-import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.UiConst.PHOTO_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.UiConst.SCANNER_RESULT
+import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraEvents
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -99,7 +99,7 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launchWhenCreated {
-            cameraViewModel.cameraState.collect { state ->
+            cameraViewModel.cameraEvent.collect { state ->
                 when (state) {
                     CameraEvents.OpenScanner -> {
                         binding.cameraText.text = getString(R.string.scan_barcode)

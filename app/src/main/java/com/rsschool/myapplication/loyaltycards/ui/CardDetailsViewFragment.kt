@@ -9,6 +9,8 @@ import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardDetailsFragmentBinding
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
+import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardDetailsViewModel
 
 class CardDetailsViewFragment : Fragment() {
@@ -29,11 +31,13 @@ class CardDetailsViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bitmap = BarcodeGenerator()
+            .generateBarcode(Barcode(viewModel.card?.cardNumber ?: "", viewModel.card?.barcodeType))
         Glide.with(this)
-            .load(viewModel.bitmap)
+            .load(bitmap)
             .error(R.drawable.ic_baseline_image_not_supported_24)
             .fitCenter()
             .into(binding.barcode)
-        binding.number.text = viewModel.cardNumber
+        binding.number.text = viewModel.card?.cardNumber
     }
 }

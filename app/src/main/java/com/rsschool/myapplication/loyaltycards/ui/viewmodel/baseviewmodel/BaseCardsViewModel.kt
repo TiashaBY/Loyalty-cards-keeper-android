@@ -1,6 +1,5 @@
 package com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
@@ -20,7 +19,7 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
     private val _dashboardEvent = MutableSharedFlow<DashboardEvent>()
     val dashboardEvent = _dashboardEvent.asSharedFlow()
 
-    abstract fun fetchData(): Flow<MyResult<*>>
+    protected abstract fun fetchData(): Flow<MyResult<*>>
 
     private fun <T> MyResult<T>.handleResult(): DashboardUIState {
         return when (this) {

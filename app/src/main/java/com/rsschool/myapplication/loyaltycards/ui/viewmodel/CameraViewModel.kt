@@ -28,19 +28,19 @@ class CameraViewModel @Inject constructor(
 
     private val startArguments = state?.get<CameraMode>("mode")
 
-    private val _cameraState = MutableStateFlow<CameraEvents>(CameraEvents.CameraFinishedCapturing)
-    val cameraState = _cameraState.asStateFlow()
+    private val _cameraEvent = MutableStateFlow<CameraEvents>(CameraEvents.CameraFinishedCapturing)
+    val cameraEvent = _cameraEvent.asStateFlow()
 
-    var frontImageUri : Uri = Uri.EMPTY
-    var backImageUri : Uri = Uri.EMPTY
+    var frontImageUri: Uri? = Uri.EMPTY
+    var backImageUri: Uri? = Uri.EMPTY
 
     init {
-        _cameraState.value = state?.get<CameraEvents>(CAMERA_MODE) ?:
-        if (startArguments == CameraMode.SCANNER) {
-            CameraEvents.OpenScanner
-        } else {
-            CameraEvents.CaptureFrontImage
-        }
+        _cameraEvent.value =
+            state?.get<CameraEvents>(CAMERA_MODE) ?: if (startArguments == CameraMode.SCANNER) {
+                CameraEvents.OpenScanner
+            } else {
+                CameraEvents.CaptureFrontImage
+            }
 
         state?.get<Uri>(FRONT_IMAGE_URI)?.let {
             frontImageUri = it
@@ -54,7 +54,7 @@ class CameraViewModel @Inject constructor(
         when (result) {
             is MyResult.Success -> {
                 val barcode = result.data as Barcode
-                _cameraState.value = CameraEvents.BarcodeScanned(barcode)
+                _cameraEvent.value = CameraEvents.BarcodeScanned(barcode)
 
             }
             is MyResult.Failure -> {
@@ -69,11 +69,11 @@ class CameraViewModel @Inject constructor(
                 is MyResult.Success<*> -> {
                 if (side == CardSide.FRONT) {
                     frontImageUri = res.data as Uri
-                    _cameraState.value = CameraEvents.CaptureBackImage
+                    _cameraEvent.value = CameraEvents.CaptureBackImage
                     } else {
                     backImageUri = res.data as Uri
-                    _cameraState.value = CameraEvents.CameraFinishedCapturing
-                    }
+                    _cameraEvent.value = CameraEvents.CameraFinishedCapturing
+                }
                 }
                 is MyResult.Failure -> {
                     onErrorEvent(res.exception.message.toString())
@@ -82,8 +82,8 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    fun onErrorEvent(msg : String) {
-        _cameraState.value = CameraEvents.CameraError("Error during image capturing $msg")
+    private fun onErrorEvent(msg: String) {
+        _cameraEvent.value = CameraEvents.CameraError("Error during image capturing $msg")
     }
 }
 

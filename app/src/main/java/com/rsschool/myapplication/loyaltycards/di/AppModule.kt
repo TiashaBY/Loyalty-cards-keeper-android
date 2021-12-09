@@ -2,14 +2,15 @@ package com.rsschool.myapplication.loyaltycards.di
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
 import com.rsschool.myapplication.loyaltycards.data.repository.RoomCardsRepository
 import com.rsschool.myapplication.loyaltycards.data.room.CardsDatabase
 import com.rsschool.myapplication.loyaltycards.data.room.LoyaltyCardDao
+import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
 import com.rsschool.myapplication.loyaltycards.domain.usecase.*
 import dagger.Module
 import dagger.Provides
@@ -64,5 +65,6 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideSharedPrefs(@ApplicationContext context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
+    fun provideSharedPrefs(@ApplicationContext context: Context): SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 }
