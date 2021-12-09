@@ -57,7 +57,6 @@ class CameraViewModel @Inject constructor(
                 _cameraState.value = CameraEvents.BarcodeScanned(barcode)
 
             }
-            MyResult.Empty,
             is MyResult.Failure -> {
                 onErrorEvent("An error on attempt to save card image")
             }

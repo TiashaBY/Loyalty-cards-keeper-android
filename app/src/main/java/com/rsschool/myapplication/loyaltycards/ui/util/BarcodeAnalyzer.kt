@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.domain.utils
+package com.rsschool.myapplication.loyaltycards.ui.util
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -8,6 +8,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
@@ -24,10 +25,14 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                     if (barcodes.isNotEmpty() && barcodes.size == 1) {
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
-                        barcodeListener(MyResult.Success(Barcode(
-                            barcode.displayValue,
-                            barcode.format.toZxingBarcode()
-                        )))
+                        barcodeListener(
+                            MyResult.Success(
+                                Barcode(
+                                    barcode.displayValue,
+                                    barcode.format.toZxingBarcode()
+                                )
+                            )
+                        )
                     }
                     return@addOnSuccessListener
                 }

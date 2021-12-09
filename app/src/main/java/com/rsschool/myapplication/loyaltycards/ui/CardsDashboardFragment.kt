@@ -14,6 +14,7 @@ import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewMo
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -45,15 +46,15 @@ class CardsDashboardFragment : CardsFragment() {
                 setHasFixedSize(true)
             }
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.isListEmpty.collect {
-                if (it) {
-                    binding.noCardsMsg.visibility = View.VISIBLE
-                } else {
-                    binding.noCardsMsg.visibility = View.GONE
-                }
-            }
-        }
+
+    }
+
+    override fun showEmptyState() {
+        binding.noCardsMsg.visibility = View.VISIBLE
+    }
+
+    override fun clearEmptyState() {
+        binding.noCardsMsg.visibility = View.GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

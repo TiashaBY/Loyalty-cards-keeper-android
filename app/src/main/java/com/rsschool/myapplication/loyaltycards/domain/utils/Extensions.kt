@@ -44,7 +44,6 @@ fun <T> SavedStateHandle.getStateFlow(
 }
 
 sealed class MyResult<out T> {
-    object Empty : MyResult<Nothing>()
     data class Success<T>(val data: T) : MyResult<T>()
     data class Failure(val exception: Throwable) : MyResult<Nothing>()
 }

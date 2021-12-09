@@ -6,25 +6,36 @@ import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
-import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.io.Serializable
 
 abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): ViewModel() {
 
-    protected val _uiState = MutableStateFlow<MyResult<List<LoyaltyCard>>>(MyResult.Empty)
-    val uiState = _uiState.asStateFlow()
-
-    protected val _isListEmpty = MutableStateFlow(false)
-    val isListEmpty = _isListEmpty.asStateFlow()
+    val uiState: StateFlow<DashboardUIState> by lazy {
+         fetchData().mapNotNull { res ->
+            res.handleResult()
+        }.stateIn(viewModelScope, SharingStarted.Lazily, DashboardUIState.Loading)
+    }
 
     private val _dashboardEvent = MutableSharedFlow<DashboardEvent>()
     val dashboardEvent = _dashboardEvent.asSharedFlow()
+
+    abstract fun fetchData(): Flow<MyResult<*>>
+
+    private fun <T> MyResult<T>.handleResult(): DashboardUIState {
+        return when (this) {
+            is MyResult.Success -> {
+                if ((data as List<*>).isEmpty()) {
+                    DashboardUIState.Empty
+                } else {
+                    DashboardUIState.Success(data as List<LoyaltyCard>)
+                }
+            }
+            is MyResult.Failure -> {
+                DashboardUIState.Error(exception.message.toString())
+            }
+        }
+    }
 
     fun onItemDetailsClick(card: LoyaltyCard) {
         viewModelScope.launch {
@@ -43,10 +54,16 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
             useCase.deleteCard(card)
         }
     }
-
-    abstract fun onLoad(): Job
 }
 
 sealed class DashboardEvent {
     data class NavigateToDetailsView(val card: LoyaltyCard) : DashboardEvent()
 }
+
+sealed class DashboardUIState {
+    object Empty : DashboardUIState()
+    object Loading : DashboardUIState()
+    data class Success(val data: List<LoyaltyCard>) : DashboardUIState()
+    data class Error(val msg: String) : DashboardUIState()
+}
+

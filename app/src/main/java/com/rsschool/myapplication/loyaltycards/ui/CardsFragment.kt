@@ -9,45 +9,51 @@ import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.NavGraphDirections
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 abstract class CardsFragment : Fragment() {
 
-    abstract val viewModel : BaseCardsViewModel
+    abstract val viewModel: BaseCardsViewModel
     protected lateinit var cardAdapter: CardsListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onLoad()
-        cardAdapter = CardsListAdapter(object: OnCardClickListener {
+
+        cardAdapter = CardsListAdapter(object : OnCardClickListener {
             override fun onItemDetailsClick(card: LoyaltyCard) {
                 viewModel.onItemDetailsClick(card)
             }
+
             override fun onFavIconClick(card: LoyaltyCard, isChecked: Boolean) {
                 viewModel.onFavIconClick(card, isChecked)
             }
+
             override fun onDeleteIconClick(card: LoyaltyCard) {
                 viewModel.onDeleteIconClick(card)
             }
         })
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.uiState.collect {
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.uiState.collectLatest {
                 when (it) {
-                    is MyResult.Success -> {
+                    is DashboardUIState.Success -> {
+                        clearEmptyState()
                         cardAdapter.submitList(it.data)
                     }
-                    is MyResult.Empty -> {
+                    is DashboardUIState.Empty -> {
                         cardAdapter.submitList(emptyList())
+                        showEmptyState()
                     }
-                    is MyResult.Failure -> {
+                    is DashboardUIState.Error -> {
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.error_on_db_get),
@@ -58,15 +64,19 @@ abstract class CardsFragment : Fragment() {
             }
         }
 
-            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                viewModel.dashboardEvent.collect { event ->
-                    when (event) {
-                        is DashboardEvent.NavigateToDetailsView -> {
-                            val action = NavGraphDirections.actionToCardsDetailsFragment(event.card)
-                            findNavController().navigate(action)
-                        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.dashboardEvent.collect { event ->
+                when (event) {
+                    is DashboardEvent.NavigateToDetailsView -> {
+                        val action = NavGraphDirections.actionToCardsDetailsFragment(event.card)
+                        findNavController().navigate(action)
                     }
                 }
             }
         }
+    }
+
+    abstract fun clearEmptyState()
+
+    abstract fun showEmptyState()
 }

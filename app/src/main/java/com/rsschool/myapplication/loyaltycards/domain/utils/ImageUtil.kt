@@ -68,7 +68,6 @@ class ImageUtil(private val context: Context) {
     suspend fun deletePhotoFromInternalStorage(uri: Uri): Boolean {
         val filename = uri.toFile().name
         return try {
-
             context.deleteFile(filename)
             Log.d(TAG, "File deleted: ${uri.path}")
             true

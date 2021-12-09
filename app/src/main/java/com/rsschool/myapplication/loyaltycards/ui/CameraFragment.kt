@@ -28,7 +28,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CameraPreviewFragmentBinding
-import com.rsschool.myapplication.loyaltycards.domain.utils.BarcodeAnalyzer
+import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.UiConst.PHOTO_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.UiConst.SCANNER_RESULT

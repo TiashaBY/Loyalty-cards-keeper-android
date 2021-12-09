@@ -17,6 +17,5 @@ class RoomCardsRepository @Inject constructor(private val dao: LoyaltyCardDao) :
 
     override fun getCardByNameOrNumber(query: String) = dao.getCardByNameOrNumber(query)
 
-    @Throws
     override fun getFavouritesCarts() = dao.getFavouritesCarts()
 }

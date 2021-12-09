@@ -2,13 +2,20 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult
-import io.mockk.*
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
+import io.mockk.MockKAnnotations
+import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
@@ -18,56 +25,76 @@ import org.junit.runners.JUnit4
 import java.lang.Exception
 
 
+@ExperimentalCoroutinesApi
 @RunWith(JUnit4::class)
 class FavouriteCardsViewModelTest {
 
     @MockK
     lateinit var loyaltyCardUseCases: LoyaltyCardUseCases
-    val dispatcher = Dispatchers.Unconfined
+    @MockK
+    lateinit var card : LoyaltyCard
 
     @InjectMockKs
     lateinit var viewModel: FavouriteCardsViewModel
 
-    @ExperimentalCoroutinesApi
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        Dispatchers.setMain(dispatcher)
-    }
-    @Test
-    fun givenUserWithoutFavorites_whenGetFavoritesUseCaseExecuted_thenUiStateIsEmpty() {
-        // given
-        coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-            emit(listOf<LoyaltyCard>())
-        }
-        // when
-        viewModel.onLoad()
-        // then
-        assert(viewModel.uiState.value is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Empty)
-    }
-    @Test
-    fun givenUserWithFavourites_whenGetFavoritesUseCaseExecuted_thenUiStateIsSuccess() {
-        val card = mockk<LoyaltyCard>()
-        // given
-        coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-            emit(listOf(card))
-        }
-        // when
-        viewModel.onLoad()
-        // then
-        assert(viewModel.uiState.value == MyResult.Success(listOf(card)))
+        Dispatchers.setMain(Dispatchers.Unconfined)
     }
 
     @Test
-    fun givenDbError_whenGetFavoritesUseCaseExecuted_thenUiStateIsFailure() {
-        val ex = Exception()
-        // given
-        coEvery { loyaltyCardUseCases.getFavoriteCards() } throws ex
-        // when
-        viewModel.onLoad()
-        // then
-        assert(viewModel.uiState.value is com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.MyResult.Failure)
+    fun givenUserWithoutFavorites_whenGetFavoritesUseCaseExecuted_thenUiStateIsEmpty() = runBlockingTest {
+        coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
+            emit(MyResult.Success(listOf<LoyaltyCard>()))
+        }
+        val job = launch {
+            viewModel.uiState.collect()
+        }
+        assert(viewModel.uiState.value == DashboardUIState.Empty)
+        job.cancel()
     }
+
+    @Test
+    fun givenUserWithFavourites_whenGetFavoritesUseCaseExecuted_thenUiStateIsSuccess() =
+        runBlockingTest {
+            coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
+                emit(MyResult.Success(listOf(card)))
+            }
+            val job = launch {
+                viewModel.uiState.collect()
+            }
+            assert(viewModel.uiState.value == DashboardUIState.Success(listOf(card)))
+            job.cancel()
+        }
+
+    @Test
+    fun givenDbError_whenGetFavoritesUseCaseExecuted_thenUiStateIsFailure() = runBlockingTest {
+        coEvery { loyaltyCardUseCases.getFavoriteCards() } throws Exception()
+        val job = launch {
+            viewModel.uiState.collect()
+        }
+        assert(viewModel.uiState.value is DashboardUIState.Error)
+        job.cancel()
+    }
+
+    @Test
+    fun givenUserWithFavourites_thenUiStateInitialStateIsLoading() {
+        coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
+            emit(MyResult.Success(listOf(card)))
+            assert(viewModel.uiState.value is DashboardUIState.Loading)
+        }
+    }
+
+    @Test
+    fun givenUserWithFavourites_whenUserClicksFavItem_thenNavigateToDetailsViewEventIsTriggered() {
+        coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
+            emit(MyResult.Success(listOf(card)))
+            viewModel.onItemDetailsClick(card)
+            assert(viewModel.uiState.value is DashboardUIState.Loading)
+        }
+    }
+
 
     @After
     internal fun tearDown() {

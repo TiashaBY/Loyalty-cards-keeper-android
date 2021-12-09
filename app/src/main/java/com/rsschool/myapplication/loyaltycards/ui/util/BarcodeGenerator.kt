@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.domain.utils
+package com.rsschool.myapplication.loyaltycards.ui.util
 
 import android.graphics.Bitmap
 import com.google.zxing.MultiFormatWriter

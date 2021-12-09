@@ -39,8 +39,7 @@
             android:label="AddCardFragment">
             <action
                 android:id="@+id/action_addCardFragment_to_cameraFragment"
-                app:destination="@id/cameraFragment"
-                app:restoreState="true"/>
+                app:destination="@id/cameraFragment" />
             <argument
                 android:name="result"
                 app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode"

@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class FavouritesFragment : CardsFragment() {
 
-    private var _binding : FavouritesFragmentBinding? = null
+    private var _binding: FavouritesFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
 
-    override val viewModel : FavouriteCardsViewModel by viewModels()
+    override val viewModel: FavouriteCardsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,14 +37,13 @@ class FavouritesFragment : CardsFragment() {
                 setHasFixedSize(true)
             }
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.isListEmpty.collect() {
-                if (it) {
-                    binding.noFavMsg.visibility = View.VISIBLE
-                } else {
-                    binding.noFavMsg.visibility = View.GONE
-                }
-            }
-        }
+    }
+
+    override fun showEmptyState() {
+        binding.noFavMsg.visibility = View.VISIBLE
+    }
+
+    override fun clearEmptyState() {
+        binding.noFavMsg.visibility = View.GONE
     }
 }
