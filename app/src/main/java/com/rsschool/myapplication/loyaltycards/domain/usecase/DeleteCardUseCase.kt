@@ -6,6 +6,8 @@ import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.utils.ImageUtil
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DeleteCardUseCase @Inject constructor(private val repo: CardsRepository, private val app: Application) {
@@ -13,8 +15,10 @@ class DeleteCardUseCase @Inject constructor(private val repo: CardsRepository, p
         val imageUtil = ImageUtil(app)
         var isSuccess = false
         if (repo.delete(card) > 0) {
-            isSuccess = imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.backImage)) &&
-                    imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.backImage))
+            withContext(Dispatchers.IO) {
+                isSuccess = imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.backImage)) &&
+                        imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.backImage))
+            }
         }
         return if (isSuccess) {
             MyResult.Success(card.cardId)

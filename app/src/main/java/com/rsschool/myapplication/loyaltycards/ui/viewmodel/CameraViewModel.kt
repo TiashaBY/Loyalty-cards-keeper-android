@@ -7,12 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
+import com.rsschool.myapplication.loyaltycards.domain.utils.CameraMode
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.CardSide
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val CAMERA_MODE = "cameraMode"
+private const val FRONT_IMAGE_URI = "frontImageUri"
+private const val BACK_IMAGE_URI = "backImageUri"
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
@@ -20,57 +26,65 @@ class CameraViewModel @Inject constructor(
     private val pictureUseCase: TakeCardPictureUseCase,
 ) : ViewModel() {
 
-    val startArguments = state?.get<String>("mode")
+    private val startArguments = state?.get<CameraMode>("mode")
 
-    private val _cameraMode = MutableStateFlow<CameraEvents>(CameraEvents.CameraStopped)
-    val cameraMode = _cameraMode.asStateFlow()
+    private val _cameraState = MutableStateFlow<CameraEvents>(CameraEvents.CameraFinishedCapturing)
+    val cameraState = _cameraState.asStateFlow()
+
+    var frontImageUri : Uri = Uri.EMPTY
+    var backImageUri : Uri = Uri.EMPTY
 
     init {
-        _cameraMode.value = if (startArguments == "SCANNER") CameraEvents.OpenScanner
-        else state?.get<CameraEvents>("cameraMode") ?: CameraEvents.CameraStopped
+        _cameraState.value = state?.get<CameraEvents>(CAMERA_MODE) ?:
+        if (startArguments == CameraMode.SCANNER) {
+            CameraEvents.OpenScanner
+        } else {
+            CameraEvents.CaptureFrontImage
+        }
+
+        state?.get<Uri>(FRONT_IMAGE_URI)?.let {
+            frontImageUri = it
+        }
+        state?.get<Uri>(BACK_IMAGE_URI)?.let {
+            backImageUri = it
+        }
     }
 
     fun onBarcodeScanned(result: MyResult<*>) {
         when (result) {
             is MyResult.Success -> {
                 val barcode = result.data as Barcode
-                _cameraMode.value = CameraEvents.BarcodeScanned(barcode)
+                _cameraState.value = CameraEvents.BarcodeScanned(barcode)
 
             }
             MyResult.Empty,
             is MyResult.Failure -> {
-                onCardCaptureError()
-                _cameraMode.value = CameraEvents.CameraStopped
+                onErrorEvent("An error on attempt to save card image")
             }
         }
     }
 
-    //todo
-    fun onCardCaptured(events: CameraEvents, image: ImageProxy) {
+    fun onCardCaptured(side: CardSide, image: ImageProxy) {
         viewModelScope.launch {
-            val result = pictureUseCase(image)
-            when (result) {
+            when (val res = pictureUseCase(image)) {
                 is MyResult.Success<*> -> {
-   /*                 if (events == CameraEvents.CAPTURE_IMAGE_FRONT) {
-                       // sucessEvent for front
-                        _cameraMode.value = CameraEvents.CAPTURE_IMAGE_BACK
+                if (side == CardSide.FRONT) {
+                    frontImageUri = res.data as Uri
+                    _cameraState.value = CameraEvents.CaptureBackImage
                     } else {
-                        // sucessEvent for front
-                        _cameraMode.value = CameraEvents.NOT_ACTIVE
-                    }*/
+                    backImageUri = res.data as Uri
+                    _cameraState.value = CameraEvents.CameraFinishedCapturing
+                    }
                 }
                 is MyResult.Failure -> {
-                   //error event on save
+                    onErrorEvent(res.exception.message.toString())
                 }
             }
         }
     }
 
-    //TOdo
-    fun onCardCaptureError() {
-        viewModelScope.launch {
-            //error event on capture
-        }
+    fun onErrorEvent(msg : String) {
+        _cameraState.value = CameraEvents.CameraError("Error during image capturing $msg")
     }
 }
 
@@ -78,10 +92,7 @@ sealed class CameraEvents {
     object OpenScanner : CameraEvents()
     object CaptureFrontImage : CameraEvents()
     object CaptureBackImage : CameraEvents()
-    object CameraStopped : CameraEvents()
+    object CameraFinishedCapturing : CameraEvents()
     data class BarcodeScanned(val barcode : Barcode) : CameraEvents()
-    data class CapturedImageSaved(val uri : Uri) : CameraEvents()
-    data class CameraError(val msg : String)
-
-    //SCANNER, CAPTURE_IMAGE_FRONT, CAPTURE_IMAGE_BACK, NOT_ACTIVE, DATA
+    data class CameraError(val msg : String) : CameraEvents()
 }

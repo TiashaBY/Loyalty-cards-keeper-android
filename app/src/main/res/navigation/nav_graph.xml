@@ -39,7 +39,8 @@
             android:label="AddCardFragment">
             <action
                 android:id="@+id/action_addCardFragment_to_cameraFragment"
-                app:destination="@id/cameraFragment" />
+                app:destination="@id/cameraFragment"
+                app:restoreState="true"/>
             <argument
                 android:name="result"
                 app:argType="com.rsschool.myapplication.loyaltycards.domain.model.Barcode"
@@ -55,9 +56,10 @@
                 app:destination="@id/addCardFragment"
                 app:launchSingleTop="true"
                 app:popUpTo="@id/addCardFragment"
-                app:popUpToInclusive="false" />
+                app:popUpToInclusive="false"
+                />
             <argument
                 android:name="mode"
-                app:argType="string" />
+                app:argType="com.rsschool.myapplication.loyaltycards.domain.utils.CameraMode" />
         </fragment>
 </navigation>

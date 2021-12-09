@@ -2,7 +2,7 @@ package com.rsschool.myapplication.loyaltycards.domain.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android .graphics.BitmapFactory
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.camera.core.ImageProxy
@@ -35,7 +35,7 @@ class ImageUtil(private val context: Context) {
             croppedWidth = (croppedHeight * standardCardWidth) / standardCardHeight
             if (croppedWidth > widthReal) croppedWidth = widthReal.toFloat()
         }
-        var topLeftX = (widthReal - croppedWidth) / 2
+        val topLeftX = (widthReal - croppedWidth) / 2
         val topLeftY = (heightReal - croppedHeight) / 2
 
         return Bitmap.createBitmap(
@@ -68,6 +68,7 @@ class ImageUtil(private val context: Context) {
     suspend fun deletePhotoFromInternalStorage(uri: Uri): Boolean {
         val filename = uri.toFile().name
         return try {
+
             context.deleteFile(filename)
             Log.d(TAG, "File deleted: ${uri.path}")
             true

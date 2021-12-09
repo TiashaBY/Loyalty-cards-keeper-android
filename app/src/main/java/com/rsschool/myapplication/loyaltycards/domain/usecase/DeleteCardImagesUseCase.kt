@@ -6,7 +6,7 @@ import com.rsschool.myapplication.loyaltycards.domain.utils.ImageUtil
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import javax.inject.Inject
 
-class DeleteCardPictureUseCase @Inject constructor(private val app: Application) {
+class DeleteCardImagesUseCase @Inject constructor(private val app: Application) {
 
     suspend operator fun invoke(uri: Uri): MyResult<*> {
         val imageUtil = ImageUtil(app)

@@ -3,7 +3,6 @@ package com.rsschool.myapplication.loyaltycards.ui
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,20 +14,25 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
+import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
+import com.rsschool.myapplication.loyaltycards.domain.utils.CameraMode
+import com.rsschool.myapplication.loyaltycards.ui.UiConst.PHOTO_RESULT
+import com.rsschool.myapplication.loyaltycards.ui.UiConst.SCANNER_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.withContext
 import java.io.File
-
 
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
@@ -46,7 +50,7 @@ class AddCardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = AddCardFragmentBinding.inflate(inflater, container, false)
-        val callback = object : OnBackPressedCallback(true /** true means that the callback is enabled */) {
+        val callback = object : OnBackPressedCallback(true ) {
             override fun handleOnBackPressed() {
                 showLeavingDialog()
             }
@@ -56,25 +60,12 @@ class AddCardFragment : Fragment() {
         return binding.root
     }
 
-    override fun setArguments(args: Bundle?) {
-        if (args != null) {
-            super.setArguments(Bundle(args).apply {
-               // putBundle(BUNDLE_ARGS, args) // Wrap the arguments as BUNDLE_ARGS
-            })
-        } else {
-            super.setArguments(null)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
         viewModel.load()
 
         binding.addCardTop.apply {
-/*            cardName.setText(viewModel.name.value)
-            cardNumber.setText(viewModel.number.value)*/
-
             cardNumber.doOnTextChanged { text, _, _, _ ->
                 viewModel.onCardNumberChange(text.toString())
             }
@@ -111,7 +102,7 @@ class AddCardFragment : Fragment() {
         }
 
         binding.addCardBottom.addCardButton.setOnClickListener {
-            viewModel.onAddCardClick()
+            viewModel.onAddCardImageClick()
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
@@ -124,20 +115,33 @@ class AddCardFragment : Fragment() {
                         findNavController().popBackStack()
                         findNavController().navigate(R.id.cardsDashboardFragment)
                     }
-                    is AddCardEvent.RequestImageEvent -> {
-                        findNavController().navigate(R.id.cameraFragment)
-                    }
-                    is AddCardEvent.RequestBarcodeEvent -> {
-                        val action = AddCardFragmentDirections.actionAddCardFragmentToCameraFragment("SCANNER")
+                    AddCardEvent.RequestImageEvent -> {
+                        val action =
+                            AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(
+                                CameraMode.PHOTO)
+                        setFragmentResultListener(PHOTO_RESULT) { _, bundle ->
+                            val uriList = bundle.get(PHOTO_RESULT) as List<String>
+                            viewModel.onPhotoCaptured(uriList)
+                        }
                         findNavController().navigate(action)
                     }
-                }
+                    AddCardEvent.RequestBarcodeEvent -> {
+                        val action =
+                            AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(
+                                CameraMode.SCANNER)
+                        setFragmentResultListener(SCANNER_RESULT) { _, bundle ->
+                            val barcode = bundle.getParcelable<Barcode>(SCANNER_RESULT)
+                            viewModel.onBarcodeScanned(barcode)
+                        }
+                        findNavController().navigate(action)
+                    }
+                }.exhaustive
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.number.collect { number ->
-                if (number.isNullOrEmpty()) {
+                if (number.isEmpty()) {
                     disableSaveButton()
                 } else {
                     enableSaveButton()
@@ -150,9 +154,9 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launchWhenResumed {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.name.collect { name ->
-                if (name.isNullOrEmpty()) {
+                if (name.isEmpty()) {
                     disableSaveButton()
                 } else {
                     enableSaveButton()
@@ -165,7 +169,7 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.barcodeFormat.collect { f ->
                 if (f != null) {
                     val spinnerPosition: Int = spinnerAdapter.getPosition(f)
@@ -176,14 +180,14 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+/*        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             viewModel.imageBitmap.collect { bitmap ->
                 Glide.with(this@AddCardFragment)
                     .load(bitmap)
                     .error(R.drawable.ic_baseline_image_not_supported_24)
                     .into(binding.addCardTop.barcode)
             }
-        }
+        }*/
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.frontImageUri.collect { uri ->
@@ -206,37 +210,29 @@ class AddCardFragment : Fragment() {
         binding.saveButton.isEnabled = false
     }
 
-    private fun loadBitmap(uri: Uri, view: ImageView) {
+    private suspend fun loadBitmap(uri: Uri, view: ImageView) {
         val imgFile = File(uri.path ?: "")
         if (imgFile.exists()) {
-            val bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath())
-            Glide.with(this@AddCardFragment)
-                .load(bitmap)
-                .error(R.drawable.ic_baseline_image_not_supported_24)
-                .centerInside()
-                .into(view)
+            withContext(Dispatchers.IO) {
+                val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
+                view.post {
+                    Glide.with(this@AddCardFragment)
+                        .load(bitmap)
+                        .error(R.drawable.ic_baseline_image_not_supported_24)
+                        .centerInside()
+                        .into(view)
+                }
+            }
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-        Log.d("Fragment", "Destroyed")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("Fragment", "Detached")
-    }
-
-    private fun showLeavingDialog() {
+    private fun showLeavingDialog() =
         AlertDialog.Builder(requireContext()).setMessage("Are you sure you want to exit?")
             .setCancelable(false)
-            .setNegativeButton("No", { dialog, id ->
+            .setNegativeButton("No") { dialog, _ ->
                 dialog.cancel()
-            })
-            .setPositiveButton("Yes") { dialog, id ->
+            }
+            .setPositiveButton("Yes") { _, _ ->
                 viewModel.onLeave()
             }.create().show()
-    }
 }

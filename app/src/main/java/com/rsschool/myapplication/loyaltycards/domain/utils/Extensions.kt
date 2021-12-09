@@ -48,3 +48,7 @@ sealed class MyResult<out T> {
     data class Success<T>(val data: T) : MyResult<T>()
     data class Failure(val exception: Throwable) : MyResult<Nothing>()
 }
+
+enum class CameraMode {
+    SCANNER, PHOTO
+}
