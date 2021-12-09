@@ -102,7 +102,6 @@ class FavouriteCardsViewModelTest {
             viewModel.dashboardEvent.map {
                 assert(it == DashboardEvent.NavigateToDetailsView(card))
             }
-
         }
 
     @After

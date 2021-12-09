@@ -82,7 +82,7 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    private fun onErrorEvent(msg: String) {
+    fun onErrorEvent(msg: String) {
         _cameraEvent.value = CameraEvents.CameraError("Error during image capturing $msg")
     }
 }

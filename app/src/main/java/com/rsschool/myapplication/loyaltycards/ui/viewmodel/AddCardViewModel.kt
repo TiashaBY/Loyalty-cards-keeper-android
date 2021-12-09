@@ -9,6 +9,7 @@ import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
 import com.rsschool.myapplication.loyaltycards.domain.usecase.DeleteCardImagesUseCase
+import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
 import com.rsschool.myapplication.loyaltycards.ui.UiConst.RESULT_OK
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -38,17 +39,17 @@ class AddCardViewModel @Inject constructor(
     private val _barcodeFormat = MutableStateFlow<BarcodeFormat?>(null)
     val barcodeFormat = _barcodeFormat.asStateFlow()
 
-    private val _frontImageUri = MutableStateFlow<Uri>(Uri.EMPTY)
+    private val _frontImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
     val frontImageUri = _frontImageUri.asStateFlow()
 
-    private val _backImageUri = MutableStateFlow<Uri>(Uri.EMPTY)
+    private val _backImageUri = MutableStateFlow<Uri?>(Uri.EMPTY)
     val backImageUri = _backImageUri.asStateFlow()
 
     private val _addCardEventsFlow = MutableSharedFlow<AddCardEvent>()
     val addCardEventsFlow = _addCardEventsFlow.asSharedFlow()
 
+    //recover from process death
     init {
-
         state?.get<Uri>("frontImageUri")?.let {
             _frontImageUri.value = it
         }
@@ -57,6 +58,12 @@ class AddCardViewModel @Inject constructor(
         }
         state?.get<String>("name")?.let {
             _name.value = it
+        }
+        state?.get<String>("number")?.let {
+            _number.value = it
+        }
+        state?.get<BarcodeFormat>("number")?.let {
+            _barcodeFormat.value = it
         }
     }
 
@@ -89,10 +96,13 @@ class AddCardViewModel @Inject constructor(
         )
         viewModelScope.launch {
             val result = addCardUseCase(card)
-            if (result > 0) {
-                _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
-            } else {
-                _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error during saving card"))
+            when (result) {
+                is MyResult.Success -> {
+                    _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
+                }
+                is MyResult.Failure -> {
+                    _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error during saving card"))
+                }
             }
         }
     }
@@ -112,11 +122,11 @@ class AddCardViewModel @Inject constructor(
     fun onLeave() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                if (frontImageUri.value != Uri.EMPTY) {
-                    deleteImagesUseCase(frontImageUri.value)
+                frontImageUri.value?.let {
+                    deleteImagesUseCase(it)
                 }
-                if (backImageUri.value != Uri.EMPTY) {
-                    deleteImagesUseCase(backImageUri.value)
+                backImageUri.value?.let {
+                    deleteImagesUseCase(it)
                 }
                 _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
             }
@@ -127,7 +137,7 @@ class AddCardViewModel @Inject constructor(
         _number.value = barcode?.number ?: ""
     }
 
-    fun onPhotoCaptured(uriList: List<String>) {
+    fun onPhotoCaptured(uriList: List<String>?) {
         uriList?.let {
             _frontImageUri.value = Uri.parse(it[0])
             _backImageUri.value = Uri.parse(it[1])

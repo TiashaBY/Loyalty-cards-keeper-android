@@ -37,7 +37,7 @@ import java.io.File
 @AndroidEntryPoint
 class AddCardFragment : Fragment() {
 
-    private val viewModel: AddCardViewModel by viewModels<AddCardViewModel>()
+    private val viewModel: AddCardViewModel by viewModels()
 
     private var _binding: AddCardFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
@@ -210,8 +210,8 @@ class AddCardFragment : Fragment() {
         binding.saveButton.isEnabled = false
     }
 
-    private suspend fun loadBitmap(uri: Uri, view: ImageView) {
-        val imgFile = File(uri.path ?: "")
+    private suspend fun loadBitmap(uri: Uri?, view: ImageView) {
+        val imgFile = File(uri?.path ?: "")
         if (imgFile.exists()) {
             withContext(Dispatchers.IO) {
                 val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)

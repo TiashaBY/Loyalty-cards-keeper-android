@@ -43,6 +43,9 @@ class CameraViewModelTest {
     @MockK(relaxed = true)
     lateinit var viewModel: CameraViewModel
 
+    @MockK(relaxed = true)
+    lateinit var uri: Uri
+
     @Before
     fun setup() {
         MockKAnnotations.init(this)
@@ -87,23 +90,22 @@ class CameraViewModelTest {
     fun givenCardCaptureFlowStarted_whenOnCardCapturedFromFront_thenCaptureBackImageEventIsTriggered() {
         every { savedStateHandle.get<CameraMode>("mode") } returns CameraMode.PHOTO
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
+        coEvery { savePictureUseCase.invoke(imageProxy) } returns MyResult.Success(uri)
 
         viewModel.onCardCaptured(CardSide.FRONT, imageProxy)
 
         assert(viewModel.cameraEvent.value is CameraEvents.CaptureBackImage)
-        assert(viewModel.frontImageUri != Uri.EMPTY)
     }
 
     @Test
     fun givenCardCaptureFlowStarted_whenOnCardCapturedFromBack_thenCameraFinishedCapturingEventIsTriggered() {
         every { savedStateHandle.get<CameraMode>("mode") } returns CameraMode.PHOTO
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
+        coEvery { savePictureUseCase.invoke(imageProxy) } returns MyResult.Success(uri)
 
         viewModel.onCardCaptured(CardSide.BACK, imageProxy)
 
         assert(viewModel.cameraEvent.value is CameraEvents.CameraFinishedCapturing)
-        assert(viewModel.frontImageUri != Uri.EMPTY)
-        assert(viewModel.backImageUri != Uri.EMPTY)
     }
 
     @After
