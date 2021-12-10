@@ -14,6 +14,7 @@
         android:layout_marginTop="4dp"
         android:text="Step 3"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/add_card_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,6 +27,7 @@
         android:layout_marginEnd="@dimen/cards_margin"
         android:layout_marginBottom="16dp"
         android:text="@string/capture_card_image"
+        app:cornerRadius="@dimen/btn_corner_radius"
         app:layout_constraintBottom_toTopOf="@+id/card_front_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -42,7 +44,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_front_image"
-        app:layout_constraintVertical_bias="0.0"
         tools:layout_height="50dp"
         tools:layout_width="160dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />

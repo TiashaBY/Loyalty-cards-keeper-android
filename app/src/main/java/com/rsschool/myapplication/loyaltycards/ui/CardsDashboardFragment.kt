@@ -82,5 +82,6 @@ class CardsDashboardFragment : CardsFragment() {
     override fun onDestroy() {
         super.onDestroy()
         searchView?.setOnQueryTextListener(null)
+        _binding = null
     }
 }

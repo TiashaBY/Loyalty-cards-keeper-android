@@ -139,6 +139,7 @@ class AddCardViewModel @Inject constructor(
 
     fun onBarcodeScanned(barcode: Barcode?) {
         _number.value = barcode?.number ?: ""
+        _barcodeFormat.value = barcode?.format
     }
 
     fun onPhotoCaptured(uriList: List<String>?) {

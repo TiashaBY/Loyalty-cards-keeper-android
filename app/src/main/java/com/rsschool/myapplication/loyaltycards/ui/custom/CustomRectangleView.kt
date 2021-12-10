@@ -16,6 +16,7 @@ class CustomRectangleView @JvmOverloads constructor(
     private var backgroundColour = 0
     private var paint: Paint? = null
     private var transparentPaint: Paint? = null
+    private var strokePaint: Paint? = null
 
     init {
         var styledAttrs: TypedArray? = null
@@ -40,6 +41,12 @@ class CustomRectangleView @JvmOverloads constructor(
                 xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
                 color = Color.TRANSPARENT
                 isAntiAlias = true
+            }
+
+            strokePaint = Paint().apply {
+                style = Paint.Style.STROKE
+                color = Color.WHITE
+                strokeWidth = 8F
             }
         }
     }
@@ -72,10 +79,13 @@ class CustomRectangleView @JvmOverloads constructor(
             topLeftY + croppedHeight
         )
 
-        //draw blackbackground
+        //draw black background
         paint?.let { canvas.drawPaint(it) }
 
         transparentPaint?.let {
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, it)
+        }
+        strokePaint?.let {
             canvas.drawRoundRect(rect, cornerRadius, cornerRadius, it)
         }
     }

@@ -105,8 +105,8 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launchWhenCreated {
-            cameraViewModel.cameraEvent.collect { state ->
-                when (state) {
+            cameraViewModel.cameraEvent.collect { event ->
+                when (event) {
                     CameraEvents.OpenScanner -> {
                         binding.cameraText.text = getString(R.string.scan_barcode)
                         binding.cameraCaptureButton.visibility = GONE
@@ -140,12 +140,12 @@ class CameraFragment : Fragment() {
                     }
                     is CameraEvents.BarcodeScanned -> {
                         setFragmentResult(
-                            SCANNER_RESULT, bundleOf(SCANNER_RESULT to state.barcode)
+                            SCANNER_RESULT, bundleOf(SCANNER_RESULT to event.barcode)
                         )
                         findNavController().navigateUp()
                     }
                     is CameraEvents.CameraError -> {
-                        Toast.makeText(requireContext(), state.msg, Toast.LENGTH_LONG)
+                        Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG)
                         findNavController().navigateUp()
                     }
                     CameraEvents.CameraFinishedCapturing -> {

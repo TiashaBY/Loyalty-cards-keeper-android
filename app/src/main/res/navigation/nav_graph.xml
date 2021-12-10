@@ -61,6 +61,6 @@
             app:popUpToInclusive="false" />
         <argument
             android:name="mode"
-            app:argType="com.rsschool.myapplication.loyaltycards.domain.utils.CameraMode" />
+            app:argType="com.rsschool.myapplication.loyaltycards.ui.CameraMode" />
     </fragment>
 </navigation>

@@ -30,6 +30,7 @@
         android:layout_marginTop="16dp"
         android:text="Step 1"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -62,8 +63,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="Step 2"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/scan_barcode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/scan_barcode" />
@@ -72,9 +76,10 @@
         android:id="@+id/scan_barcode"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="@dimen/cards_margin"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
+        app:cornerRadius="@dimen/btn_corner_radius"
         android:gravity="center"
         android:text="@string/scan_barcode_button_text"
         app:layout_constraintBottom_toTopOf="@+id/card_number_layout"
@@ -124,13 +129,11 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="@dimen/cards_margin"
-        android:background="@android:color/transparent"
+        android:layout_marginTop="24dp"
+        android:foregroundTint="#DADADA"
         android:gravity="center"
-        android:spinnerMode="dropdown"
+        android:scrollbarSize="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/barcode"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/medium_vertical"
         app:layout_constraintTop_toTopOf="@+id/barcode"
         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
@@ -141,5 +144,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Select barcode type"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/barcode_type_spinner"
+        app:layout_constraintStart_toStartOf="@+id/medium_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/card_number_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

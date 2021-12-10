@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
@@ -17,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.lang.String
 
 class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsListAdapter.CardViewHolder>(
     DiffCallback()
@@ -46,19 +46,17 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
         }
 
         private fun loadBitmap(card: LoyaltyCard, binding: CardViewBinding) {
-            val defaultUri = Uri.Builder()
-                .scheme("res")
-                .path(String.valueOf(R.drawable.card_default))
-                .build().path
             val cardUri = Uri.parse(card.frontImage).path ?: ""
-            val imgFile = if (File(cardUri).exists()) File(cardUri) else File(defaultUri)
+            val imgFile = File(cardUri)
             CoroutineScope(Dispatchers.IO).launch {
                 val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
                 withContext(Dispatchers.Main) {
                     Glide.with(binding.cardView)
                         .load(bitmap)
                         .error(R.drawable.card_default)
-                        .fitCenter()
+                        .centerCrop()
+                        .dontAnimate()
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(binding.imageView)
                 }
             }
@@ -73,6 +71,11 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val currItem = getItem(position)
         holder.bind(currItem)
+    }
+
+    override fun onViewRecycled(holder: CardViewHolder) {
+        super.onViewRecycled(holder)
+        Glide.with(holder.itemView.context).clear(holder.itemView)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<LoyaltyCard>() {

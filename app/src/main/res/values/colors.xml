@@ -5,9 +5,9 @@
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorBackground">#7986CB</color>
     <!-- Secondary brand colors. -->
-    <color name="colorSecondary">#e8e9ec</color>
+    <color name="colorSecondary">#FBF6FF</color>
     <color name="colorSecondaryVariant">#827717</color>
-    <color name="colorOnSecondary">#eed8b3</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="greyTransparent">#80000000</color>
     <color name="favorites">#C62828</color>
