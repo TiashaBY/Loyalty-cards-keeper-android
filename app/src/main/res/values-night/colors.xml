@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#A2A2A2</color>
+    <color name="colorPrimary">#F9A825</color>
     <color name="colorPrimaryVariant">#ebb725</color>
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
     <!-- Secondary brand colors. -->
     <color name="colorSecondary">#B3000000</color>
-    <color name="colorSecondaryVariant">#868686</color>
-    <color name="colorOnSecondary">#CCCCCC</color>
+    <color name="colorSecondaryVariant">#F6F6F6</color>
+    <color name="colorOnSecondary">#F9A825</color>
 </resources>

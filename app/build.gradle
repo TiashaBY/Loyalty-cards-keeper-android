@@ -102,16 +102,6 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.0'
     implementation("androidx.window:window:1.0.0-beta04")
 
-    // For Java-friendly APIs to register and unregister callbacks
-    implementation("androidx.window:window-java:1.0.0-beta04")
-
-    // For RxJava2 integration
-    implementation("androidx.window:window-rxjava2:1.0.0-beta04")
-
-    // For RxJava3 integration
-    implementation("androidx.window:window-rxjava3:1.0.0-beta04")
-
-
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 

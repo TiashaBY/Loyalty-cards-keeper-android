@@ -103,13 +103,13 @@ class CameraFragment : Fragment() {
     @SuppressLint("UnsafeOptInUsageError")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.cameraCaptureButton.visibility = GONE
         lifecycleScope.launchWhenCreated {
+            binding.viewPort.visibility = GONE
             cameraViewModel.cameraEvent.collect { event ->
                 when (event) {
                     CameraEvents.OpenScanner -> {
                         binding.cameraText.text = getString(R.string.scan_barcode)
-                        binding.cameraCaptureButton.visibility = GONE
                         if (cameraPermissionGranted()) {
                             bindUseCases(
                                 UseCaseGroup.Builder()
@@ -121,6 +121,7 @@ class CameraFragment : Fragment() {
                         }
                     }
                     CameraEvents.CaptureFrontImage -> {
+                        binding.viewPort.visibility = GONE
                         val cardSide = CardSide.FRONT
                         binding.cameraText.text = getString(R.string.capture_front)
                         binding.cameraCaptureButton.visibility = VISIBLE
@@ -166,7 +167,7 @@ class CameraFragment : Fragment() {
 
     @SuppressLint("UnsafeOptInUsageError")
     private fun startCameraForCapturing() {
-        if (!storagePermissionsGranted() && cameraPermissionGranted()) {
+        if (storagePermissionsGranted() && cameraPermissionGranted()) {
             photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
             bindUseCases(
                 UseCaseGroup.Builder()
@@ -180,6 +181,7 @@ class CameraFragment : Fragment() {
 
 
     private fun previewUseCase(): Preview {
+        binding.viewPort.visibility = VISIBLE
         return Preview.Builder()
             .build().also {
                 it.setSurfaceProvider(viewFinder.surfaceProvider)

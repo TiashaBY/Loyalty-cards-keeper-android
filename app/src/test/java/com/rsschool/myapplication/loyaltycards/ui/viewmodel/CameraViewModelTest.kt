@@ -6,8 +6,8 @@ import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
-import com.rsschool.myapplication.loyaltycards.domain.utils.CameraMode
 import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.ui.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.CardSide
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -83,7 +83,8 @@ class CameraViewModelTest {
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
 
         viewModel.onCardCaptured(CardSide.BACK, imageProxy)
-        coVerify { savePictureUseCase.invoke(imageProxy) }
+
+        coVerify { savePictureUseCase(imageProxy) }
     }
 
     @Test

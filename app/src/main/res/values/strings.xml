@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LoyaltyCards</string>
+    <string name="app_name">Loyalty Cards Keeper</string>
     <!-- Preferences -->
     <string name="messages_header">Appearance</string>
     <string name="set_theme">Dark theme</string>

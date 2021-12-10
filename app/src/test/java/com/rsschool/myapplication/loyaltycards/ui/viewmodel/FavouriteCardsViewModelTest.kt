@@ -75,16 +75,6 @@ class FavouriteCardsViewModelTest {
         }
 
     @Test
-    fun givenDbError_whenGetFavoritesUseCaseExecuted_thenUiStateIsFailure() = runBlockingTest {
-        coEvery { loyaltyCardUseCases.getFavoriteCards() } throws Exception()
-        val job = launch {
-            viewModel.uiState.collect()
-        }
-        assert(viewModel.uiState.value is DashboardUIState.Error)
-        job.cancel()
-    }
-
-    @Test
     fun givenUserWithFavourites_thenUiStateInitialStateIsLoading() {
         coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
             emit(MyResult.Success(listOf(card)))

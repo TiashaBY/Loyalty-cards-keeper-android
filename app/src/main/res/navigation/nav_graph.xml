@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/cardsDashboardFragment">
     <fragment
+        tools:layout="@layout/card_details_fragment"
         android:id="@+id/cardDetailsViewFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CardDetailsViewFragment"
         android:label="Back">
@@ -12,16 +14,23 @@
             app:argType="com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard" />
     </fragment>
     <fragment
+        tools:layout="@layout/cards_dashboard_fragment"
         android:id="@+id/cardsDashboardFragment"
-        android:name="com.rsschool.myapplication.loyaltycards.ui.CardsDashboardFragment">
+        android:name="com.rsschool.myapplication.loyaltycards.ui.CardsDashboardFragment"
+        android:label="  ">
         <action
             android:id="@+id/action_cardsDashboardFragment_to_cardDetailsViewFragment"
             app:destination="@id/cardDetailsViewFragment" />
     </fragment>
     <fragment
+        tools:layout="@layout/cards_dashboard_fragment"
         android:id="@+id/favouritesFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.FavouritesDashboardFragment"
-        android:label="Favourites" />
+        android:label="Favourites">
+        <action
+            android:id="@+id/action_favouritesFragment_to_cardDetailsViewFragment"
+            app:destination="@id/cardDetailsViewFragment" />
+    </fragment>
     <fragment
         android:id="@+id/userPrefsFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.UserPrefsFragment"
@@ -37,6 +46,7 @@
         android:name="card"
         app:argType="com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard" />
     <fragment
+        tools:layout="@layout/add_card_fragment"
         android:id="@+id/addCardFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.AddCardFragment"
         android:label="New loyalty card">
@@ -50,9 +60,10 @@
             app:nullable="true" />
     </fragment>
     <fragment
+        tools:layout="@layout/camera_preview_fragment"
         android:id="@+id/cameraFragment"
         android:name="com.rsschool.myapplication.loyaltycards.ui.CameraFragment"
-        android:label="Back">
+        android:label="Camera">
         <action
             android:id="@+id/action_cameraFragment_to_addCardFragment"
             app:destination="@id/addCardFragment"
