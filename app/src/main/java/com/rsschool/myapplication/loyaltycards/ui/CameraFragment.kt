@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.collect
 import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
+@SuppressLint("UnsafeOptInUsageError")
 @AndroidEntryPoint
 class CameraFragment : Fragment() {
 
@@ -55,16 +56,21 @@ class CameraFragment : Fragment() {
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (!isGranted) {
+        if (isGranted) {
+            bindUseCases(
+                UseCaseGroup.Builder()
+                    .addUseCase(previewUseCase())
+                    .addUseCase(imageAnalysisUseCase()).build()
+            )
+        } else {
             Toast.makeText(
                 context,
-                "Camera permissions not granted",
+                getString(R.string.camera_permissions),
                 Toast.LENGTH_LONG
             ).show()
         }
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
     private val photoLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { p ->

@@ -1,21 +1,17 @@
 package com.rsschool.myapplication.loyaltycards.ui
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.rsschool.myapplication.loyaltycards.databinding.FavouritesFragmentBinding
-import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
+import com.rsschool.myapplication.loyaltycards.R
+import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.FavouriteCardsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class FavouritesFragment : CardsFragment() {
-
-    private var _binding: FavouritesFragmentBinding? = null
-    private val binding get() = checkNotNull(_binding)
+class FavouritesDashboardFragment : CardsFragment() {
 
     override val viewModel: FavouriteCardsViewModel by viewModels()
 
@@ -24,7 +20,7 @@ class FavouritesFragment : CardsFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FavouritesFragmentBinding.inflate(inflater, container, false)
+        _binding = CardsDashboardFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -33,17 +29,20 @@ class FavouritesFragment : CardsFragment() {
         binding.apply {
             listRecyclerView.apply {
                 adapter = cardAdapter
-                layoutManager = LinearLayoutManager(requireContext())
                 setHasFixedSize(true)
             }
         }
     }
 
     override fun showEmptyState() {
-        binding.noFavMsg.visibility = View.VISIBLE
+        val msg = resources.getString(R.string.add_into_favourites_text)
+        binding.noCardsMsg.apply {
+            text = msg
+            visibility = View.VISIBLE
+        }
     }
 
     override fun clearEmptyState() {
-        binding.noFavMsg.visibility = View.GONE
+        binding.noCardsMsg.visibility = View.GONE
     }
 }

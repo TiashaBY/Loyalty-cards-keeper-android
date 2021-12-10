@@ -42,7 +42,7 @@ class AddCardFragment : Fragment() {
     private var _binding: AddCardFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
 
-    lateinit var spinnerAdapter: ArrayAdapter<BarcodeFormat>
+    lateinit var spinnerAdapter: ArrayAdapter<String>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,8 +73,8 @@ class AddCardFragment : Fragment() {
                 viewModel.onNameChange(text.toString())//
             }
 
-            val values = BarcodeFormat.values().toMutableList<BarcodeFormat?>()
-            values.add(0, null)
+            val values = BarcodeFormat.values().map { it.name }.toMutableList()
+            values.add(0, "Barcode type")
             spinnerAdapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
@@ -86,7 +86,11 @@ class AddCardFragment : Fragment() {
                     override fun onItemSelected(
                         parent: AdapterView<*>, view: View?, pos: Int, id: Long
                     ) {
-                        values[pos]?.let { viewModel.onBarcodeTypeChange(it) }
+                        if (pos == 0) {
+                            viewModel.onBarcodeTypeChange(null)
+                        } else {
+                            viewModel.onBarcodeTypeChange(BarcodeFormat.valueOf(values[pos]))
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -172,7 +176,7 @@ class AddCardFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.barcodeFormat.collect { f ->
                 if (f != null) {
-                    val spinnerPosition: Int = spinnerAdapter.getPosition(f)
+                    val spinnerPosition: Int = spinnerAdapter.getPosition(f.name)
                     binding.addCardTop.barcodeTypeSpinner.setSelection(spinnerPosition)
                 } else {
                     binding.addCardTop.barcodeTypeSpinner.setSelection(0)

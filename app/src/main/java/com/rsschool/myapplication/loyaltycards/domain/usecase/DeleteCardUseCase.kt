@@ -16,7 +16,7 @@ class DeleteCardUseCase @Inject constructor(private val repo: CardsRepository, p
         var isSuccess = false
         if (repo.delete(card) > 0) {
             withContext(Dispatchers.IO) {
-                isSuccess = imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.backImage)) &&
+                isSuccess = imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.frontImage)) &&
                         imageUtil.deletePhotoFromInternalStorage(Uri.parse(card.backImage))
             }
         }

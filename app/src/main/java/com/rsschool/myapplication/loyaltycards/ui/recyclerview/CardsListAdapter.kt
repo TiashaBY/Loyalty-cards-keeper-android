@@ -1,13 +1,23 @@
 package com.rsschool.myapplication.loyaltycards.ui.recyclerview
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.lang.String
 
 class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsListAdapter.CardViewHolder>(
     DiffCallback()
@@ -19,6 +29,8 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
             with(binding) {
                 cardName.text = card.cardName
                 cardNumber.text = card.cardNumber
+                loadBitmap(card, binding)
+
                 likeButtonCb.isChecked = card.isFavourite
 
                 binding.details.setOnClickListener {
@@ -29,6 +41,25 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
                 }
                 binding.likeButtonCb.setOnCheckedChangeListener { _, isChecked ->
                     listener.onFavIconClick(card, isChecked)
+                }
+            }
+        }
+
+        private fun loadBitmap(card: LoyaltyCard, binding: CardViewBinding) {
+            val defaultUri = Uri.Builder()
+                .scheme("res")
+                .path(String.valueOf(R.drawable.card_default))
+                .build().path
+            val cardUri = Uri.parse(card.frontImage).path ?: ""
+            val imgFile = if (File(cardUri).exists()) File(cardUri) else File(defaultUri)
+            CoroutineScope(Dispatchers.IO).launch {
+                val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
+                withContext(Dispatchers.Main) {
+                    Glide.with(binding.cardView)
+                        .load(bitmap)
+                        .error(R.drawable.card_default)
+                        .fitCenter()
+                        .into(binding.imageView)
                 }
             }
         }

@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.rsschool.myapplication.loyaltycards.NavGraphDirections
 import com.rsschool.myapplication.loyaltycards.R
+import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
@@ -23,6 +24,10 @@ abstract class CardsFragment : Fragment() {
 
     abstract val viewModel: BaseCardsViewModel
     protected lateinit var cardAdapter: CardsListAdapter
+
+    protected var _binding: CardsDashboardFragmentBinding? = null
+    protected val binding get() = checkNotNull(_binding)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +45,6 @@ abstract class CardsFragment : Fragment() {
                 viewModel.onDeleteIconClick(card)
             }
         })
-
 
         lifecycleScope.launchWhenResumed {
             viewModel.uiState.collectLatest {

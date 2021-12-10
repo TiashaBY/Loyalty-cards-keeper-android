@@ -64,7 +64,7 @@ class AddCardViewModelTest {
         every { viewModel.backImageUri.value } returns backUri
         coEvery { deleteImagesUseCase.invoke(frontUri) } returns MyResult.Success(frontUri)
         coEvery { deleteImagesUseCase.invoke(backUri) } returns MyResult.Success(backUri)
-        viewModel = spyk(AddCardViewModel(savedStateHandle, addCardUseCase, deleteImagesUseCase))
+        viewModel = AddCardViewModel(savedStateHandle, addCardUseCase, deleteImagesUseCase)
 
         viewModel.onLeave()
 

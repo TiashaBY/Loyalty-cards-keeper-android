@@ -81,7 +81,7 @@ class AddCardViewModel @Inject constructor(
         _number.value = newValue
     }
 
-    fun onBarcodeTypeChange(newValue: BarcodeFormat) {
+    fun onBarcodeTypeChange(newValue: BarcodeFormat?) {
         _barcodeFormat.value = newValue
     }
 
@@ -123,10 +123,14 @@ class AddCardViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 frontImageUri.value?.let {
-                    deleteImagesUseCase(it)
+                    if (it.path != "") {
+                        deleteImagesUseCase(it)
+                    }
                 }
                 backImageUri.value?.let {
-                    deleteImagesUseCase(it)
+                    if (it.path != "") {
+                        deleteImagesUseCase(it)
+                    }
                 }
                 _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
             }

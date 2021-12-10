@@ -4,24 +4,17 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardsDashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class CardsDashboardFragment : CardsFragment() {
-
-    private var _binding : CardsDashboardFragmentBinding? = null
-    private val binding get() = checkNotNull(_binding)
 
     override val viewModel : CardsDashboardViewModel by viewModels()
     private var searchView : SearchView? = null
@@ -31,22 +24,19 @@ class CardsDashboardFragment : CardsFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        this.setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
         _binding = CardsDashboardFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.apply {
             listRecyclerView.apply {
                 adapter = cardAdapter
-                layoutManager = LinearLayoutManager(requireContext())
                 setHasFixedSize(true)
             }
         }
-
     }
 
     override fun showEmptyState() {

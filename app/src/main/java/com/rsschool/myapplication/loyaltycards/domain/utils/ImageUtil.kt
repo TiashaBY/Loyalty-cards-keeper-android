@@ -9,6 +9,7 @@ import androidx.camera.core.ImageProxy
 import androidx.core.net.toFile
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 private const val TAG = "FileUtil"
@@ -66,15 +67,20 @@ class ImageUtil(private val context: Context) {
     }
 
     suspend fun deletePhotoFromInternalStorage(uri: Uri): Boolean {
-        val filename = uri.toFile().name
         return try {
+            val filename = uri.toFile().name
             context.deleteFile(filename)
             Log.d(TAG, "File deleted: ${uri.path}")
             true
-        } catch (e: Exception) {
-            Log.d(TAG, "File not deleted: ${uri.path}")
-            e.printStackTrace()
-            false
+        } catch (ex: Exception) {
+            when (ex) {
+                is IllegalArgumentException, is IOException -> {
+                    Log.d(TAG, "File not deleted: ${uri.path}")
+                    ex.printStackTrace()
+                    false
+                }
+                else -> throw ex
+            }
         }
     }
 }

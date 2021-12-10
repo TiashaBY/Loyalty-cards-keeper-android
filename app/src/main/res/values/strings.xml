@@ -11,7 +11,7 @@
     <string name="light_theme_entry">Light theme</string>
     <string name="dark_theme_entry">Dark theme</string>
     <string name="follow_system_entry">Follow system</string>
-    <string name="card_number_textfield_hint">Card number</string>
+    <string name="card_number_textfield_hint">Enter card number</string>
     <string name="card_name_textfield_hint">Enter card name</string>
     <string name="helper_text_required">Required</string>
     <string name="scan_barcode_button_text">Scan barcode</string>
@@ -23,6 +23,8 @@
     <string name="search_field_hint">Type name or number</string>
     <string name="take_photo">Take Photo</string>
     <string name="scan_barcode">Scan your card barcode</string>
-    <string name="capture_front">Capture you card from the front</string>
-    <string name="capture_back">Capture you card from the back</string>
+    <string name="capture_front">Put your card into visible area and capture you card from the front</string>
+    <string name="capture_back">Put your card into visible area and capture you card from the back</string>
+    <string name="camera_permissions">Camera permissions not granted</string>
+    <string name="capture_card_image">Capture card image</string>
 </resources>

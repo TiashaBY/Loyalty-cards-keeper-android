@@ -10,9 +10,9 @@ class DeleteCardImagesUseCase @Inject constructor(private val app: Application) 
 
     suspend operator fun invoke(uri: Uri): MyResult<*> {
         val imageUtil = ImageUtil(app)
-        return if (imageUtil.deletePhotoFromInternalStorage(uri)){
+        return if (imageUtil.deletePhotoFromInternalStorage(uri)) {
             MyResult.Success(Unit)
-    } else {
+        } else {
             MyResult.Failure(Exception("An error occurred when deleting an image"))
         }
     }
