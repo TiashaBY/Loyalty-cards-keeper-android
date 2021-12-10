@@ -8,7 +8,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
@@ -26,7 +26,7 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                         val barcode = barcodes[0]
                         Log.d("barcode found", barcode.displayValue ?: "")
                         barcodeListener(
-                            MyResult.Success(
+                            ResultContainer.Success(
                                 Barcode(
                                     barcode.displayValue,
                                     barcode.format.toZxingBarcode()
@@ -37,7 +37,7 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                     return@addOnSuccessListener
                 }
                 .addOnFailureListener {
-                    barcodeListener(MyResult.Failure(it))
+                    barcodeListener(ResultContainer.Failure(it))
                 }
                 .addOnCompleteListener {
                     imageProxy.close()

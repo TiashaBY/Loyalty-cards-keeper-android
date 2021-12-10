@@ -8,7 +8,7 @@ import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
 import com.rsschool.myapplication.loyaltycards.domain.usecase.DeleteCardImagesUseCase
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
@@ -40,10 +40,10 @@ class AddCardViewModelTest {
     @MockK
     lateinit var savedStateHandle: SavedStateHandle
 
-    @MockK
+    @MockK(relaxed = true)
     lateinit var frontUri: Uri
 
-    @MockK
+    @MockK(relaxed = true)
     lateinit var backUri: Uri
 
     @Before
@@ -60,11 +60,11 @@ class AddCardViewModelTest {
 
     @Test
     fun givenUserCapturedCard_whenUserDiscardChanges_thenCapturedImagesAreDeleted() {
+        viewModel = spyk(AddCardViewModel(savedStateHandle, addCardUseCase, deleteImagesUseCase))
         every { viewModel.frontImageUri.value } returns frontUri
         every { viewModel.backImageUri.value } returns backUri
-        coEvery { deleteImagesUseCase.invoke(frontUri) } returns MyResult.Success(frontUri)
-        coEvery { deleteImagesUseCase.invoke(backUri) } returns MyResult.Success(backUri)
-        viewModel = AddCardViewModel(savedStateHandle, addCardUseCase, deleteImagesUseCase)
+        coEvery { deleteImagesUseCase.invoke(frontUri) } returns ResultContainer.Success(frontUri)
+        coEvery { deleteImagesUseCase.invoke(backUri) } returns ResultContainer.Success(backUri)
 
         viewModel.onLeave()
 
@@ -81,7 +81,7 @@ class AddCardViewModelTest {
         every { viewModel.barcodeFormat.value } returns null
         val card =
             spyk(LoyaltyCard(null, false, viewModel.name.value, viewModel.number.value, null))
-        coEvery { addCardUseCase.invoke(card) } returns MyResult.Success(successResult)
+        coEvery { addCardUseCase.invoke(card) } returns ResultContainer.Success(successResult)
 
         viewModel.onSaveClick()
 

@@ -9,7 +9,7 @@ import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
 import com.rsschool.myapplication.loyaltycards.domain.usecase.DeleteCardImagesUseCase
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.UiConst.RESULT_OK
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -97,10 +97,10 @@ class AddCardViewModel @Inject constructor(
         viewModelScope.launch {
             val result = addCardUseCase(card)
             when (result) {
-                is MyResult.Success -> {
+                is ResultContainer.Success -> {
                     _addCardEventsFlow.emit(AddCardEvent.NavigateBackWithResult(RESULT_OK))
                 }
-                is MyResult.Failure -> {
+                is ResultContainer.Failure -> {
                     _addCardEventsFlow.emit(AddCardEvent.ShowInvalidInputMessage("An error during saving card"))
                 }
             }

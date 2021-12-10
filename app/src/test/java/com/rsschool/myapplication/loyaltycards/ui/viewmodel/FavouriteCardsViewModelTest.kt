@@ -3,7 +3,7 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
 import io.mockk.MockKAnnotations
@@ -52,7 +52,7 @@ class FavouriteCardsViewModelTest {
     @Test
     fun givenUserWithoutFavorites_whenGetFavoritesUseCaseExecuted_thenUiStateIsEmpty() = runBlockingTest {
         coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-            emit(MyResult.Success(listOf<LoyaltyCard>()))
+            emit(ResultContainer.Success(listOf<LoyaltyCard>()))
         }
         val job = launch {
             viewModel.uiState.collect()
@@ -65,7 +65,7 @@ class FavouriteCardsViewModelTest {
     fun givenUserWithFavourites_whenGetFavoritesUseCaseExecuted_thenUiStateIsSuccess() =
         runBlockingTest {
             coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-                emit(MyResult.Success(listOf(card)))
+                emit(ResultContainer.Success(listOf(card)))
             }
             val job = launch {
                 viewModel.uiState.collect()
@@ -77,7 +77,7 @@ class FavouriteCardsViewModelTest {
     @Test
     fun givenUserWithFavourites_thenUiStateInitialStateIsLoading() {
         coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-            emit(MyResult.Success(listOf(card)))
+            emit(ResultContainer.Success(listOf(card)))
         }
             assert(viewModel.uiState.value is DashboardUIState.Loading)
         }
@@ -86,7 +86,7 @@ class FavouriteCardsViewModelTest {
     fun givenUserWithFavourites_whenUserClicksFavItem_thenNavigateToDetailsViewEventIsTriggered() =
         runBlockingTest {
             coEvery { loyaltyCardUseCases.getFavoriteCards() } returns flow {
-                emit(MyResult.Success(listOf(card)))
+                emit(ResultContainer.Success(listOf(card)))
             }
             viewModel.onItemDetailsClick(card)
             viewModel.dashboardEvent.map {

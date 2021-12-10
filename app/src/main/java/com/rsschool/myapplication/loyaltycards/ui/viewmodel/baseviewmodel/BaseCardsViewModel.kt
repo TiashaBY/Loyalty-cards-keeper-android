@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -19,18 +19,18 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
     private val _dashboardEvent = MutableSharedFlow<DashboardEvent>()
     val dashboardEvent = _dashboardEvent.asSharedFlow()
 
-    protected abstract fun fetchData(): Flow<MyResult<*>>
+    protected abstract fun fetchData(): Flow<ResultContainer<*>>
 
-    private fun <T> MyResult<T>.handleResult(): DashboardUIState {
+    private fun <T> ResultContainer<T>.handleResult(): DashboardUIState {
         return when (this) {
-            is MyResult.Success -> {
+            is ResultContainer.Success -> {
                 if ((data as List<*>).isEmpty()) {
                     DashboardUIState.Empty
                 } else {
                     DashboardUIState.Success(data as List<LoyaltyCard>)
                 }
             }
-            is MyResult.Failure -> {
+            is ResultContainer.Failure -> {
                 DashboardUIState.Error(exception.message.toString())
             }
         }

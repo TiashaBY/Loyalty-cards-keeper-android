@@ -6,7 +6,7 @@ import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.CardSide
 import io.mockk.*
@@ -59,7 +59,7 @@ class CameraViewModelTest {
     fun givenUserScannedBarcode_whenTheResultIsSuccess_thenCameraEventIsBarcodeScanned() {
         every { savedStateHandle.get<CameraMode>("mode") } returns CameraMode.SCANNER
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
-        val result = MyResult.Success(barcode)
+        val result = ResultContainer.Success(barcode)
 
         viewModel.onBarcodeScanned(result)
 
@@ -70,7 +70,7 @@ class CameraViewModelTest {
     fun givenUserScannedBarcode_whenTheResultIsFailure_thenCameraEventIsError() {
         every { savedStateHandle.get<CameraMode>("mode") } returns CameraMode.SCANNER
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
-        val result = MyResult.Failure(Exception(""))
+        val result = ResultContainer.Failure(Exception(""))
 
         viewModel.onBarcodeScanned(result)
 
@@ -91,7 +91,7 @@ class CameraViewModelTest {
     fun givenCardCaptureFlowStarted_whenOnCardCapturedFromFront_thenCaptureBackImageEventIsTriggered() {
         every { savedStateHandle.get<CameraMode>("mode") } returns CameraMode.PHOTO
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
-        coEvery { savePictureUseCase.invoke(imageProxy) } returns MyResult.Success(uri)
+        coEvery { savePictureUseCase.invoke(imageProxy) } returns ResultContainer.Success(uri)
 
         viewModel.onCardCaptured(CardSide.FRONT, imageProxy)
 
@@ -102,7 +102,7 @@ class CameraViewModelTest {
     fun givenCardCaptureFlowStarted_whenOnCardCapturedFromBack_thenCameraFinishedCapturingEventIsTriggered() {
         every { savedStateHandle.get<CameraMode>("mode") } returns CameraMode.PHOTO
         viewModel = spyk(CameraViewModel(savedStateHandle, savePictureUseCase))
-        coEvery { savePictureUseCase.invoke(imageProxy) } returns MyResult.Success(uri)
+        coEvery { savePictureUseCase.invoke(imageProxy) } returns ResultContainer.Success(uri)
 
         viewModel.onCardCaptured(CardSide.BACK, imageProxy)
 

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.CardSide
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,14 +50,14 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    fun onBarcodeScanned(result: MyResult<*>) {
+    fun onBarcodeScanned(result: ResultContainer<*>) {
         when (result) {
-            is MyResult.Success -> {
+            is ResultContainer.Success -> {
                 val barcode = result.data as Barcode
                 _cameraEvent.value = CameraEvents.BarcodeScanned(barcode)
 
             }
-            is MyResult.Failure -> {
+            is ResultContainer.Failure -> {
                 onErrorEvent("An error on attempt to save card image")
             }
         }
@@ -66,16 +66,16 @@ class CameraViewModel @Inject constructor(
     fun onCardCaptured(side: CardSide, image: ImageProxy) {
         viewModelScope.launch {
             when (val res = pictureUseCase(image)) {
-                is MyResult.Success<*> -> {
-                if (side == CardSide.FRONT) {
-                    frontImageUri = res.data as Uri
-                    _cameraEvent.value = CameraEvents.CaptureBackImage
+                is ResultContainer.Success<*> -> {
+                    if (side == CardSide.FRONT) {
+                        frontImageUri = res.data as Uri
+                        _cameraEvent.value = CameraEvents.CaptureBackImage
                     } else {
-                    backImageUri = res.data as Uri
-                    _cameraEvent.value = CameraEvents.CameraFinishedCapturing
+                        backImageUri = res.data as Uri
+                        _cameraEvent.value = CameraEvents.CameraFinishedCapturing
+                    }
                 }
-                }
-                is MyResult.Failure -> {
+                is ResultContainer.Failure -> {
                     onErrorEvent(res.exception.message.toString())
                 }
             }

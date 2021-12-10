@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
 import io.mockk.*
@@ -66,7 +66,7 @@ class CardsDashboardViewModelTest {
     fun givenUserWithoutAnyCards_whenGetCardsUseCaseExecuted_thenUiStateIsEmpty() =
         runBlockingTest {
             coEvery { loyaltyCardUseCases.getCards("") } returns flow {
-                emit(MyResult.Success(listOf<LoyaltyCard>()))
+                emit(ResultContainer.Success(listOf<LoyaltyCard>()))
             }
 
             val job = launch {
@@ -81,7 +81,7 @@ class CardsDashboardViewModelTest {
     fun givenUserWitSomeCards_whenUserGetsCardsWithEmptySearch_thenUiStateSuccessAndAllResultsAreShown() =
         runBlockingTest {
             coEvery { loyaltyCardUseCases.getCards("") } returns flow {
-                emit(MyResult.Success(listOf(card)))
+                emit(ResultContainer.Success(listOf(card)))
             }
 
             val job = launch {
@@ -96,7 +96,7 @@ class CardsDashboardViewModelTest {
     fun givenUserWitSomeCards_whenUserGetsCardsWithSearchQuery_thenUiStateIsSuccessAndFilteredResultIsShown() =
         runBlockingTest {
             coEvery { loyaltyCardUseCases.getCards("query") } returns flow {
-                emit(MyResult.Success(listOf(cardForSearch)))
+                emit(ResultContainer.Success(listOf(cardForSearch)))
             }
 
             every { viewModel.searchQuery } answers { fieldValue }
@@ -112,7 +112,7 @@ class CardsDashboardViewModelTest {
     @Test
     fun givenUserWithCards_whenUserClicksItem_thenNavigateToDetailsViewEventIsTriggered() {
         coEvery { loyaltyCardUseCases.getCards("") } returns flow {
-            emit(MyResult.Success(listOf(card)))
+            emit(ResultContainer.Success(listOf(card)))
         }
         viewModel.onItemDetailsClick(card)
         viewModel.dashboardEvent.map {

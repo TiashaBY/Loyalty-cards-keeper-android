@@ -5,13 +5,13 @@ import android.net.Uri
 import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.utils.ImageUtil
-import com.rsschool.myapplication.loyaltycards.domain.utils.MyResult
+import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DeleteCardUseCase @Inject constructor(private val repo: CardsRepository, private val app: Application) {
-    suspend operator fun invoke(card: LoyaltyCard): MyResult<*> {
+    suspend operator fun invoke(card: LoyaltyCard): ResultContainer<*> {
         val imageUtil = ImageUtil(app)
         var isSuccess = false
         if (repo.delete(card) > 0) {
@@ -21,9 +21,9 @@ class DeleteCardUseCase @Inject constructor(private val repo: CardsRepository, p
             }
         }
         return if (isSuccess) {
-            MyResult.Success(card.cardId)
+            ResultContainer.Success(card.cardId)
         } else {
-            MyResult.Failure(Exception("An error occurred when deleting card ${card.cardName}"))
+            ResultContainer.Failure(Exception("An error occurred when deleting card ${card.cardName}"))
         }
     }
 }

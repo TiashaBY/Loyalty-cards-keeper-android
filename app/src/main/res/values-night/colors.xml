@@ -5,7 +5,7 @@
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
     <!-- Secondary brand colors. -->
-    <color name="colorSecondary">#B3000000</color>
+    <color name="colorSecondary">#B3454545</color>
     <color name="colorSecondaryVariant">#F6F6F6</color>
     <color name="colorOnSecondary">#F9A825</color>
 </resources>
