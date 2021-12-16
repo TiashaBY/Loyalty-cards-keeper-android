@@ -1,36 +1,25 @@
 package com.rsschool.myapplication.loyaltycards.di
 
 import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import androidx.room.Room
-import com.google.mlkit.vision.barcode.Barcode
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.rsschool.myapplication.loyaltycards.data.repository.LocalImageRepository
 import com.rsschool.myapplication.loyaltycards.data.repository.RoomCardsRepository
 import com.rsschool.myapplication.loyaltycards.data.room.CardsDatabase
 import com.rsschool.myapplication.loyaltycards.data.room.LoyaltyCardDao
 import com.rsschool.myapplication.loyaltycards.domain.CardsRepository
+import com.rsschool.myapplication.loyaltycards.domain.ImageRepository
 import com.rsschool.myapplication.loyaltycards.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 class AppModule {
-
-    @Provides
-    @Singleton
-    fun getBarCodeScannerOptions() = BarcodeScannerOptions.Builder()
-        .setBarcodeFormats(
-            Barcode.FORMAT_QR_CODE,
-            Barcode.FORMAT_AZTEC)
-        .build()
-
     @Provides
     @Singleton
     fun provideDatabase(app: Application) =
@@ -39,18 +28,26 @@ class AppModule {
             .build()
 
     @Provides
-    fun provideLoyaltyCardsDao(db : CardsDatabase) = db.getLoyaltyCardDao()
+    fun provideLoyaltyCardsDao(db: CardsDatabase) = db.getLoyaltyCardDao()
 
     @Provides
     @Singleton
-    fun provideCardsRepo(dao: LoyaltyCardDao) : CardsRepository = RoomCardsRepository(dao)
+    fun provideCardsRepo(dao: LoyaltyCardDao): CardsRepository = RoomCardsRepository(dao)
 
     @Provides
     @Singleton
-    fun provideLoyaltyCardsUseCases(repo: CardsRepository, app: Application): LoyaltyCardUseCases {
+    fun provideImagesRepo(app: Application): ImageRepository =
+        LocalImageRepository(app)
+
+    @Provides
+    @Singleton
+    fun provideLoyaltyCardsUseCases(
+        repo: CardsRepository,
+        imageRepo: ImageRepository
+    ): LoyaltyCardUseCases {
         return LoyaltyCardUseCases(
             getCards = SearchForQueryUseCase(repo),
-            deleteCard = DeleteCardUseCase(repo, app),
+            deleteCard = DeleteCardUseCase(repo, imageRepo),
             addCard = AddCardUseCase(repo),
             getFavoriteCards = GetFavouritesListUseCase(repo),
             updateFavorites = UpdateFavoritesUseCase(repo)
@@ -59,12 +56,12 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideTakePicUseCaseUseCases(app: Application): TakeCardPictureUseCase {
-        return TakeCardPictureUseCase(app)
+    fun provideTakePicUseCaseUseCases(imageRepo: ImageRepository): SaveCardImageUseCase {
+        return SaveCardImageUseCase(imageRepo)
     }
 
     @Provides
     @Singleton
-    fun provideSharedPrefs(@ApplicationContext context: Context): SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
+    fun provideSharedPrefs(app: Application): SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(app)
 }

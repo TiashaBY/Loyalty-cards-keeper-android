@@ -12,7 +12,7 @@ class AddCardUseCase @Inject constructor(private val repo: CardsRepository) {
         return if (result > 0) {
             ResultContainer.Success(result)
         } else {
-            ResultContainer.Failure(Exception(result.toString()))
+            ResultContainer.Failure(Exception("An error occurred when inserting a card ${card.cardName}"))
         }
     }
 }

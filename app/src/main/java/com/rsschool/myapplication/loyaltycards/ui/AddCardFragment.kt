@@ -63,11 +63,10 @@ class AddCardFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         super.onViewCreated(view, savedInstanceState)
         viewModel.load()
 
-        binding.addCardTop.apply {
+        with(binding.addCardTop) {
             cardNumber.doOnTextChanged { text, _, _, _ ->
                 viewModel.onCardNumberChange(text.toString())
             }
@@ -75,32 +74,11 @@ class AddCardFragment : Fragment() {
                 viewModel.onNameChange(text.toString())//
             }
 
-            val values = BarcodeFormat.values().map { it.name }.toMutableList()
-            values.add(0, "NONE")
-            spinnerAdapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                values
-            )
-            barcodeTypeSpinner.adapter = spinnerAdapter
-            barcodeTypeSpinner.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>, view: View?, pos: Int, id: Long
-                    ) {
-                        if (pos == 0) {
-                            viewModel.onBarcodeTypeChange(null)
-                        } else {
-                            viewModel.onBarcodeTypeChange(BarcodeFormat.valueOf(values[pos]))
-                        }
-                    }
+            initBarcodeFormatSpinner()
 
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
-                }
-        }
-
-        binding.addCardTop.scanBarcode.setOnClickListener {
-            viewModel.onScanBarcodeClick()
+            scanBarcode.setOnClickListener {
+                viewModel.onScanBarcodeClick()
+            }
         }
 
         binding.saveButton.setOnClickListener {
@@ -111,57 +89,72 @@ class AddCardFragment : Fragment() {
             viewModel.onAddCardImageClick()
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-            viewModel.addCardEventsFlow.collect { event ->
-                when (event) {
-                    is AddCardEvent.ShowInvalidInputMessage -> {
-                        Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG).show()
+        initCardEventsCollector()
+        initNameFieldCollector()
+        initNumberFieldCollector()
+        initBarcodeFormatFieldCollector()
+        initCardImagesCollector()
+    }
+
+    private fun AddCardTopBinding.initBarcodeFormatSpinner() {
+        val values = BarcodeFormat.values().map { it.name }.toMutableList()
+        values.add(0, "NONE")
+        spinnerAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            values
+        )
+        barcodeTypeSpinner.adapter = spinnerAdapter
+        barcodeTypeSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>, view: View?, pos: Int, id: Long
+                ) {
+                    if (pos == 0) {
+                        viewModel.onBarcodeTypeChange(null)
+                    } else {
+                        viewModel.onBarcodeTypeChange(BarcodeFormat.valueOf(values[pos]))
                     }
-                    is AddCardEvent.NavigateBackWithResult -> {
-                        findNavController().popBackStack()
-                        findNavController().navigate(R.id.cardsDashboardFragment)
-                    }
-                    AddCardEvent.RequestImageEvent -> {
-                        val action =
-                            AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(
-                                CameraMode.PHOTO
-                            )
-                        setFragmentResultListener(PHOTO_RESULT) { _, bundle ->
-                            val uriList = bundle.get(PHOTO_RESULT) as List<String>
-                            viewModel.onPhotoCaptured(uriList)
-                        }
-                        findNavController().navigate(action)
-                    }
-                    AddCardEvent.RequestBarcodeEvent -> {
-                        val action =
-                            AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(
-                                CameraMode.SCANNER
-                            )
-                        setFragmentResultListener(SCANNER_RESULT) { _, bundle ->
-                            val barcode = bundle.getParcelable<Barcode>(SCANNER_RESULT)
-                            viewModel.onBarcodeScanned(barcode)
-                        }
-                        findNavController().navigate(action)
-                    }
-                }.exhaustive
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+    }
+
+    private fun initCardImagesCollector() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.frontImageUri.collect { uri ->
+                loadBitmap(uri, binding.addCardBottom.cardFrontImage)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.name.collect { name ->
-                if (name.isEmpty()) {
-                    disableSaveButton()
-                } else {
-                    enableSaveButton()
-                }
-                with(binding.addCardTop.cardName) {
-                    if (text.toString() != name) {
-                        setText(name)
+            viewModel.backImageUri.collect { uri ->
+                loadBitmap(uri, binding.addCardBottom.cardBackImage)
+            }
+        }
+    }
+
+    private fun initBarcodeFormatFieldCollector() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.barcodeFormat.collect { f ->
+                with(binding.addCardTop) {
+                    if (f != null) {
+                        val spinnerPosition: Int = spinnerAdapter.getPosition(f.name)
+                        barcodeTypeSpinner.setSelection(spinnerPosition)
+                    } else {
+                        barcodeTypeSpinner.setSelection(0)
+                    }
+                    val number = viewModel.number.value
+                    if (number.isNotEmpty()) {
+                        drawBarcode(number, f)
                     }
                 }
             }
         }
+    }
 
+    private fun initNumberFieldCollector() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.number.collect { number ->
                 if (number.isEmpty()) {
@@ -180,33 +173,62 @@ class AddCardFragment : Fragment() {
                 }
             }
         }
+    }
 
+    private fun initNameFieldCollector() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.barcodeFormat.collect { f ->
-                with(binding.addCardTop) {
-                    if (f != null) {
-                        val spinnerPosition: Int = spinnerAdapter.getPosition(f.name)
-                        barcodeTypeSpinner.setSelection(spinnerPosition)
-                    } else {
-                        barcodeTypeSpinner.setSelection(0)
-                    }
-                    val number = viewModel.number.value
-                    if (!number.isNullOrEmpty()) {
-                        drawBarcode(number, f)
+            viewModel.name.collect { name ->
+                if (name.isEmpty()) {
+                    disableSaveButton()
+                } else {
+                    enableSaveButton()
+                }
+                with(binding.addCardTop.cardName) {
+                    if (text.toString() != name) {
+                        setText(name)
                     }
                 }
             }
         }
+    }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.frontImageUri.collect { uri ->
-                loadBitmap(uri, binding.addCardBottom.cardFrontImage)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.backImageUri.collect { uri ->
-                loadBitmap(uri, binding.addCardBottom.cardBackImage)
+    @Suppress("UNCHECKED_CAST")
+    private fun initCardEventsCollector() {
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+            viewModel.addCardEventsFlow.collect { event ->
+                when (event) {
+                    is AddCardEvent.ShowInvalidInputMessage -> {
+                        Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG).show()
+                    }
+                    is AddCardEvent.NavigateBackWithResult -> {
+                        findNavController().popBackStack()
+                        findNavController().navigate(R.id.cardsDashboardFragment)
+                    }
+                    AddCardEvent.RequestImageEvent -> {
+                        val action =
+                            AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(
+                                CameraMode.PHOTO
+                            )
+                        setFragmentResultListener(PHOTO_RESULT) { _, bundle ->
+                            val uriList = bundle.get(PHOTO_RESULT)
+                            if (uriList is List<*>) {
+                                viewModel.onPhotoCaptured(uriList as List<String>?)
+                            }
+                        }
+                        findNavController().navigate(action)
+                    }
+                    AddCardEvent.RequestBarcodeEvent -> {
+                        val action =
+                            AddCardFragmentDirections.actionAddCardFragmentToCameraFragment(
+                                CameraMode.SCANNER
+                            )
+                        setFragmentResultListener(SCANNER_RESULT) { _, bundle ->
+                            val barcode = bundle.getParcelable<Barcode>(SCANNER_RESULT)
+                            viewModel.onBarcodeScanned(barcode)
+                        }
+                        findNavController().navigate(action)
+                    }
+                }.exhaustive
             }
         }
     }

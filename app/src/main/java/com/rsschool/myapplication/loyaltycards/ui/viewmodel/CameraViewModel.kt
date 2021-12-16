@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
-import com.rsschool.myapplication.loyaltycards.domain.usecase.TakeCardPictureUseCase
+import com.rsschool.myapplication.loyaltycards.domain.usecase.SaveCardImageUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.CardSide
@@ -22,8 +22,8 @@ private const val BACK_IMAGE_URI = "backImageUri"
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
-    private val state: SavedStateHandle?,
-    private val pictureUseCase: TakeCardPictureUseCase,
+    state: SavedStateHandle?,
+    private val imageUseCase: SaveCardImageUseCase,
 ) : ViewModel() {
 
     private val startArguments = state?.get<CameraMode>("mode")
@@ -65,7 +65,7 @@ class CameraViewModel @Inject constructor(
 
     fun onCardCaptured(side: CardSide, image: ImageProxy) {
         viewModelScope.launch {
-            when (val res = pictureUseCase(image)) {
+            when (val res = imageUseCase(image)) {
                 is ResultContainer.Success<*> -> {
                     if (side == CardSide.FRONT) {
                         frontImageUri = res.data as Uri

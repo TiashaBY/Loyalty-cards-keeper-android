@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun loadUserPrefs() {
-        preferences.getString(themePreferenceKey, getString(R.string.follow_system_value))
+        preferences.getString(themePreferenceKey, "")
             ?.let {
                 updateTheme(it)
             }
