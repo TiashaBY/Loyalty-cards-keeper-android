@@ -254,17 +254,17 @@ class AddCardFragment : Fragment() {
     }
 
     private fun showLeavingDialog() =
-        AlertDialog.Builder(requireContext()).setMessage("Are you sure you want to exit?")
+        AlertDialog.Builder(requireContext()).setMessage(getString(R.string.exit_dialog_msg))
             .setCancelable(false)
-            .setNegativeButton("No") { dialog, _ ->
+            .setNegativeButton(getString(R.string.dilog_no)) { dialog, _ ->
                 dialog.cancel()
             }
-            .setPositiveButton("Yes") { _, _ ->
+            .setPositiveButton(getString(R.string.dialog_yes)) { _, _ ->
                 viewModel.onLeave()
             }.create().show()
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }

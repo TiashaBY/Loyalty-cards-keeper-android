@@ -27,4 +27,8 @@
     <string name="capture_back">Put your card into visible area and capture you card from the back</string>
     <string name="camera_permissions">Camera permissions not granted</string>
     <string name="capture_card_image">Capture card image</string>
+    <string name="exit_dialog_msg">Are you sure you want to exit?</string>
+    <string name="dilog_no">No</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="content_descr_your_card_image">Your card image</string>
 </resources>

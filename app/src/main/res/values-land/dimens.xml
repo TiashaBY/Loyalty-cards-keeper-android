@@ -2,4 +2,5 @@
 <resources>
     <dimen name="margin">64dp</dimen>
     <dimen name="cards_margin">8dp</dimen>
+    <dimen name="details_padding">64dp</dimen>
 </resources>

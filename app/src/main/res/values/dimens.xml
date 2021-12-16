@@ -3,4 +3,5 @@
     <dimen name="margin">32dp</dimen>
     <dimen name="cards_margin">16dp</dimen>
     <dimen name="btn_corner_radius">16dp</dimen>
+    <dimen name="details_padding">32dp</dimen>
 </resources>

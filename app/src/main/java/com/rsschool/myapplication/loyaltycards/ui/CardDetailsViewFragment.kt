@@ -30,13 +30,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+private const val cornerRadius = 0.06F
+
 class CardDetailsViewFragment : Fragment() {
 
     private var _binding: CardDetailsFragmentBinding? = null
     private val binding get() = checkNotNull(_binding)
 
     private val viewModel: CardDetailsViewModel by viewModels()
-    private var side = CardSide.FRONT
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +63,7 @@ class CardDetailsViewFragment : Fragment() {
                 binding.number.text = viewModel.card?.cardNumber
 
                 val imageView = binding.cardImage
-                imageView.setImageDrawable(frontBitmap)
+                imageView.setImageDrawable(if (viewModel.cardSide == CardSide.FRONT) frontBitmap else backBitmap)
 
                 imageView.setOnClickListener {
                     runAnimation(imageView, backBitmap, frontBitmap)
@@ -83,14 +84,15 @@ class CardDetailsViewFragment : Fragment() {
         oa1.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 super.onAnimationEnd(animation)
-                if (side == CardSide.FRONT) {
+                val cardSide = viewModel.cardSide
+                if (cardSide == CardSide.FRONT) {
                     drawBitmap(backBitmap, imageView)
                     oa2.start()
-                    side = CardSide.BACK
+                    viewModel.onCardSideChange()
                 } else {
                     drawBitmap(frontBitmap, imageView)
                     oa2.start()
-                    side = CardSide.FRONT
+                    viewModel.onCardSideChange()
                 }
             }
         })
@@ -110,7 +112,7 @@ class CardDetailsViewFragment : Fragment() {
         val imgFile = File(uri.path ?: "")
         if (imgFile.exists()) {
             val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
-            val roundPx = bitmap.width * 0.06F
+            val roundPx = bitmap.width * cornerRadius
             val roundedBitmap = RoundedBitmapDrawableFactory.create(resources, bitmap)
             roundedBitmap.cornerRadius = roundPx
             return roundedBitmap
@@ -118,8 +120,8 @@ class CardDetailsViewFragment : Fragment() {
         return null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
