@@ -79,9 +79,13 @@ class CardsDashboardFragment : CardsFragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyOptionsMenu() {
+        super.onDestroyOptionsMenu()
         searchView?.setOnQueryTextListener(null)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }

@@ -46,8 +46,8 @@ class FavouritesDashboardFragment : CardsFragment() {
         binding.noCardsMsg.visibility = View.GONE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }

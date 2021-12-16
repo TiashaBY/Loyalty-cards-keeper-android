@@ -146,7 +146,7 @@ class CameraFragment : Fragment() {
                         findNavController().navigateUp()
                     }
                     is CameraEvents.CameraError -> {
-                        Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG)
+                        Toast.makeText(requireContext(), event.msg, Toast.LENGTH_LONG).show()
                         findNavController().navigateUp()
                     }
                     CameraEvents.CameraFinishedCapturing -> {
@@ -178,7 +178,6 @@ class CameraFragment : Fragment() {
             photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
         }
     }
-
 
     private fun previewUseCase(): Preview {
         binding.viewPort.visibility = VISIBLE
@@ -265,10 +264,15 @@ class CameraFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
-        _binding = null
     }
 
     companion object {
