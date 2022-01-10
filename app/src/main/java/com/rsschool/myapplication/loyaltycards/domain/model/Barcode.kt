@@ -6,5 +6,3 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Barcode(var number: String, val format: BarcodeFormat?) : Parcelable
-
-

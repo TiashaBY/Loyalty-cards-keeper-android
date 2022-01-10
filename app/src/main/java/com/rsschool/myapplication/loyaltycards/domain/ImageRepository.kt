@@ -5,5 +5,6 @@ import android.net.Uri
 
 interface ImageRepository {
     suspend fun saveToRepository(bitmap: Bitmap): Uri
+
     suspend fun deleteFromRepository(uri: Uri): Boolean
 }

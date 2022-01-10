@@ -10,7 +10,7 @@ import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
 import com.rsschool.myapplication.loyaltycards.domain.usecase.DeleteCardImagesUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
-import com.rsschool.myapplication.loyaltycards.ui.UiConst.RESULT_OK
+import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.RESULT_OK
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

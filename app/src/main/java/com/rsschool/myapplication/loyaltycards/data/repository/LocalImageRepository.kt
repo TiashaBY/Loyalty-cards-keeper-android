@@ -44,7 +44,7 @@ class LocalImageRepository(private val context: Context) : ImageRepository {
         } catch (ex: Exception) {
             when (ex) {
                 is IllegalArgumentException -> {
-                    Log.d(TAG, "File not deleted: ${uri.path}")
+                    Log.d(TAG, "File not deleted, invalid uri: ${uri.path}")
                     false
                 }
                 else -> throw ex

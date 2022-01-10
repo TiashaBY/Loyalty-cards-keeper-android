@@ -14,9 +14,19 @@ class CustomRectangleView @JvmOverloads constructor(
     @AttrRes defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
     private var backgroundColour = 0
-    private var paint: Paint? = null
-    private var transparentPaint: Paint? = null
-    private var strokePaint: Paint? = null
+    private val paint: Paint by lazy { Paint().apply { color = backgroundColour } }
+
+    private val transparentPaint: Paint = Paint().apply {
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
+        color = Color.TRANSPARENT
+        isAntiAlias = true
+    }
+
+    private val strokePaint: Paint = Paint().apply {
+        style = Paint.Style.STROKE
+        color = Color.WHITE
+        strokeWidth = 8F
+    }
 
     init {
         var styledAttrs: TypedArray? = null
@@ -32,21 +42,6 @@ class CustomRectangleView @JvmOverloads constructor(
                     styledAttrs.getColor(R.styleable.CustomRectangleView_custom_color, Color.BLACK)
             } finally {
                 styledAttrs?.recycle()
-            }
-
-            paint = Paint()
-            paint?.color = backgroundColour
-
-            transparentPaint = Paint().apply {
-                xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
-                color = Color.TRANSPARENT
-                isAntiAlias = true
-            }
-
-            strokePaint = Paint().apply {
-                style = Paint.Style.STROKE
-                color = Color.WHITE
-                strokeWidth = 8F
             }
         }
     }
@@ -69,24 +64,15 @@ class CustomRectangleView @JvmOverloads constructor(
         }
         val topLeftX = (widthReal - croppedWidth) / 2
         val topLeftY = (heightReal - croppedHeight) / 2
-
-        val cornerRadius = 25f
+        val topRightX = (topLeftX + croppedWidth)
+        val topRightY = topLeftY + croppedHeight
         // Set rect centered in frame
-        val rect = RectF(
-            topLeftX,
-            topLeftY,
-            (topLeftX + croppedWidth),
-            topLeftY + croppedHeight
-        )
+        val rect = RectF(topLeftX, topLeftY, topRightX, topRightY)
 
         //draw black background
-        paint?.let { canvas.drawPaint(it) }
-
-        transparentPaint?.let {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, it)
-        }
-        strokePaint?.let {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, it)
-        }
+        val cornerRadius = 25f
+        canvas.drawPaint(paint)
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, transparentPaint)
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, strokePaint)
     }
 }

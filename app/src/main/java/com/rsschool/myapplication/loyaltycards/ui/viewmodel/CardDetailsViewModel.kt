@@ -3,7 +3,7 @@ package com.rsschool.myapplication.loyaltycards.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.ui.CardSide
+import com.rsschool.myapplication.loyaltycards.ui.util.CardSide
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -23,6 +23,7 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardDetailsFragmentBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeGenerator
+import com.rsschool.myapplication.loyaltycards.ui.util.CardSide
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardDetailsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,22 +52,26 @@ class CardDetailsViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val number = viewModel.card?.cardNumber ?: ""
+        binding.number.text = viewModel.card?.cardNumber
+        drawBarcode(number)
+    }
+
+    private fun drawBarcode(number: String) {
         val type = viewModel.card?.barcodeType
+        type?.let {
+            CoroutineScope(Dispatchers.IO).launch {
+                val bitmap = BarcodeGenerator()
+                    .generateBarcode(Barcode(number, type))
+                val frontBitmap = getRoundedBitmap(Uri.parse(viewModel.card?.frontImage))
+                val backBitmap = getRoundedBitmap(Uri.parse(viewModel.card?.backImage))
+                withContext(Dispatchers.Main) {
+                    drawBitmap(bitmap, binding.barcode)
+                    val imageView = binding.cardImage
+                    imageView.setImageDrawable(if (viewModel.cardSide == CardSide.FRONT) frontBitmap else backBitmap)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val bitmap = BarcodeGenerator()
-                .generateBarcode(Barcode(number, type))
-            val frontBitmap = getRoundedBitmap(Uri.parse(viewModel.card?.frontImage))
-            val backBitmap = getRoundedBitmap(Uri.parse(viewModel.card?.backImage))
-            withContext(Dispatchers.Main) {
-                drawBitmap(bitmap, binding.barcode)
-                binding.number.text = viewModel.card?.cardNumber
-
-                val imageView = binding.cardImage
-                imageView.setImageDrawable(if (viewModel.cardSide == CardSide.FRONT) frontBitmap else backBitmap)
-
-                imageView.setOnClickListener {
-                    runAnimation(imageView, backBitmap, frontBitmap)
+                    imageView.setOnClickListener {
+                        runAnimation(imageView, backBitmap, frontBitmap)
+                    }
                 }
             }
         }
@@ -77,26 +82,26 @@ class CardDetailsViewFragment : Fragment() {
         backBitmap: RoundedBitmapDrawable?,
         frontBitmap: RoundedBitmapDrawable?
     ) {
-        val oa1 = ObjectAnimator.ofFloat(imageView, "scaleX", 1f, 0F)
-        val oa2 = ObjectAnimator.ofFloat(imageView, "scaleX", 0f, 1F)
-        oa1.interpolator = DecelerateInterpolator()
-        oa2.interpolator = AccelerateDecelerateInterpolator()
-        oa1.addListener(object : AnimatorListenerAdapter() {
+        val animatorFirst = ObjectAnimator.ofFloat(imageView, "scaleX", 1F, 0F)
+        val animatorSecond = ObjectAnimator.ofFloat(imageView, "scaleX", 0F, 1F)
+        animatorFirst.interpolator = DecelerateInterpolator()
+        animatorSecond.interpolator = AccelerateDecelerateInterpolator()
+        animatorFirst.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 super.onAnimationEnd(animation)
                 val cardSide = viewModel.cardSide
                 if (cardSide == CardSide.FRONT) {
                     drawBitmap(backBitmap, imageView)
-                    oa2.start()
+                    animatorSecond.start()
                     viewModel.onCardSideChange()
                 } else {
                     drawBitmap(frontBitmap, imageView)
-                    oa2.start()
+                    animatorSecond.start()
                     viewModel.onCardSideChange()
                 }
             }
         })
-        oa1.start()
+        animatorFirst.start()
     }
 
     private fun <T> drawBitmap(drawable: T, imageView: ImageView) {

@@ -25,9 +25,10 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardTopBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
-import com.rsschool.myapplication.loyaltycards.ui.UiConst.PHOTO_RESULT
-import com.rsschool.myapplication.loyaltycards.ui.UiConst.SCANNER_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeGenerator
+import com.rsschool.myapplication.loyaltycards.ui.util.CameraMode
+import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.PHOTO_RESULT
+import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.SCANNER_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,12 +82,14 @@ class AddCardFragment : Fragment() {
             }
         }
 
-        binding.saveButton.setOnClickListener {
-            viewModel.onSaveClick()
-        }
+        with(binding) {
+            saveButton.setOnClickListener {
+                viewModel.onSaveClick()
+            }
 
-        binding.addCardBottom.addCardButton.setOnClickListener {
-            viewModel.onAddCardImageClick()
+            addCardBottom.addCardButton.setOnClickListener {
+                viewModel.onAddCardImageClick()
+            }
         }
 
         initCardEventsCollector()
@@ -194,7 +197,7 @@ class AddCardFragment : Fragment() {
 
     @Suppress("UNCHECKED_CAST")
     private fun initCardEventsCollector() {
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.addCardEventsFlow.collect { event ->
                 when (event) {
                     is AddCardEvent.ShowInvalidInputMessage -> {

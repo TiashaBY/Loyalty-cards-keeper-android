@@ -1,5 +1,6 @@
 package com.rsschool.myapplication.loyaltycards
 
+import android.app.Application
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
@@ -12,9 +13,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.rsschool.myapplication.loyaltycards.databinding.ActivityMainBinding
+import dagger.Provides
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -22,9 +26,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private var binding: ActivityMainBinding? = null
 
     private val themePreferenceKey by lazy { getString(R.string.theme_preference_key) }
-
-    @Inject
-    lateinit var preferences: SharedPreferences
+    private val preferences: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

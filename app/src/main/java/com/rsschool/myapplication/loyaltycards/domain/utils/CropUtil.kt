@@ -30,8 +30,7 @@ class CropUtil {
         val topLeftY = (heightReal - croppedHeight) / 2
 
         return Bitmap.createBitmap(
-            bitmap,
-            topLeftX.toInt(), topLeftY.toInt(), croppedWidth.toInt(), croppedHeight.toInt()
+            bitmap, topLeftX.toInt(), topLeftY.toInt(), croppedWidth.toInt(), croppedHeight.toInt()
         )
     }
 }

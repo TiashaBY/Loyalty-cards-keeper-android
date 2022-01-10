@@ -14,17 +14,20 @@ class DeleteCardUseCase @Inject constructor(
     private val imageRepo: ImageRepository
 ) {
     suspend operator fun invoke(card: LoyaltyCard): ResultContainer<*> {
-        var isSuccess = false
-        if (repo.delete(card) > 0) {
-            withContext(Dispatchers.IO) {
-                isSuccess = imageRepo.deleteFromRepository(Uri.parse(card.frontImage)) &&
-                        imageRepo.deleteFromRepository(Uri.parse(card.backImage))
+        try {
+            repo.delete(card)
+        } catch (dbException: java.lang.Exception) {
+            return ResultContainer.Failure(dbException)
+        }
+
+        withContext(Dispatchers.IO) {
+            try {
+                imageRepo.deleteFromRepository(Uri.parse(card.frontImage))
+                imageRepo.deleteFromRepository(Uri.parse(card.backImage))
+            } catch (fileDeleteException: Exception) {
+                return@withContext ResultContainer.Failure(fileDeleteException)
             }
         }
-        return if (isSuccess) {
-            ResultContainer.Success(card.cardId)
-        } else {
-            ResultContainer.Failure(Exception("An error occurred when deleting a card ${card.cardName}"))
-        }
+        return ResultContainer.Success(card.cardId)
     }
 }

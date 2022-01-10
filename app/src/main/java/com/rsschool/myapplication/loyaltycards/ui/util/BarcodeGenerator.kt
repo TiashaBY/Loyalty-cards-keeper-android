@@ -1,6 +1,7 @@
 package com.rsschool.myapplication.loyaltycards.ui.util
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
@@ -43,9 +44,11 @@ class BarcodeGenerator {
             bitmap.setPixels(pixels, 0, bitMatrixWidth, 0, 0, bitMatrixWidth, bitMatrixHeight)
             return bitmap
         } catch (e: WriterException) {
-            throw WriterException(e)
+            Log.d("Barcode generator", e.message.toString())
+            throw e
         } catch (e: OutOfMemoryError) {
-            return null
+            Log.d("Barcode generator", e.message.toString())
+            throw e
         }
     }
 }

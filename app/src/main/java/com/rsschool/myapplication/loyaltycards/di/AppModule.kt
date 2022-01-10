@@ -14,33 +14,39 @@ import com.rsschool.myapplication.loyaltycards.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.scopes.FragmentScoped
+import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 @Module
 class AppModule {
     @Provides
-    @Singleton
+    @ViewModelScoped
     fun provideDatabase(app: Application) =
         Room.databaseBuilder(app, CardsDatabase::class.java, "cards_database")
             .fallbackToDestructiveMigration()
             .build()
 
     @Provides
+    @ViewModelScoped
     fun provideLoyaltyCardsDao(db: CardsDatabase) = db.getLoyaltyCardDao()
 
     @Provides
-    @Singleton
+    @ViewModelScoped
     fun provideCardsRepo(dao: LoyaltyCardDao): CardsRepository = RoomCardsRepository(dao)
 
     @Provides
-    @Singleton
+    @ViewModelScoped
     fun provideImagesRepo(app: Application): ImageRepository =
         LocalImageRepository(app)
 
     @Provides
-    @Singleton
+    @ViewModelScoped
     fun provideLoyaltyCardsUseCases(
         repo: CardsRepository,
         imageRepo: ImageRepository
@@ -55,13 +61,8 @@ class AppModule {
     }
 
     @Provides
-    @Singleton
+    @ViewModelScoped
     fun provideTakePicUseCaseUseCases(imageRepo: ImageRepository): SaveCardImageUseCase {
         return SaveCardImageUseCase(imageRepo)
     }
-
-    @Provides
-    @Singleton
-    fun provideSharedPrefs(app: Application): SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(app)
 }

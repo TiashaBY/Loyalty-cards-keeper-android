@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.usecase.SaveCardImageUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
-import com.rsschool.myapplication.loyaltycards.ui.CameraMode
-import com.rsschool.myapplication.loyaltycards.ui.CardSide
+import com.rsschool.myapplication.loyaltycards.ui.util.CameraMode
+import com.rsschool.myapplication.loyaltycards.ui.util.CardSide
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
