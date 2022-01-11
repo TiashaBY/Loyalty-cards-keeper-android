@@ -9,7 +9,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
-import com.rsschool.myapplication.loyaltycards.ui.BarcodeListener
+import com.rsschool.myapplication.loyaltycards.ui.fragment.BarcodeListener
 
 class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()

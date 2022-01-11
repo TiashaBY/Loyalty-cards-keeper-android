@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.FavouriteCardsViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.FavouriteCardsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

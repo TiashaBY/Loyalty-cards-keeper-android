@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.fragment
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -25,6 +25,7 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.databinding.AddCardTopBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
+import com.rsschool.myapplication.loyaltycards.ui.exhaustive
 import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.ui.util.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.PHOTO_RESULT

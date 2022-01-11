@@ -1,8 +1,7 @@
-package com.rsschool.myapplication.loyaltycards.ui.viewmodel
+package com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

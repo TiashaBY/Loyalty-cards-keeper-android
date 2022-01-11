@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.fragment
 
 import android.os.Bundle
 import android.view.View
@@ -12,9 +12,9 @@ import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmen
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.BaseCardsViewModel
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.BaseCardsViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardEvent
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

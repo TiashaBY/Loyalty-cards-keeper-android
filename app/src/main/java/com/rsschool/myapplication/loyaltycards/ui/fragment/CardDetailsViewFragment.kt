@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui
+package com.rsschool.myapplication.loyaltycards.ui.fragment
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

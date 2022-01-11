@@ -5,8 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardEvent
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel.DashboardUIState
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.CardsDashboardViewModel
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardEvent
+import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardUIState
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

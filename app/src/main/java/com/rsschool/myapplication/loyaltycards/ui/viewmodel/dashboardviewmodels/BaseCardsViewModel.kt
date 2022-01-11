@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.viewmodel.baseviewmodel
+package com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
