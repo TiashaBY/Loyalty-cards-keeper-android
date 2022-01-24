@@ -13,10 +13,7 @@ import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.OnCardClickListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 
 class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter<LoyaltyCard, CardsListAdapter.CardViewHolder>(
@@ -46,9 +43,11 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
         }
 
         private fun loadBitmap(card: LoyaltyCard, binding: CardViewBinding) {
+            val job = Job()
+            val scope = job + Dispatchers.IO
             val cardUri = Uri.parse(card.frontImage).path ?: ""
             val imgFile = File(cardUri)
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(scope).launch {
                 val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
                 withContext(Dispatchers.Main) {
                     Glide.with(binding.cardView)
@@ -56,7 +55,6 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
                         .error(R.drawable.card_default)
                         .centerCrop()
                         .dontAnimate()
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(binding.imageView)
                 }
             }

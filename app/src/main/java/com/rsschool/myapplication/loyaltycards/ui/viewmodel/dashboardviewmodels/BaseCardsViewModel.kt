@@ -5,19 +5,27 @@ import androidx.lifecycle.viewModelScope
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): ViewModel() {
+//TODO: handle failure DB events
+abstract class BaseCardsViewModel(private val useCase: LoyaltyCardUseCases) : ViewModel() {
 
     val uiState: StateFlow<DashboardUIState> by lazy {
-         fetchData().mapNotNull { res ->
+        fetchData().mapNotNull { res ->
             res.handleResult()
         }.stateIn(viewModelScope, SharingStarted.Lazily, DashboardUIState.Loading)
     }
 
     private val _dashboardEvent = MutableSharedFlow<DashboardEvent>()
     val dashboardEvent = _dashboardEvent.asSharedFlow()
+
+    private val job = Job()
+    private val coroutineContext: CoroutineContext = job + Dispatchers.IO
 
     protected abstract fun fetchData(): Flow<ResultContainer<*>>
 
@@ -38,19 +46,25 @@ abstract class BaseCardsViewModel (private val useCase: LoyaltyCardUseCases): Vi
 
     fun onItemDetailsClick(card: LoyaltyCard) {
         viewModelScope.launch {
-            _dashboardEvent.emit(DashboardEvent.NavigateToDetailsView(card))
+            withContext(this@BaseCardsViewModel.coroutineContext) {
+                _dashboardEvent.emit(DashboardEvent.NavigateToDetailsView(card))
+            }
         }
     }
 
     fun onFavIconClick(card: LoyaltyCard, checked: Boolean) {
         viewModelScope.launch {
-            useCase.updateFavorites(card, checked)
+            withContext(this@BaseCardsViewModel.coroutineContext) {
+                useCase.updateFavorites(card, checked)
+            }
         }
     }
 
     fun onDeleteIconClick(card: LoyaltyCard) {
         viewModelScope.launch {
-            useCase.deleteCard(card)
+            withContext(this@BaseCardsViewModel.coroutineContext) {
+                useCase.deleteCard(card)
+            }
         }
     }
 }

@@ -22,40 +22,13 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
-class AppModule {
+class DatabaseModule {
     @Provides
-    @ViewModelScoped
-    fun provideLoyaltyCardsDao(db: CardsDatabase) = db.getLoyaltyCardDao()
-
-    @Provides
-    @ViewModelScoped
-    fun provideCardsRepo(dao: LoyaltyCardDao): CardsRepository = RoomCardsRepository(dao)
-
-    @Provides
-    @ViewModelScoped
-    fun provideImagesRepo(app: Application): ImageRepository =
-        LocalImageRepository(app)
-
-    @Provides
-    @ViewModelScoped
-    fun provideLoyaltyCardsUseCases(
-        repo: CardsRepository,
-        imageRepo: ImageRepository
-    ): LoyaltyCardUseCases {
-        return LoyaltyCardUseCases(
-            getCards = SearchForQueryUseCase(repo),
-            deleteCard = DeleteCardUseCase(repo, imageRepo),
-            addCard = AddCardUseCase(repo),
-            getFavoriteCards = GetFavouritesListUseCase(repo),
-            updateFavorites = UpdateFavoritesUseCase(repo)
-        )
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideTakePicUseCaseUseCases(imageRepo: ImageRepository): SaveCardImageUseCase {
-        return SaveCardImageUseCase(imageRepo)
-    }
+    @Singleton
+    fun provideDatabase(app: Application) =
+        Room.databaseBuilder(app, CardsDatabase::class.java, "cards_database")
+            .fallbackToDestructiveMigration()
+            .build()
 }

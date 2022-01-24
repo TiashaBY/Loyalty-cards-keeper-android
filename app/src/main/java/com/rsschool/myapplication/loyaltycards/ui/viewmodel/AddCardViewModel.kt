@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+//TODO - add coroutine context, group some variables
 @HiltViewModel
 class AddCardViewModel @Inject constructor(
     private val state: SavedStateHandle?,

@@ -58,11 +58,7 @@ class CameraFragment : Fragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            bindUseCases(
-                UseCaseGroup.Builder()
-                    .addUseCase(previewUseCase())
-                    .addUseCase(imageAnalysisUseCase()).build()
-            )
+            bindScanCodeUseCase()
         } else {
             Toast.makeText(
                 context,
@@ -77,11 +73,7 @@ class CameraFragment : Fragment() {
     ) { p ->
         if ((p[READ_EXTERNAL_STORAGE] == true && p[WRITE_EXTERNAL_STORAGE] == true && p[CAMERA] == true)
         ) {
-            bindUseCases(
-                UseCaseGroup.Builder()
-                    .addUseCase(previewUseCase())
-                    .addUseCase(captureImageUseCase()).build()
-            )
+            bindCaptureImageUseCase()
         } else {
             Toast.makeText(
                 context,
@@ -112,31 +104,31 @@ class CameraFragment : Fragment() {
                     CameraEvents.OpenScanner -> {
                         binding.cameraText.text = getString(R.string.scan_barcode)
                         if (cameraPermissionGranted()) {
-                            bindUseCases(
-                                UseCaseGroup.Builder()
-                                    .addUseCase(previewUseCase())
-                                    .addUseCase(imageAnalysisUseCase()).build()
-                            )
+                            bindScanCodeUseCase()
                         } else {
                             scannerLauncher.launch(CAMERA)
                         }
                     }
                     CameraEvents.CaptureFrontImage -> {
-                        binding.viewPort.visibility = GONE
                         val cardSide = CardSide.FRONT
-                        binding.cameraText.text = getString(R.string.capture_front)
-                        binding.cameraCaptureButton.visibility = VISIBLE
-                        binding.cameraCaptureButton.setOnClickListener {
-                            captureImage(cardSide)
+                        with(binding) {
+                            viewPort.visibility = GONE
+                            cameraText.text = getString(R.string.capture_front)
+                            cameraCaptureButton.visibility = VISIBLE
+                            cameraCaptureButton.setOnClickListener {
+                                captureImage(cardSide)
+                            }
                         }
                         startCameraForCapturing()
                     }
                     CameraEvents.CaptureBackImage -> {
                         val cardSide = CardSide.BACK
-                        binding.cameraCaptureButton.visibility = VISIBLE
-                        binding.cameraText.text = getString(R.string.capture_back)
-                        binding.cameraCaptureButton.setOnClickListener {
-                            captureImage(cardSide)
+                        with(binding) {
+                            cameraCaptureButton.visibility = VISIBLE
+                            cameraText.text = getString(R.string.capture_back)
+                            cameraCaptureButton.setOnClickListener {
+                                captureImage(cardSide)
+                            }
                         }
                         startCameraForCapturing()
                     }
@@ -166,18 +158,30 @@ class CameraFragment : Fragment() {
         }
     }
 
+    private fun bindScanCodeUseCase() {
+        bindUseCases(
+            UseCaseGroup.Builder()
+                .addUseCase(previewUseCase())
+                .addUseCase(imageAnalysisUseCase()).build()
+        )
+    }
+
     @SuppressLint("UnsafeOptInUsageError")
     private fun startCameraForCapturing() {
         if (storagePermissionsGranted() && cameraPermissionGranted()) {
             photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
-            bindUseCases(
-                UseCaseGroup.Builder()
-                    .addUseCase(previewUseCase())
-                    .addUseCase(captureImageUseCase()).build()
-            )
+            bindCaptureImageUseCase()
         } else {
             photoLauncher.launch((STORAGE_PERMISSIONS + CAMERA).toTypedArray())
         }
+    }
+
+    private fun bindCaptureImageUseCase() {
+        bindUseCases(
+            UseCaseGroup.Builder()
+                .addUseCase(previewUseCase())
+                .addUseCase(captureImageUseCase()).build()
+        )
     }
 
     private fun previewUseCase(): Preview {
