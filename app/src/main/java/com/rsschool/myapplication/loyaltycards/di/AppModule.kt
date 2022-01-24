@@ -1,10 +1,6 @@
 package com.rsschool.myapplication.loyaltycards.di
 
-import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
-import androidx.room.Room
 import com.rsschool.myapplication.loyaltycards.data.repository.LocalImageRepository
 import com.rsschool.myapplication.loyaltycards.data.repository.RoomCardsRepository
 import com.rsschool.myapplication.loyaltycards.data.room.CardsDatabase
@@ -15,14 +11,9 @@ import com.rsschool.myapplication.loyaltycards.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityScoped
-import dagger.hilt.android.scopes.FragmentScoped
 import dagger.hilt.android.scopes.ViewModelScoped
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @InstallIn(ViewModelComponent::class)
 @Module
