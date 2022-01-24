@@ -1,6 +1,5 @@
 package com.rsschool.myapplication.loyaltycards
 
-import android.app.Application
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
@@ -15,10 +14,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.rsschool.myapplication.loyaltycards.databinding.ActivityMainBinding
-import dagger.Provides
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {

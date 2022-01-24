@@ -10,7 +10,7 @@ import com.rsschool.myapplication.loyaltycards.NavGraphDirections
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
+import com.rsschool.myapplication.loyaltycards.ui.recyclerview.OnCardClickListener
 import com.rsschool.myapplication.loyaltycards.ui.recyclerview.CardsListAdapter
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.BaseCardsViewModel
 import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardEvent

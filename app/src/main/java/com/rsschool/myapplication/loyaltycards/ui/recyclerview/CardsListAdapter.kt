@@ -12,7 +12,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.ui.listener.OnCardClickListener
+import com.rsschool.myapplication.loyaltycards.ui.recyclerview.OnCardClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,17 +29,17 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
             with(binding) {
                 cardName.text = card.cardName
                 cardNumber.text = card.cardNumber
-                loadBitmap(card, binding)
+                loadBitmap(card, this)
 
                 likeButtonCb.isChecked = card.isFavourite
 
-                binding.details.setOnClickListener {
+                details.setOnClickListener {
                     listener.onItemDetailsClick(card)
                 }
-                binding.deleteButton.setOnClickListener {
+                deleteButton.setOnClickListener {
                     listener.onDeleteIconClick(card)
                 }
-                binding.likeButtonCb.setOnCheckedChangeListener { _, isChecked ->
+                likeButtonCb.setOnCheckedChangeListener { _, isChecked ->
                     listener.onFavIconClick(card, isChecked)
                 }
             }
@@ -88,4 +88,10 @@ class CardsListAdapter(private val listener : OnCardClickListener) : ListAdapter
                     oldItem.cardName == newItem.cardName &&
                     oldItem.cardNumber == newItem.cardNumber
     }
+}
+
+interface OnCardClickListener {
+    fun onItemDetailsClick(card: LoyaltyCard)
+    fun onFavIconClick(card: LoyaltyCard, isChecked: Boolean)
+    fun onDeleteIconClick(card: LoyaltyCard)
 }
