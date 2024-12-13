@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels
+package com.rsschool.myapplication.loyaltycards.ui.dashboard
 
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel

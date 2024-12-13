@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.fragment
+package com.rsschool.myapplication.loyaltycards.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle

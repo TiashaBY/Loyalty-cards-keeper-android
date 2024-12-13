@@ -4,9 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.LoyaltyCardUseCases
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardEvent
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.DashboardUIState
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.FavouriteCardsViewModel
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.DashboardEvent
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.DashboardUIState
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.FavouriteCardsViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.coEvery

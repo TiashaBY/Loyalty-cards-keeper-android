@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.fragment
+package com.rsschool.myapplication.loyaltycards.ui.dashboard
 
 import android.os.Bundle
 import android.view.*
@@ -8,7 +8,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardsDashboardFragmentBinding
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.dashboardviewmodels.CardsDashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 

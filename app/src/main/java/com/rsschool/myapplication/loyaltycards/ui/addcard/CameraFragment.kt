@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.fragment
+package com.rsschool.myapplication.loyaltycards.ui.addcard
 
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
@@ -33,8 +33,6 @@ import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeAnalyzer
 import com.rsschool.myapplication.loyaltycards.ui.util.CardSide
 import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.PHOTO_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.SCANNER_RESULT
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraEvents
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CameraViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.camera_preview_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

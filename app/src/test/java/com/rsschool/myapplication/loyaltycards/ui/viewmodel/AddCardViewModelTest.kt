@@ -9,6 +9,7 @@ import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
 import com.rsschool.myapplication.loyaltycards.domain.usecase.AddCardUseCase
 import com.rsschool.myapplication.loyaltycards.domain.usecase.DeleteCardImagesUseCase
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.AddCardViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

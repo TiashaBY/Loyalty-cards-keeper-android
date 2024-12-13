@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.viewmodel
+package com.rsschool.myapplication.loyaltycards.ui.addcard
 
 import android.net.Uri
 import androidx.camera.core.ImageProxy

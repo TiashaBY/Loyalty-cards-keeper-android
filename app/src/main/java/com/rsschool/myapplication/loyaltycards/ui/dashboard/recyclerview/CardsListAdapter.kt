@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.recyclerview
+package com.rsschool.myapplication.loyaltycards.ui.dashboard.recyclerview
 
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -12,7 +12,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.rsschool.myapplication.loyaltycards.R
 import com.rsschool.myapplication.loyaltycards.databinding.CardViewBinding
 import com.rsschool.myapplication.loyaltycards.domain.model.LoyaltyCard
-import com.rsschool.myapplication.loyaltycards.ui.recyclerview.OnCardClickListener
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.recyclerview.OnCardClickListener
 import kotlinx.coroutines.*
 import java.io.File
 

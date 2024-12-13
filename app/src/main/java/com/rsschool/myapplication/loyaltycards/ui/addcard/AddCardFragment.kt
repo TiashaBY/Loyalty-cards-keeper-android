@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.fragment
+package com.rsschool.myapplication.loyaltycards.ui.addcard
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -30,8 +30,8 @@ import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.ui.util.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.PHOTO_RESULT
 import com.rsschool.myapplication.loyaltycards.ui.util.UiConst.SCANNER_RESULT
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardEvent
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.AddCardViewModel
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.AddCardEvent
+import com.rsschool.myapplication.loyaltycards.ui.dashboard.AddCardViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect

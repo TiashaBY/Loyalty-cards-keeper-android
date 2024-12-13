@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.fragment
+package com.rsschool.myapplication.loyaltycards.ui.carddetails
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -24,7 +24,6 @@ import com.rsschool.myapplication.loyaltycards.databinding.CardDetailsFragmentBi
 import com.rsschool.myapplication.loyaltycards.domain.model.Barcode
 import com.rsschool.myapplication.loyaltycards.ui.util.BarcodeGenerator
 import com.rsschool.myapplication.loyaltycards.ui.util.CardSide
-import com.rsschool.myapplication.loyaltycards.ui.viewmodel.CardDetailsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.rsschool.myapplication.loyaltycards.ui.viewmodel
+package com.rsschool.myapplication.loyaltycards.ui.dashboard
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle

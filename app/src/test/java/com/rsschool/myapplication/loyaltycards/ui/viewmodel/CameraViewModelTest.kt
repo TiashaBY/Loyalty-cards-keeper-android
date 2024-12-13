@@ -9,6 +9,8 @@ import com.rsschool.myapplication.loyaltycards.domain.usecase.SaveCardImageUseCa
 import com.rsschool.myapplication.loyaltycards.domain.utils.ResultContainer
 import com.rsschool.myapplication.loyaltycards.ui.CameraMode
 import com.rsschool.myapplication.loyaltycards.ui.CardSide
+import com.rsschool.myapplication.loyaltycards.ui.addcard.CameraEvents
+import com.rsschool.myapplication.loyaltycards.ui.addcard.CameraViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
